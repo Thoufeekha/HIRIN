@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIRIN'</title>
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -25,7 +27,7 @@
         <div class="container-fluid px-5">
 
             <a class="navbar-brand" href="#">
-                <img src="../imgs/logo.png" class="logo">
+                <img src="{% static 'imgs/logo.png' %}" class="logo">
             </a>
 
             <button class="navbar-toggler"
@@ -36,86 +38,62 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarMenu">
+           <div class="collapse navbar-collapse justify-content-end"
+                id="navbarMenu">
 
-                <ul class="navbar-nav mx-auto">
+                <ul class="navbar-nav align-items-center">
 
                     <li class="nav-item">
-                        <a class="nav-link active-nav" href="#">
+                        <a class="nav-link active-nav" href="/">
                             Home
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="/companies/">
                             Companies
                         </a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle"
-                            href="#"
-                            role="button"
-                            data-bs-toggle="dropdown">
 
-                            Service
+                        <a class="nav-link dropdown-toggle"
+                        href="javascript:void(0);"
+                        data-bs-toggle="dropdown">
+
+                            Services
+
                         </a>
 
                         <ul class="dropdown-menu">
 
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    ATS Resume Analyzer
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    AI Cover Letter Generator
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    AI Email Generator
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    Mock Interview Assistant
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    Portal Assistant Chatbot
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    Ghost Hunter
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item" href="#">ATS Resume Evaluator</a></li>
+                            <li><a class="dropdown-item" href="#">Job Recommendation Engine</a></li>
+                            <li><a class="dropdown-item" href="#">AI Cover Letter Generator</a></li>
+                            <li><a class="dropdown-item" href="#">AI Email Generator</a></li>
+                            <li><a class="dropdown-item" href="#">Interview Preparation Assistant</a></li>
+                            <li><a class="dropdown-item" href="#">Portal Assistant Chatbot</a></li>
 
                         </ul>
 
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="/FAQ/">
+                            FAQ
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-4">
+                        <a class="nav-link login-link"
+                        href="/login/">
+
+                            Login
+
+                        </a>
+                    </li>
+
                 </ul>
-
-                <div class="auth-buttons">
-
-                    <a href="#" class="login-link">
-                        Login
-                    </a>
-
-                    <a href="#" class="signup-btn">
-                        Sign Up
-                    </a>
-
-                </div>
 
             </div>
 
@@ -164,8 +142,7 @@
 
         <div class="hero-left">
 
-            <img src="../imgs/resume-illustration.png"
-                alt="resume">
+            <img src="{% static 'imgs/resume-illustration.png' %}" alt="resume">
 
         </div>
 
@@ -173,8 +150,7 @@
 
             <div class="hero-logo">
 
-                <img src="../imgs/tie-icon.png"
-                    alt="tie">
+                <img src="{% static 'imgs/tie-icon.png' %}" alt="tie">
 
                 <h1>HIRIN'</h1>
 
@@ -188,16 +164,15 @@
                 Your smart job search assistant. Discover opportunities, connect with top companies, and build your career.
             </p>
 
-            <button class="hero-btn">
-                Get Started →
-            </button>
+            <a href="/getstarted/" class="hero-btn">
+                 Get Started →
+            </a>
 
         </div>
 
         <div class="hero-right">
 
-            <img src="../imgs/briefcase-illustration.png"
-                alt="briefcase">
+            <img src="{% static 'imgs/briefcase-illustration.png' %}" alt="briefcase">
 
         </div>
 

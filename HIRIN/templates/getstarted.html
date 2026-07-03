@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - HireIn</title>
+
+    <link rel="stylesheet" href="{% static 'css/getstarted.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        <h1>HIRIN'</h1>
+        <p>Choose your role to continue</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <i class="fa-solid fa-user"></i>
+
+            <h2>Job Seeker</h2>
+
+            <p>
+                Find jobs, upload resumes,
+                and get AI-powered career assistance.
+            </p>
+
+            <a href="/signup/" class="btn">
+                Continue
+            </a>
+        </div>
+
+        <div class="card">
+
+            <i class="fa-solid fa-building"></i>
+
+            <h2>Recruiter</h2>
+
+            <p>
+                Post jobs, manage applicants,
+                and hire smarter.
+            </p>
+
+            <a href="/signup/" class="btn">
+                Continue
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

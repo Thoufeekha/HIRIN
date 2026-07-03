@@ -33,6 +33,9 @@ body{
     background:#fff !important;
 }
 
+.container-fluid{
+    max-width:1400px;
+}
 .nav-link{
     margin:0 15px;
     color:var(--text) !important;
@@ -42,6 +45,14 @@ body{
 
 .nav-link:hover{
     color:var(--primary) !important;
+}
+
+.navbar-nav{
+    align-items:center;
+}
+
+.navbar-nav .nav-item{
+    margin:0 8px;
 }
 
 .active-nav{
@@ -63,17 +74,20 @@ body{
 .auth-buttons{
     display:flex;
     align-items:center;
-    gap:25px;
+    margin-left:40px;
 }
 
 .login-link{
     text-decoration:none;
     color:var(--primary);
     font-weight:600;
+    padding:8px 16px;
+    border-radius:10px;
     transition:.3s;
 }
 
 .login-link:hover{
+    background:var(--primary-light);
     color:var(--primary-dark);
 }
 
@@ -231,12 +245,19 @@ body{
     background:var(--primary-dark);
     transform:translateY(-2px);
 }
+/* ## additional */
+.hero-btn{
+    text-decoration:none;
+    display:inline-block;
+    cursor:pointer;
+}
 
 /* ==========================
    DROPDOWN
 ========================== */
 
 .dropdown-menu{
+    min-width:260px;
     border:none;
     border-radius:15px;
     box-shadow:0 10px 25px rgba(0,0,0,.08);

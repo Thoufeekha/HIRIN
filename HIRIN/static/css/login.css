@@ -1,0 +1,74 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,sans-serif;
+}
+
+body{
+    background:#f7faf8;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-box{
+    width:420px;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.login-box h1{
+    color:#1d7f5f;
+}
+
+.login-box p{
+    margin:10px 0 25px;
+    color:#666;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.login-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:#1d7f5f;
+    color:white;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.divider{
+    text-align:center;
+    margin:20px 0;
+    color:#888;
+}
+
+.google-btn{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+}
+
+.signup-link{
+    margin-top:20px;
+    text-align:center;
+}
+
+.signup-link a{
+    color:#1d7f5f;
+    text-decoration:none;
+}
