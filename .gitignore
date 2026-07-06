@@ -216,3 +216,20 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+
+# Django media uploads
+media/
+
+# Database (optional)
+db.sqlite3
+
+# Environment variables
+.env
