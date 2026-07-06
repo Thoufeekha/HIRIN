@@ -1,0 +1,186 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Complete Profile - HIRIN'
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/register.css' %}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="register-box">
+
+    <h1>Complete Your Profile</h1>
+
+    <p>
+        Help us recommend the best jobs for you
+    </p>
+
+    {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- Email -->
+
+        <input type="email"
+        name="email"
+        value="{{ request.user.email }}"
+        readonly>
+
+        <!-- Phone -->
+
+        <input type="text"
+               name="phone"
+               placeholder="Phone Number"
+               required>
+
+        <!-- Location -->
+
+        <input type="text"
+               name="country"
+               placeholder="Country"
+               required>
+
+        <input type="text"
+               name="state"
+               placeholder="State"
+               required>
+
+        <input type="text"
+               name="city"
+               placeholder="City"
+               required>
+
+        <!-- Education -->
+
+        <select name="education"
+                required>
+
+            <option value="">
+                Highest Education
+            </option>
+
+            <option value="Higher Secondary">
+                Higher Secondary
+            </option>
+
+            <option value="Diploma">
+                Diploma
+            </option>
+
+            <option value="Bachelor's Degree">
+                Bachelor's Degree
+            </option>
+
+            <option value="Master's Degree">
+                Master's Degree
+            </option>
+
+            <option value="PhD">
+                PhD
+            </option>
+
+        </select>
+
+        <!-- Field -->
+
+        <input type="text"
+               name="field"
+               placeholder="Field / Specialization (e.g. Computer Science)"
+               required>
+
+        <!-- Preferred Job Role -->
+
+        <input type="text"
+               name="preferred_job_role"
+               placeholder="Preferred Job Role"
+               required>
+
+        <!-- Experience -->
+
+        <select name="experience_level"
+                required>
+
+            <option value="">
+                Select Experience Level
+            </option>
+
+            <option value="Fresher">
+                Fresher
+            </option>
+
+            <option value="0-2 Years">
+                0-2 Years
+            </option>
+
+            <option value="2-5 Years">
+                2-5 Years
+            </option>
+
+            <option value="5+ Years">
+                5+ Years
+            </option>
+
+        </select>
+
+        <!-- Skills -->
+
+        <textarea name="skills"
+                  rows="4"
+                  placeholder="Skills (Example: Python, SQL, Machine Learning, Power BI)"
+                  required></textarea>
+
+        <!-- LinkedIn -->
+
+        <input type="url"
+               name="linkedin"
+               placeholder="LinkedIn URL (Optional)">
+
+        <!-- Resume -->
+
+        <label>
+            Upload Resume
+        </label>
+
+        <input type="file"
+               name="resume"
+               accept=".pdf,.doc,.docx"
+               required>
+
+        <button type="submit"
+                class="register-btn">
+
+            Save Profile
+
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
