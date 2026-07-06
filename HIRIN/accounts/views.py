@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .models import JobSeekerProfile
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -51,7 +52,6 @@ def jobseeker_register(request):
 def recruiter_register(request):
     return render(request, 'recruiter_register.html')
 
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def jobseeker_profile_setup(request):
