@@ -65,7 +65,7 @@ def login_view(request):
 
             login(request, user)
 
-            return redirect("/")
+            return redirect("jobseeker_dashboard")
 
         return render(
             request,

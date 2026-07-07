@@ -23,4 +23,39 @@ urlpatterns = [
     name='jobseeker_profile_setup'
     ),
 
+    path(
+        "jobseeker_dashboard/",
+        views.jobseeker_dashboard,
+        name="jobseeker_dashboard"
+    ),
+
+    path(
+        "job_tracker/",
+        views.job_tracker,
+        name="job_tracker"
+    ),
+
+    path(
+        "ats_resume/",
+        views.ats_resume,
+        name="ats_resume"
+    ),
+
+    path(
+    "email_generator/",
+    views.email_generator,
+    name="email_generator"
+    ),
+
+    path(
+        "cover_letter/",
+        views.cover_letter,
+        name="cover_letter"
+    ),
+
+    path(
+        "interview_prep/",
+        views.interview_prep,
+        name="interview_prep"
+    ),
 ]

@@ -42,7 +42,7 @@ def jobseeker_register(request):
         login(request, user)
 
         # Send them to profile setup
-        return redirect("/jobseeker_profile_setup/")
+        return redirect("jobseeker_profile_setup")
 
     return render(
         request,
@@ -91,9 +91,33 @@ def jobseeker_profile_setup(request):
             profile_completed=True
         )
 
-        return redirect("/")
+        return redirect("jobseeker_dashboard")
 
     return render(
         request,
         "jobseeker_profile_setup.html"
     )
+
+@login_required
+def jobseeker_dashboard(request):
+    return render(request, "jobseeker/dashboard.html")
+
+@login_required
+def job_tracker(request):
+    return render(request, "jobseeker/job_tracker.html")
+
+@login_required
+def ats_resume(request):
+    return render(request, "jobseeker/ats_resume.html")
+
+@login_required
+def email_generator(request):
+    return render(request, "jobseeker/email_generator.html")
+
+@login_required
+def cover_letter(request):
+    return render(request, "jobseeker/cover_letter.html")
+
+@login_required
+def interview_prep(request):
+    return render(request, "jobseeker/interview_prep.html")

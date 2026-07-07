@@ -1,0 +1,146 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,sans-serif;
+}
+
+body{
+    background:#f8f9fa;
+}
+
+.layout{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    background:white;
+    border-right:1px solid #e5e7eb;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    padding:25px 20px;
+}
+
+.logo{
+    margin-bottom:40px;
+}
+
+.logo h2{
+    color:#119378;
+}
+
+.sidebar-links{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.sidebar-links a{
+    text-decoration:none;
+    color:#444;
+
+    padding:12px;
+    border-radius:10px;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    transition:0.2s;
+}
+
+.sidebar-links a:hover{
+    background:#dff5ee;
+    color:#119378;
+}
+
+.sidebar-links a.active{
+    background:#dff5ee;
+    color:#119378;
+    font-weight:600;
+}
+
+.sidebar-bottom{
+    border-top:1px solid #e5e7eb;
+    padding-top:20px;
+}
+
+.logout-btn{
+    text-decoration:none;
+    color:#dc2626;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:12px;
+    border-radius:10px;
+}
+
+.logout-btn:hover{
+    background:#fee2e2;
+}
+
+.main-content{
+    flex:1;
+}
+
+.topbar{
+    height:80px;
+    background:white;
+    border-bottom:1px solid #e5e7eb;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 30px;
+}
+
+.search-box input{
+    width:450px;
+    padding:12px 15px;
+
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.notification-btn{
+    width:45px;
+    height:45px;
+
+    border:none;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+}
+
+.profile-circle{
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+    background:#dff5ee;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#119378;
+    font-weight:600;
+}
+
+.content{
+    padding:30px;
+}

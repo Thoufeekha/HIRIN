@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIRIN'</title>
+
+    <link rel="stylesheet" href="{% static 'css/jobseeker_base.css' %}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+{% with request.resolver_match.url_name as current_url %}
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo">
+                <h2>hirin'</h2>
+            </div>
+
+            <nav class="sidebar-links">
+
+                <a href="{% url 'jobseeker_dashboard' %}"
+                   class="{% if current_url == 'jobseeker_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-table-columns"></i>
+                    Dashboard
+                </a>
+
+                <a href="{% url 'job_tracker' %}"
+                   class="{% if current_url == 'job_tracker' %}active{% endif %}">
+                    <i class="fa-solid fa-list-check"></i>
+                    Job Tracker
+                </a>
+
+                <a href="{% url 'ats_resume' %}"
+                   class="{% if current_url == 'ats_resume' %}active{% endif %}">
+                    <i class="fa-regular fa-file-lines"></i>
+                    ATS Resume Evaluator
+                </a>
+
+                <a href="{% url 'email_generator' %}"
+                   class="{% if current_url == 'email_generator' %}active{% endif %}">
+                    <i class="fa-regular fa-envelope"></i>
+                    Email Generator
+                </a>
+
+                <a href="{% url 'cover_letter' %}"
+                   class="{% if current_url == 'cover_letter' %}active{% endif %}">
+                    <i class="fa-solid fa-file-signature"></i>
+                    Cover Letter Generator
+                </a>
+
+                <a href="{% url 'interview_prep' %}"
+                   class="{% if current_url == 'interview_prep' %}active{% endif %}">
+                    <i class="fa-regular fa-comments"></i>
+                    Interview Prep
+                </a>
+
+            </nav>
+
+        </div>
+
+        <!-- Logout -->
+
+        <div class="sidebar-bottom">
+
+            <a href="#" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="search-box">
+                <input type="text"
+                       placeholder="Search jobs, companies, or roles">
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="notification-btn">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+
+                <div class="profile-circle">
+                    {{ request.user.first_name|slice:":2"|upper }}
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+{% endwith %}
+
+</body>
+</html>
