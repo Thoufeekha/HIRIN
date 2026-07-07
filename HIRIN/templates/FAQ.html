@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - HIRIN'{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================
+     BANNER SECTION
+     ============================ -->
+<section class="faq-banner">
+
+    <div class="banner-icon left">
+        <i class="fa-regular fa-comments"></i>
+    </div>
+
+    <div class="banner-content">
+        <h1>FAQ</h1>
+        <p>Got questions? We have answers.</p>
+    </div>
+
+    <div class="banner-icon right">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <i class="fa-regular fa-envelope"></i>
+    </div>
+
+</section>
+
+<!-- ============================
+     WHITE CARD: TABS + QUESTIONS
+     ============================ -->
+<div class="faq-card">
+
+    <!-- Tab buttons -->
+    <div class="faq-tabs">
+        <button class="faq-tab-btn active" id="btn-jobseeker" onclick="showFaqTab('jobseeker')">
+            <i class="fa-regular fa-user"></i> Job Seekers
+        </button>
+
+        <button class="faq-tab-btn" id="btn-recruiter" onclick="showFaqTab('recruiter')">
+            <i class="fa-solid fa-briefcase"></i> Recruiters
+        </button>
+    </div>
+
+    <!-- JOB SEEKER QUESTIONS -->
+    <div class="faq-panel active" id="panel-jobseeker">
+        <div class="accordion" id="jobseekerAccordion">
+            {% for faq in jobseeker_faqs %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#js{{ forloop.counter }}">
+                        <span class="faq-icon">
+                            <i class="fa-regular fa-circle-question"></i>
+                        </span>
+                        {{ faq.question }}
+                    </button>
+                </h2>
+                <div id="js{{ forloop.counter }}" class="accordion-collapse collapse"
+                     data-bs-parent="#jobseekerAccordion">
+                    <div class="accordion-body">
+                        {{ faq.answer }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No FAQs Found</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- RECRUITER QUESTIONS -->
+    <div class="faq-panel" id="panel-recruiter">
+        <div class="accordion" id="recruiterAccordion">
+            {% for faq in recruiter_faqs %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#rc{{ forloop.counter }}">
+                        <span class="faq-icon">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </span>
+                        {{ faq.question }}
+                    </button>
+                </h2>
+                <div id="rc{{ forloop.counter }}" class="accordion-collapse collapse"
+                     data-bs-parent="#recruiterAccordion">
+                    <div class="accordion-body">
+                        {{ faq.answer }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No FAQs Found</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple JS function to switch between Job Seeker / Recruiter tabs.
+    function showFaqTab(tab){
+        document.getElementById("panel-jobseeker").classList.remove("active");
+        document.getElementById("panel-recruiter").classList.remove("active");
+
+        document.getElementById("btn-jobseeker").classList.remove("active");
+        document.getElementById("btn-recruiter").classList.remove("active");
+
+        document.getElementById("panel-" + tab).classList.add("active");
+        document.getElementById("btn-" + tab).classList.add("active");
+    }
+</script>
+{% endblock %}
