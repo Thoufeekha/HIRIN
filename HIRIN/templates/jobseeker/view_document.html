@@ -1,0 +1,514 @@
+<!-- jobseeker/templates/jobseeker/view_document.html -->
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Link the CSS file -->
+<link rel="stylesheet" href="{% static 'css/view_document.css' %}">
+
+<div class="viewer-page">
+
+    <!-- Header -->
+    <div class="viewer-header">
+        <div class="viewer-icon">
+            <i class="fa-solid fa-file-lines"></i>
+        </div>
+        <div class="viewer-info">
+            <h2>{{ doc.company_name }} - Generated Documents</h2>
+            <p>
+                <i class="fa-solid fa-briefcase"></i> {{ doc.job_role }}
+                <span style="margin:0 8px; color:#cbd5e1;">|</span>
+                <i class="fa-solid fa-file-export"></i> {{ doc.get_document_type_display }}
+                <span style="margin:0 8px; color:#cbd5e1;">|</span>
+                <i class="fa-solid fa-palette"></i> {{ doc.get_tone_display }}
+            </p>
+            <div class="doc-meta">
+                <span>
+                    <i class="fa-regular fa-calendar"></i> 
+                    Generated: {{ doc.created_at|date:"M d, Y H:i" }}
+                </span>
+                <span>
+                    <i class="fa-regular fa-clock"></i> 
+                    Updated: {{ doc.updated_at|date:"M d, Y H:i" }}
+                </span>
+                {% if doc.user %}
+                <span>
+                    <i class="fa-regular fa-user"></i> 
+                    {{ doc.user.username }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="viewer-actions-top">
+            <a href="{% url 'email_generato:home' %}" class="viewer-btn viewer-btn-secondary viewer-btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'email_generato:generate' %}" class="viewer-btn viewer-btn-primary viewer-btn-sm">
+                <i class="fa-solid fa-plus"></i> New
+            </a>
+        </div>
+    </div>
+
+    <!-- Document Cards - Show both Cover Letter and Cold Email -->
+    <div class="viewer-docs-grid">
+        
+        <!-- Cover Letter Card -->
+        {% if doc.cover_letter_content %}
+        <div class="viewer-doc-card">
+            <div class="card-header cover-letter-header">
+                <h5>
+                    <i class="fa-solid fa-file-signature"></i>
+                    Cover Letter
+                </h5>
+                <span class="doc-type-badge">
+                    <i class="fa-regular fa-file-pdf"></i> PDF & DOCX
+                </span>
+            </div>
+            <div class="card-body">
+                <pre class="doc-content" id="coverLetterContent">{{ doc.cover_letter_content }}</pre>
+            </div>
+            <div class="card-footer">
+                {% if doc.cover_letter_pdf %}
+                <a href="{{ doc.cover_letter_pdf.url }}" target="_blank" class="viewer-btn viewer-btn-primary viewer-btn-sm">
+                    <i class="fa-solid fa-up-right-from-square"></i> View PDF
+                </a>
+                <a href="{{ doc.cover_letter_pdf.url }}" download class="viewer-btn viewer-btn-success viewer-btn-sm">
+                    <i class="fa-solid fa-download"></i> Download PDF
+                </a>
+                {% endif %}
+                {% if doc.cover_letter_docx %}
+                <a href="{% url 'email_generato:download_file' doc.id 'cover_letter' 'docx' %}" class="viewer-btn viewer-btn-info viewer-btn-sm">
+                    <i class="fa-solid fa-file-word"></i> Download DOCX
+                </a>
+                {% endif %}
+                <button onclick="copyContent('coverLetterContent')" class="viewer-btn viewer-btn-secondary viewer-btn-sm">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+                <button onclick="printContent('coverLetterContent')" class="viewer-btn viewer-btn-outline viewer-btn-sm">
+                    <i class="fa-solid fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Cold Email Card -->
+        {% if doc.cold_email_content %}
+        <div class="viewer-doc-card">
+            <div class="card-header cold-email-header">
+                <h5>
+                    <i class="fa-solid fa-envelope"></i>
+                    Cold Email
+                </h5>
+                <span class="doc-type-badge">
+                    <i class="fa-regular fa-file-pdf"></i> PDF & DOCX
+                </span>
+            </div>
+            <div class="card-body">
+                <pre class="doc-content" id="coldEmailContent">{{ doc.cold_email_content }}</pre>
+            </div>
+            <div class="card-footer">
+                {% if doc.cold_email_pdf %}
+                <a href="{{ doc.cold_email_pdf.url }}" target="_blank" class="viewer-btn viewer-btn-primary viewer-btn-sm">
+                    <i class="fa-solid fa-up-right-from-square"></i> View PDF
+                </a>
+                <a href="{{ doc.cold_email_pdf.url }}" download class="viewer-btn viewer-btn-success viewer-btn-sm">
+                    <i class="fa-solid fa-download"></i> Download PDF
+                </a>
+                {% endif %}
+                {% if doc.cold_email_docx %}
+                <a href="{% url 'email_generato:download_file' doc.id 'cold_email' 'docx' %}" class="viewer-btn viewer-btn-info viewer-btn-sm">
+                    <i class="fa-solid fa-file-word"></i> Download DOCX
+                </a>
+                {% endif %}
+                <button onclick="copyContent('coldEmailContent')" class="viewer-btn viewer-btn-secondary viewer-btn-sm">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+                <button onclick="printContent('coldEmailContent')" class="viewer-btn viewer-btn-outline viewer-btn-sm">
+                    <i class="fa-solid fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- If no documents found -->
+        {% if not doc.cover_letter_content and not doc.cold_email_content %}
+        <div class="viewer-no-doc full-width">
+            <i class="fa-regular fa-file-lines"></i>
+            <h3>No Documents Found</h3>
+            <p>This document doesn't have any content to display.</p>
+            <a href="{% url 'email_generato:home' %}" class="viewer-btn viewer-btn-primary viewer-btn-lg">
+                <i class="fa-solid fa-arrow-left"></i> Back to Generator
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="viewer-bottom-actions">
+        <a href="{% url 'email_generato:home' %}" class="viewer-btn viewer-btn-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Generator
+        </a>
+        
+        {% if doc.cover_letter_pdf or doc.cold_email_pdf %}
+        <button onclick="downloadAll()" class="viewer-btn viewer-btn-success">
+            <i class="fa-solid fa-download"></i>
+            Download All PDFs
+        </button>
+        {% endif %}
+        
+        {% if doc.cover_letter_content or doc.cold_email_content %}
+        <button onclick="printAll()" class="viewer-btn viewer-btn-info">
+            <i class="fa-solid fa-print"></i>
+            Print All Documents
+        </button>
+        {% endif %}
+        
+        <a href="{% url 'email_generato:delete_document' doc.id %}" class="viewer-btn viewer-btn-danger" 
+           onclick="return confirm('⚠️ Are you sure you want to delete this document?\n\nThis action cannot be undone.')">
+            <i class="fa-solid fa-trash"></i>
+            Delete Document
+        </a>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+// Copy content to clipboard
+function copyContent(elementId) {
+    const element = document.getElementById(elementId);
+    const content = element.textContent;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(content).then(() => {
+            showNotification('✅ Content copied to clipboard!', 'success');
+        }).catch(() => {
+            fallbackCopy(content);
+        });
+    } else {
+        fallbackCopy(content);
+    }
+}
+
+function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showNotification('✅ Content copied to clipboard!', 'success');
+    } catch (err) {
+        showNotification('❌ Failed to copy content. Please select and copy manually.', 'error');
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+// Print content
+function printContent(elementId) {
+    const element = document.getElementById(elementId);
+    const content = element.textContent;
+    
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print Document</title>
+                <style>
+                    body { 
+                        font-family: 'Courier New', monospace; 
+                        padding: 40px; 
+                        line-height: 1.8;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        white-space: pre-wrap;
+                        font-size: 14px;
+                    }
+                    .header {
+                        text-align: center;
+                        border-bottom: 2px solid #333;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .header h2 {
+                        margin: 0;
+                        color: #1a2332;
+                    }
+                    .content {
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    }
+                    .footer {
+                        margin-top: 40px;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666;
+                        border-top: 1px solid #ddd;
+                        padding-top: 20px;
+                    }
+                    @media print {
+                        body { padding: 20px; }
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>${elementId === 'coverLetterContent' ? '📄 Cover Letter' : '✉️ Cold Email'}</h2>
+                    <p style="color: #666; font-size: 13px;">Generated on ${new Date().toLocaleString()}</p>
+                </div>
+                <div class="content">${content}</div>
+                <div class="footer">
+                    <p>Generated by HIRIN' Job Portal</p>
+                </div>
+                <div class="no-print" style="text-align:center; margin-top:20px;">
+                    <button onclick="window.print()" style="padding:10px 30px; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+                        🖨️ Print
+                    </button>
+                    <button onclick="window.close()" style="padding:10px 30px; background:#64748b; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px; margin-left:10px;">
+                        Close
+                    </button>
+                </div>
+                <script>
+                    // Auto-print after loading
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+// Print all documents
+function printAll() {
+    const coverLetter = document.getElementById('coverLetterContent');
+    const coldEmail = document.getElementById('coldEmailContent');
+    
+    if (!coverLetter && !coldEmail) {
+        showNotification('No documents to print.', 'error');
+        return;
+    }
+    
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    let content = `
+        <html>
+            <head>
+                <title>Print All Documents</title>
+                <style>
+                    body { 
+                        font-family: 'Courier New', monospace; 
+                        padding: 40px; 
+                        line-height: 1.8;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+                    .header {
+                        text-align: center;
+                        border-bottom: 2px solid #333;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        color: #1a2332;
+                    }
+                    .doc-section {
+                        margin-bottom: 50px;
+                        page-break-after: always;
+                    }
+                    .doc-title {
+                        background: #f8fafc;
+                        padding: 10px 15px;
+                        border-left: 4px solid #2563eb;
+                        margin-bottom: 15px;
+                        font-weight: bold;
+                        font-size: 16px;
+                    }
+                    .content {
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    }
+                    .footer {
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666;
+                        border-top: 1px solid #ddd;
+                        padding-top: 20px;
+                        margin-top: 20px;
+                    }
+                    @media print {
+                        body { padding: 20px; }
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>📄 Generated Documents</h1>
+                    <p style="color: #666; font-size: 13px;">Generated on ${new Date().toLocaleString()}</p>
+                </div>
+    `;
+    
+    if (coverLetter) {
+        content += `
+            <div class="doc-section">
+                <div class="doc-title">📄 Cover Letter</div>
+                <div class="content">${coverLetter.textContent}</div>
+            </div>
+        `;
+    }
+    
+    if (coldEmail) {
+        content += `
+            <div class="doc-section">
+                <div class="doc-title">✉️ Cold Email</div>
+                <div class="content">${coldEmail.textContent}</div>
+            </div>
+        `;
+    }
+    
+    content += `
+                <div class="footer">
+                    <p>Generated by HIRIN' Job Portal</p>
+                </div>
+                <div class="no-print" style="text-align:center; margin-top:20px;">
+                    <button onclick="window.print()" style="padding:10px 30px; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+                        🖨️ Print All
+                    </button>
+                    <button onclick="window.close()" style="padding:10px 30px; background:#64748b; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px; margin-left:10px;">
+                        Close
+                    </button>
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+        </html>
+    `;
+    
+    printWindow.document.write(content);
+    printWindow.document.close();
+}
+
+// Download all PDFs
+function downloadAll() {
+    const pdfLinks = document.querySelectorAll('a[href$=".pdf"]');
+    let downloaded = 0;
+    
+    pdfLinks.forEach(function(link) {
+        if (link.textContent.includes('Download PDF')) {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.download = link.href.split('/').pop();
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            downloaded++;
+        }
+    });
+    
+    if (downloaded > 0) {
+        showNotification(`✅ Downloading ${downloaded} PDF file(s)...`, 'success');
+    } else {
+        showNotification('No PDF files found to download.', 'error');
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type] || colors.success};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+        max-width: 400px;
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Add slide animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl+P to print
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        printAll();
+    }
+    // Ctrl+C to copy (only if content is selected)
+    if (e.ctrlKey && e.key === 'c') {
+        const selection = window.getSelection().toString();
+        if (selection) {
+            showNotification('✅ Selected content copied!', 'success');
+        }
+    }
+});
+
+// Auto dismiss any existing alerts
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.5s';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        }, 5000);
+    });
+});
+</script>
+
+{% endblock %}
