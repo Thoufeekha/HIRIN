@@ -1,6 +1,8 @@
-# accounts/urls.py
+
 
 from django.urls import path
+
+
 from . import views
 
 urlpatterns = [
@@ -9,6 +11,12 @@ urlpatterns = [
         'jobseeker/register/',
         views.jobseeker_register,
         name='jobseeker_register'
+    ),
+
+    path(
+        'login/',
+        views.jobseeker_login,
+        name='jobseeker_login'
     ),
 
     path(
@@ -24,6 +32,12 @@ urlpatterns = [
     ),
 
     path(
+        "profile/",
+        views.jobseeker_profile,
+        name="jobseeker_profile"
+    ),
+
+    path(
         "jobseeker_dashboard/",
         views.jobseeker_dashboard,
         name="jobseeker_dashboard"
@@ -33,6 +47,24 @@ urlpatterns = [
         "job_tracker/",
         views.job_tracker,
         name="job_tracker"
+    ),
+
+    path(
+    "add-job/",
+    views.add_job,
+    name="add_job"
+   ),
+
+    path(
+        "jobs/",
+        views.job_list,
+        name="job_list"
+    ),
+
+    path(
+        "apply/<int:job_id>/",
+        views.apply_job,
+        name="apply_job"
     ),
 
     path(
@@ -58,4 +90,11 @@ urlpatterns = [
         views.interview_prep,
         name="interview_prep"
     ),
+
+    path(
+        "logout/",
+        views.jobseeker_logout,
+        name="logout"
+    ),
+
 ]

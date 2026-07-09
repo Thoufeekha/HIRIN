@@ -1,7 +1,103 @@
 {% extends "jobseeker/jobseeker_base.html" %}
 
+{% load static %}
+
 {% block content %}
 
-<h1>Dashboard</h1>
+<!-- <h1>Dashboard</h1> -->
+
+
+<div class="welcome-row">
+  <div class="welcome">
+    <h1>Welcome back, {{ full_name }}</h1>
+    <p>Here's how your job search is going.</p>
+  </div>
+  <div class="ring-card">
+    <svg class="ring" viewBox="0 0 52 52">
+      <circle cx="26" cy="26" r="22" fill="none" stroke="#e7e3d8" stroke-width="6"/>
+      <circle cx="26" cy="26" r="22" fill="none" stroke="#1f7a5c" stroke-width="6"
+        stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="{{ ring_offset }}"
+        transform="rotate(-90 26 26)"/>
+      <text x="26" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#1b2420" font-family="Sora">{{ completeness }}%</text>
+    </svg>
+    <div class="ring-text">
+      <b>Profile completeness</b>
+      <span>Add certifications & portfolio links</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat applied"><div class="label">Applied</div><div class="value">{{ applied_count }}</div></div>
+  <div class="stat shortlisted"><div class="label">Shortlisted</div><div class="value">{{ shortlisted_count }}</div></div>
+  <div class="stat interviewing"><div class="label">Interviewing</div><div class="value">{{ interviewing_count }}</div></div>
+  <div class="stat rejected"><div class="label">Rejected</div><div class="value">{{ rejected_count }}</div></div>
+</div>
+
+<div class="section-head">
+
+  <h2>Recommended for you</h2>
+   
+  <a href="{% url 'job_list' %}">See all →</a>
+</div>
+<div class="rec-grid">
+  {% for job in recommended_jobs %}
+  <div class="job-card">
+    <div class="job-top">
+      <div class="logo-badge">{{ job.company.name|slice:":2"|upper }}</div>
+      <div class="match">{{ job.match_percent|default:"—" }}% match</div>
+    </div>
+    <h3>{{ job.title }}</h3>
+    <p class="meta">{{ job.company.name }} · {{ job.location }}</p>
+    <form method="post" action="{% url 'apply_job' job.id %}">
+         
+      {% csrf_token %}
+      <button type="submit" class="apply-btn">Apply now</button>
+    </form>
+            
+
+  </div>
+  {% empty %}
+  <p style="color:var(--ink-soft);">No recommendations yet — complete your profile to get matched with jobs.</p>
+  {% endfor %}
+</div>
+
+<div class="section-head">
+  <h2>Recent applications</h2>
+  <a href="{% url 'job_tracker' %}">View job tracker →</a>
+</div>
+<div class="apps-card">
+  <table>
+    <thead>
+      <tr><th>Company</th><th>Role</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for app in recent_applications %}
+      <tr>
+        <td>
+          <div class="company-cell">
+            <span class="mini-badge">{{ app.job.company.name|slice:":2"|upper }}</span>
+            {{ app.job.company.name }}
+          </div>
+        </td>
+        <td>{{ app.job.title }}</td>
+        <td><span class="pill {{ app.status|lower }}">{{ app.status }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" style="color:var(--ink-soft);">You haven't applied to anything yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const avatarBtn = document.getElementById('avatarBtn');
+  const menu = document.getElementById('userMenu');
+  avatarBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+  document.addEventListener('click', () => menu.classList.remove('open'));
+</script>
 
 {% endblock %}

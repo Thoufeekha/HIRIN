@@ -98,13 +98,21 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    gap: 20px;
 
     padding:0 30px;
 }
 
+.search-box {
+    flex: 1;
+}
+
+
 .search-box input{
-    width:450px;
+    width:100%;
+    box-sizing: border-box;
     padding:12px 15px;
+    
 
     border:1px solid #ddd;
     border-radius:10px;

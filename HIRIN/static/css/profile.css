@@ -1,0 +1,291 @@
+/* ===== Profile Page ===== */
+
+.profile-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.profile-header-row h1 {
+    font-size: 28px;
+    margin: 0 0 4px 0;
+}
+
+.profile-header-row p {
+    color: var(--ink-soft, #6b6e79);
+    margin: 0;
+}
+
+.edit-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid #1f7a5c;
+    color: #1f7a5c;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    background: #fff;
+    transition: background 0.15s ease;
+}
+
+.edit-profile-btn:hover {
+    background: #eef8f3;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.profile-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.profile-card {
+    background: #fff;
+    border: 1px solid #ece8dd;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.profile-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    margin: 0 0 18px 0;
+    color: #1b2420;
+}
+
+.profile-card h3 i {
+    color: #1f7a5c;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f2efe6;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--ink-soft, #6b6e79);
+    font-size: 14px;
+}
+
+.info-value {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1b2420;
+    text-align: right;
+}
+
+.skills-row {
+    flex-direction: column;
+    gap: 10px;
+}
+
+.skills-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    background: #eaf6f0;
+    color: #1f7a5c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Right column */
+
+.completeness-card {
+    text-align: center;
+}
+
+.completeness-card h3 {
+    justify-content: flex-start;
+}
+
+.ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.ring {
+    width: 120px;
+    height: 120px;
+}
+
+.completeness-msg {
+    font-size: 13px;
+    color: var(--ink-soft, #6b6e79);
+    margin: 6px 0 14px 0;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #f2efe6;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #1f7a5c;
+}
+
+.improve-link {
+    color: #1f7a5c;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.improve-link:hover {
+    text-decoration: underline;
+}
+
+.external-link {
+    color: #1f7a5c;
+    font-size: 14px;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.external-link:hover {
+    text-decoration: underline;
+}
+
+.resume-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.resume-icon {
+    font-size: 22px;
+    color: #1f7a5c;
+    background: #eaf6f0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.resume-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.resume-date {
+    font-size: 12px;
+    color: var(--ink-soft, #6b6e79);
+}
+
+.view-resume-btn {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #1f7a5c;
+    color: #1f7a5c;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.view-resume-btn:hover {
+    background: #eef8f3;
+}
+
+@media (max-width: 900px) {
+    .profile-grid,
+    .profile-two-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Avatar Dropdown (used across all jobseeker pages) ===== */
+
+.user-menu-wrapper {
+    position: relative;
+}
+
+.profile-circle {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    background: #fff;
+    border: 1px solid #ece8dd;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    min-width: 220px;
+    padding: 8px;
+    z-index: 50;
+}
+
+.user-dropdown.open {
+    display: block;
+}
+
+.user-dropdown-header {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f2efe6;
+    margin-bottom: 6px;
+}
+
+.user-dropdown-header strong {
+    font-size: 14px;
+    color: #1b2420;
+}
+
+.user-dropdown-header span {
+    font-size: 12px;
+    color: var(--ink-soft, #6b6e79);
+}
+
+.user-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    color: #1b2420;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+.user-dropdown a:hover {
+    background: #f6f4ec;
+}
+
+.user-dropdown a.logout-link {
+    color: #d9483a;
+}
