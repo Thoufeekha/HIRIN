@@ -2,7 +2,7 @@
 from django.urls import path
 from email_generato import views
 
-
+app_name = "email_generato"
 
 urlpatterns = [
     path('', views.email_generator_home, name='home'),
