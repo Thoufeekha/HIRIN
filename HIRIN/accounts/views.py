@@ -1,4 +1,6 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
+from django.db.models import Q
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
 from .models import JobSeekerProfile
@@ -209,7 +211,76 @@ def jobseeker_dashboard(request):
 
 @login_required
 def job_tracker(request):
+    applications = Application.objects.filter(
+        user=request.user
+    ).select_related("job", "job__company")
+ 
+    # ---- Search ----
+    search_query = request.GET.get("q", "").strip()
+    if search_query:
+        applications = applications.filter(
+            Q(job__title__icontains=search_query) |
+            Q(job__company__name__icontains=search_query)
+        )
+ 
+    # ---- Filter by status ----
+    status_filter = request.GET.get("status", "")
+    if status_filter:
+        applications = applications.filter(status=status_filter)
+ 
+    # ---- Sort ----
+    sort_by = request.GET.get("sort", "newest")
+    if sort_by == "oldest":
+        applications = applications.order_by("applied_date")
+    elif sort_by == "company":
+        applications = applications.order_by("job__company__name")
+    else:
+        applications = applications.order_by("-applied_date")
+ 
+    # ---- Pipeline stats (for the funnel summary) ----
+    all_applications = Application.objects.filter(user=request.user)
+    total_count = all_applications.count()
+ 
+    status_counts = {
+        "Applied": all_applications.filter(status="Applied").count(),
+        "Shortlisted": all_applications.filter(status="Shortlisted").count(),
+        "Interviewing": all_applications.filter(status="Interviewing").count(),
+        "Offer": all_applications.filter(status="Offer").count(),
+        "Rejected": all_applications.filter(status="Rejected").count(),
+    }
+ 
+    def pct(count):
+        return round((count / total_count) * 100) if total_count else 0
+ 
+    status_percents = {key: pct(value) for key, value in status_counts.items()}
+ 
+    context = {
+        "applications": applications,
+        "total_count": total_count,
+        "status_counts": status_counts,
+        "status_percents": status_percents,
+        "search_query": search_query,
+        "status_filter": status_filter,
+        "sort_by": sort_by,
+        "status_choices": Application.STATUS_CHOICES,
+    }
     return render(request, "jobseeker/job_tracker.html")
+
+ 
+ 
+@login_required
+def update_application_status(request, application_id):
+    application = get_object_or_404(Application, id=application_id)
+ 
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        valid_statuses = dict(Application.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            application.status = new_status
+            application.save()
+            messages.success(request, "Application status updated.")
+    return redirect("job_tracker")
+
 
 def add_job(request):
 

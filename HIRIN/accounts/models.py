@@ -130,13 +130,17 @@ class Application(models.Model):
         ("Applied", "Applied"),
         ("Shortlisted", "Shortlisted"),
         ("Interviewing", "Interviewing"),
+        ("Offer", "Offer"),          
         ("Rejected", "Rejected"),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Applied")
     applied_date = models.DateTimeField(auto_now_add=True)
- 
+    status_updated_at = models.DateTimeField(auto_now=True)
+
+    notes = models.TextField(blank=True, null=True) 
+    
     class Meta:
         ordering = ["-applied_date"]
  

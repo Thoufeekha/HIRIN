@@ -49,6 +49,15 @@ urlpatterns = [
         name="job_tracker"
     ),
 
+    
+    path(
+        "job-tracker/update/<int:application_id>/", 
+         views.update_application_status,
+        name="update_application_status"
+    ),
+
+ 
+
     path(
     "add-job/",
     views.add_job,

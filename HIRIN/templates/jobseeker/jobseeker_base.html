@@ -92,10 +92,14 @@
     <main class="main-content">
 
         <header class="topbar">
+{% block header_search %}
 
-          
-    {% block topbar_search %}
-    {% endblock %}
+{% block topbar_search %}
+<div class="search-box">
+    <input type="text"
+        placeholder="Search jobs, companies, or roles">
+</div>
+{% endblock %}
 
             <div class="topbar-right">
 
