@@ -1,0 +1,131 @@
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/job_postings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Manage Job Listings</h1>
+
+    <a href="{% url 'post_job' %}" class="new-job-btn">
+        + New Posting
+    </a>
+
+</div>
+
+<div class="filter-tabs">
+
+    <a href="{% url 'job_postings' %}" class="filter">
+        All ({{ all_count }})
+    </a>
+
+    <a href="?status=Active" class="filter">
+        Active ({{ active_count }})
+    </a>
+
+    <a href="?status=Closing Soon" class="filter">
+        Closing Soon ({{ closing_count }})
+    </a>
+
+    <a href="?status=Draft" class="filter">
+        Draft ({{ draft_count }})
+    </a>
+
+    <a href="?status=Closed" class="filter">
+        Closed ({{ closed_count }})
+    </a>
+</div>
+
+<div class="job-list">
+
+    {% for job in jobs %}
+
+    <div class="job-card">
+
+        <div class="job-left">
+
+            <h3>{{ job.title|title }}</h3>
+
+            <p>
+                {{ job.employment_type }}
+                •
+                {{ job.location }}
+            </p>
+
+            <small>
+                Posted {{ job.created_at|date:"M d, Y" }}
+            </small>
+
+            {% if job.reposted_at %}
+                <br>
+                <small class="reposted-date">
+                    Reposted {{ job.reposted_at|date:"M d, Y" }}
+                </small>
+            {% endif %}
+
+        </div>
+
+        <div class="job-right">
+
+            {% if job.is_reposted %}
+
+                <span class="status status-active">
+                    Reposted
+                </span>
+
+            {% elif job.status == "Active" %}
+
+                <span class="status status-active">
+                    Active
+                </span>
+
+            {% elif job.status == "Closing Soon" %}
+
+                <span class="status status-closing">
+                    Closing Soon
+                </span>
+
+            {% elif job.status == "Closed" %}
+
+                <span class="status status-closed">
+                    Closed
+                </span>
+
+            {% else %}
+
+                <span class="status status-draft">
+                    Draft
+                </span>
+
+            {% endif %}
+
+            <a href="{% url 'view_job' job.id %}"
+               class="view-btn">
+                View
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="empty-card">
+
+        <h3>No job postings yet</h3>
+
+        <p>
+            Create your first job posting to start receiving applications.
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

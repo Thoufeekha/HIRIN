@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIRIN'</title>
+
+    <link rel="stylesheet" href="{% static 'css/recruiter_base.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+    
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+{% with request.resolver_match.url_name as current_url %}
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo">
+                <h2>HIRIN'</h2>
+            </div>
+
+            <nav class="sidebar-links">
+
+                <a href="{% url 'recruiter_dashboard' %}"
+                   class="{% if current_url == 'recruiter_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-table-columns"></i>
+                    Dashboard
+                </a>
+
+                <!-- <a href="{% url 'recruiter_profile_setup' %}"
+                   class="{% if current_url == 'recruiter_profile_setup' %}active{% endif %}">
+                    <i class="fa-solid fa-building"></i>
+                    Company Profile
+                </a> -->
+
+                <a href="{% url 'job_postings' %}"
+                    class="{% if current_url == 'job_postings' %}active{% endif %}">
+                    <i class="fa-solid fa-briefcase"></i>
+                    Job Postings
+                </a>
+
+
+                <a href="#"
+                   class="{% if current_url == 'applicants' %}active{% endif %}">
+                    <i class="fa-solid fa-users"></i>
+                    Candidates
+                </a>
+
+
+            </nav>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="search-box">
+                <input type="text"
+                       placeholder="Search jobs, applicants, skills">
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="notification-btn">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+
+                <div class="profile-circle">
+                    {{ request.user.first_name|slice:":2"|upper }}
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+{% endwith %}
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/view_job.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="job-details-card">
+
+    <div class="job-header">
+
+        <div>
+
+            <h1>{{ job.title }}</h1>
+
+            <span class="status-badge
+            {% if job.status == 'Active' %}
+                active
+            {% elif job.status == 'Closing Soon' %}
+                closing
+            {% elif job.status == 'Closed' %}
+                closed
+            {% else %}
+                draft
+            {% endif %}">
+
+                {{ job.status }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="job-meta">
+
+        <p>
+            <i class="fa-solid fa-location-dot"></i>
+            {{ job.location }}
+        </p>
+
+        <p>
+            <i class="fa-solid fa-briefcase"></i>
+            {{ job.employment_type }}
+        </p>
+
+        <p>
+            <i class="fa-solid fa-calendar"></i>
+            Posted {{ job.created_at|date:"M d, Y" }}
+        </p>
+
+        <p>
+            <i class="fa-solid fa-clock"></i>
+            Valid Until {{ job.valid_until|date:"M d, Y" }}
+        </p>
+
+    </div>
+
+    <div class="section">
+
+        <h3>Job Description</h3>
+
+        <div class="job-description">
+
+            <p>
+                {{ job.description }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <h3>Required Skills</h3>
+
+        <div class="skills">
+
+            {% for skill in job.skills.split %}
+
+                <span class="skill-chip">
+                    {{ skill }}
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <div class="action-buttons">
+
+        {% if job.status == "Active" or job.status == "Closing Soon" %}
+
+            <a href="{% url 'close_job' job.id %}"
+               class="danger-btn">
+
+                Close Job
+
+            </a>
+
+        {% elif job.status == "Closed" %}
+
+            <a href="{% url 'repost_job' job.id %}"
+               class="primary-btn">
+
+                Repost Job
+
+            </a>
+
+        {% elif job.status == "Draft" %}
+
+            <a href="{% url 'publish_job' job.id %}"
+               class="primary-btn">
+
+                Publish Job
+
+            </a>
+
+        {% endif %}
+
+        <a href="{% url 'job_postings' %}"
+           class="secondary-btn">
+
+            Back to Jobs
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

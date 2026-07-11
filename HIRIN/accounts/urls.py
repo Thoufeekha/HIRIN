@@ -50,12 +50,6 @@ urlpatterns = [
     ),
 
     path(
-    "add-job/",
-    views.add_job,
-    name="add_job"
-   ),
-
-    path(
         "jobs/",
         views.job_list,
         name="job_list"
@@ -93,8 +87,56 @@ urlpatterns = [
 
     path(
         "logout/",
-        views.jobseeker_logout,
+        views.logout_view,
         name="logout"
+    ),
+
+    path(
+        "recruiter_profile_setup/",
+        views.recruiter_profile_setup,
+        name="recruiter_profile_setup"
+    ),
+
+    path(
+        "recruiter_dashboard/",
+        views.recruiter_dashboard,
+        name="recruiter_dashboard"
+    ),
+
+    path(
+        "post_job/",
+        views.post_job,
+        name="post_job"
+    ),
+
+    path(
+        "job_postings/",
+        views.job_postings,
+        name="job_postings"
+    ),
+
+    path(
+        "publish-job/<int:job_id>/",
+        views.publish_job,
+        name="publish_job"
+    ),
+
+    path(
+        "close-job/<int:job_id>/",
+        views.close_job,
+        name="close_job"
+    ),
+
+    path(
+        "repost-job/<int:job_id>/",
+        views.repost_job,
+        name="repost_job"
+    ),
+
+    path(
+        "view-job/<int:job_id>/",
+        views.view_job,
+        name="view_job"
     ),
 
 ]

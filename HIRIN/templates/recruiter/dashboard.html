@@ -1,0 +1,71 @@
+{% extends "recruiter/recruiter_base.html" %}
+
+{% block content %}
+
+<h1 class="dashboard-title">
+    Dashboard
+</h1>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <p>Active Jobs</p>
+        <h2>{{ active_jobs }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Total Applicants</p>
+        <h2>{{ total_applicants }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>New This Week</p>
+        <h2>{{ new_this_week }}</h2>
+    </div>
+
+</div>
+
+<div class="jobs-container">
+
+    <div class="jobs-header">
+        <h2>Recent Job Postings</h2>
+        <a href="{% url 'job_postings' %}"
+                    class="{% if current_url == 'job_postings' %}active{% endif %}">View All</a>
+    </div>
+
+    {% if recent_jobs %}
+
+        {% for job in recent_jobs %}
+
+        <div class="job-item">
+
+            <div>
+                <h3>{{ job.title }}</h3>
+                <p>{{ job.location }}</p>
+            </div>
+
+            <span class="applicant-count">
+                {{ job.applicant_count }} Applicants
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-jobs">
+
+            <p>No job postings available.</p>
+
+            <small>
+                Create your first job posting to start receiving applications.
+            </small>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

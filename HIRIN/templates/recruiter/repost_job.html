@@ -1,0 +1,33 @@
+{% extends "recruiter/recruiter_base.html" %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>Repost Job</h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label>New Closing Date</label>
+
+        <input
+            type="date"
+            name="valid_until"
+            required
+        >
+
+        <button
+            type="submit"
+            class="submit-btn">
+
+            Repost Job
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

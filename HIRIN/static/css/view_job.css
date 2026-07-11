@@ -1,0 +1,172 @@
+.job-details-card{
+    background:#ffffff;
+    border:1px solid #E5E7EB;
+    border-radius:20px;
+    padding:35px;
+}
+
+.job-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.job-header h1{
+    font-size:42px;
+    color:#111827;
+    margin-bottom:10px;
+}
+
+.status-badge{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.status-badge.active{
+    background:#DFF5EE;
+    color:#119378;
+}
+
+.status-badge.closing{
+    background:#FEF3C7;
+    color:#B45309;
+}
+
+.status-badge.closed{
+    background:#FEE2E2;
+    color:#DC2626;
+}
+
+.status-badge.draft{
+    background:#E5E7EB;
+    color:#374151;
+}
+
+.job-meta{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin-bottom:30px;
+}
+
+.job-meta p{
+    color:#6B7280;
+    font-size:15px;
+}
+
+.job-meta i{
+    color:#119378;
+    margin-right:8px;
+}
+
+.section{
+    margin-top:30px;
+}
+
+.section h3{
+    color:#111827;
+    font-size:22px;
+    margin-bottom:15px;
+}
+
+.section p{
+    color:#4B5563;
+    line-height:1.8;
+}
+
+.skills{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.skill-chip{
+    background:#DFF5EE;
+    color:#119378;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.action-buttons{
+    margin-top:35px;
+    display:flex;
+    gap:15px;
+}
+
+.primary-btn{
+    background:#119378;
+    color:white;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.primary-btn:hover{
+    background:#0e7a64;
+}
+
+.danger-btn{
+    background:#DC2626;
+    color:white;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.danger-btn:hover{
+    background:#B91C1C;
+}
+
+.secondary-btn{
+    background:#E5E7EB;
+    color:#374151;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.secondary-btn:hover{
+    background:#D1D5DB;
+}
+
+.job-description{
+    background:#F9FAFB;
+    border:1px solid #E5E7EB;
+    border-radius:14px;
+    padding:20px;
+    margin-top:10px;
+}
+
+.job-description p{
+    margin:0;
+}
+
+@media(max-width:768px){
+
+    .job-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .job-meta{
+        grid-template-columns:1fr;
+    }
+
+    .action-buttons{
+        flex-direction:column;
+    }
+
+}
