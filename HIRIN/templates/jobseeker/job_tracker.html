@@ -1,0 +1,114 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+
+{% load static %}
+
+{% block header_search %}{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/job_tracker.css' %}">
+
+<div class="jt-header">
+    <div>
+        <h1>Job tracker</h1>
+        <p class="jt-subtext">Track every job you've applied to on HIRIN'.</p>
+    </div>
+</div>
+
+<!-- Pipeline summary -->
+<div class="jt-card jt-pipeline">
+    <div class="jt-pipeline-top">
+        <p class="jt-card-title">Application pipeline</p>
+        <p class="jt-muted">{{ total_count }} total applications</p>
+    </div>
+
+    <div class="jt-pipeline-stages">
+        <div class="jt-stage">
+            <p class="jt-stage-num">{{ status_counts.Applied }}</p>
+            <p class="jt-stage-label">Applied</p>
+        </div>
+        <i class="jt-arrow">&rarr;</i>
+        <div class="jt-stage">
+            <p class="jt-stage-num jt-amber">{{ status_counts.Shortlisted }}</p>
+            <p class="jt-stage-label">Shortlisted</p>
+        </div>
+        <i class="jt-arrow">&rarr;</i>
+        <div class="jt-stage">
+            <p class="jt-stage-num jt-blue">{{ status_counts.Interviewing }}</p>
+            <p class="jt-stage-label">Interviewing</p>
+        </div>
+        <i class="jt-arrow">&rarr;</i>
+        <div class="jt-stage">
+            <p class="jt-stage-num jt-green">{{ status_counts.Offer }}</p>
+            <p class="jt-stage-label">Offer</p>
+        </div>
+    </div>
+
+    <div class="jt-progress-bar">
+        <div class="jt-seg jt-seg-applied" style="width: {{ status_percents.Applied }}%;"></div>
+        <div class="jt-seg jt-seg-shortlisted" style="width: {{ status_percents.Shortlisted }}%;"></div>
+        <div class="jt-seg jt-seg-interviewing" style="width: {{ status_percents.Interviewing }}%;"></div>
+        <div class="jt-seg jt-seg-offer" style="width: {{ status_percents.Offer }}%;"></div>
+        <div class="jt-seg jt-seg-rejected" style="width: {{ status_percents.Rejected }}%;"></div>
+    </div>
+    <div class="jt-progress-labels">
+        <span>Applied {{ status_percents.Applied }}%</span>
+        <span>Shortlisted {{ status_percents.Shortlisted }}%</span>
+        <span>Interviewing {{ status_percents.Interviewing }}%</span>
+        <span>Offer {{ status_percents.Offer }}%</span>
+        <span class="jt-red">Rejected {{ status_percents.Rejected }}%</span>
+    </div>
+</div>
+
+<!-- Filters -->
+<form method="get" class="jt-filters">
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search by company or role">
+
+    <select name="status">
+        <option value="">All statuses</option>
+        {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="sort">
+        <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Sort: newest first</option>
+        <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Sort: oldest first</option>
+        <option value="company" {% if sort_by == "company" %}selected{% endif %}>Sort: company a-z</option>
+    </select>
+
+    <button type="submit" class="jt-btn-secondary">Apply</button>
+</form>
+
+<!-- Table -->
+<div class="jt-table-card">
+    <table class="jt-table">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Applied on</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.job.company.name }}</td>
+                <td class="jt-muted">{{ app.job.title }}</td>
+                <td class="jt-muted">{{ app.applied_date|date:"d M Y" }}</td>
+                <td>
+                    <span class="jt-badge jt-badge-{{ app.status|lower }}">{{ app.status }}</span>
+                </td>
+                <td class="jt-muted jt-truncate">{{ app.notes|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="jt-empty">You haven't applied to anything yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
