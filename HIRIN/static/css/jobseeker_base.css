@@ -103,19 +103,25 @@ body{
     padding:0 30px;
 }
 
-.search-box {
-    flex: 1;
+.search-box{
+    flex:1;
+    margin-right:20px;
 }
-
 
 .search-box input{
     width:100%;
-    box-sizing: border-box;
-    padding:12px 15px;
-    
+    height:48px;
+    padding:0 18px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    background:#fff;
+    font-size:15px;
+    outline:none;
+}
 
-    border:1px solid #ddd;
-    border-radius:10px;
+.search-box input:focus{
+    border-color:#119378;
+    box-shadow:0 0 0 3px rgba(17,147,120,.15);
 }
 
 .topbar-right{

@@ -4,6 +4,8 @@ from django.contrib.auth import login,logout
 from .models import JobSeekerProfile
 from .models import JobSeekerProfile, Job, Application,Company
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 
 
 # Create your views here.
@@ -276,3 +278,68 @@ def interview_prep(request):
 def jobseeker_logout(request):
     logout(request)
     return redirect("jobseeker_login")
+
+@login_required
+def jobseeker_settings(request):
+    user = request.user
+    profile = JobSeekerProfile.objects.filter(user=user).first()
+
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+
+        if form_type == "account_info":
+            fullname = request.POST.get("full_name")
+            user.first_name = fullname
+            user.email = request.POST.get("email")
+            user.save()
+
+            JobSeekerProfile.objects.update_or_create(
+                user=user,
+                defaults={"phone": request.POST.get("phone")}
+            )
+            messages.success(request, "Account info updated.")
+
+        elif form_type == "change_password":
+            current_pw = request.POST.get("current_password")
+            new_pw = request.POST.get("new_password")
+            confirm_pw = request.POST.get("confirm_password")
+
+            if not user.check_password(current_pw):
+                messages.error(request, "Current password is incorrect.")
+            elif new_pw != confirm_pw:
+                messages.error(request, "New passwords do not match.")
+            elif len(new_pw) < 8:
+                messages.error(request, "New password must be at least 8 characters.")
+            else:
+                user.set_password(new_pw)
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password updated.")
+
+        elif form_type == "notifications":
+            if profile:
+                profile.notify_job_recs = "notify_job_recs" in request.POST
+                profile.notify_app_updates = "notify_app_updates" in request.POST
+                profile.save()
+                messages.success(request, "Notification preferences saved.")
+
+        elif form_type == "privacy":
+            if profile:
+                profile.profile_visible = "profile_visible" in request.POST
+                profile.save()
+                messages.success(request, "Privacy settings saved.")
+
+        elif form_type == "delete_account":
+            logout(request)
+            user.delete()
+            messages.success(request, "Your account has been deleted.")
+            return redirect("jobseeker_login")
+
+        return redirect("jobseeker_settings")
+
+    context = {
+        "profile": profile,
+        "full_name": user.first_name or user.email,
+        "email": user.email,
+    }
+    return render(request, "jobseeker/settings.html", context)

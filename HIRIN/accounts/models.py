@@ -73,6 +73,10 @@ class JobSeekerProfile(models.Model):
     profile_completed = models.BooleanField(
         default=False
     )
+    notify_job_recs = models.BooleanField(default=True)
+    notify_app_updates = models.BooleanField(default=True)
+    notify_newsletter = models.BooleanField(default=False)
+    profile_visible = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(
         auto_now_add=True

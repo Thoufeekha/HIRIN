@@ -2,9 +2,30 @@
 
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+
+{% block topbar_search %}
+
+<div class="search-box">
+    <input
+        type="text"
+        placeholder="Search jobs, companies, or roles">
+</div>
+
+{% endblock %}
+
 {% block content %}
 
+
 <!-- <h1>Dashboard</h1> -->
+
+
+
+
+
 
 
 <div class="welcome-row">
@@ -90,14 +111,7 @@
   </table>
 </div>
 
-<script>
-  const avatarBtn = document.getElementById('avatarBtn');
-  const menu = document.getElementById('userMenu');
-  avatarBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menu.classList.toggle('open');
-  });
-  document.addEventListener('click', () => menu.classList.remove('open'));
-</script>
+
+
 
 {% endblock %}

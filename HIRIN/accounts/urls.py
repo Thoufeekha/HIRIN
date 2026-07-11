@@ -97,4 +97,9 @@ urlpatterns = [
         name="logout"
     ),
 
+    path(
+        "settings/",
+          views.jobseeker_settings,
+          name="jobseeker_settings"),
+
 ]
