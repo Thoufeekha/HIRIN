@@ -1,0 +1,52 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📊 Aptitude Test Results</h1>
+    <p>Your performance analysis and improvement suggestions</p>
+</div>
+
+<div class="results-container">
+    <div class="score-summary">
+        <div class="score-circle">
+            <span class="score-number">{{ percentage|floatformat:1 }}%</span>
+            <span class="score-label">Overall Score</span>
+        </div>
+        <div class="score-details">
+            <div class="detail-item">
+                <span class="label">Correct Answers</span>
+                <span class="value">{{ test.correct_answers }}/{{ test.total_questions }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Test Date</span>
+                <span class="value">{{ test.completed_at|date:"M d, Y H:i" }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="category-analysis">
+        <h3>📈 Category Performance</h3>
+        <div class="category-grid">
+            {% for category, data in category_data.items %}
+            <div class="category-card">
+                <h4>{{ category }}</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="--width: {{ data.correct }}%; width: var(--width);"></div>
+                </div>
+                <span class="category-score">{{ data.correct }}/{{ data.total }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <a href="{% url 'interviewprep:aptitude_test' %}" class="btn-primary">Take Another Test</a>
+        <a href="{% url 'interviewprep:home' %}" class="btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>💼 HR Interview Tips</h1>
+    <p>Get personalized HR interview tips and sample answers</p>
+</div>
+
+<div class="hr-tips-container">
+    <div class="tips-input-section">
+        <div class="tips-card">
+            <div class="tips-icon">💡</div>
+            <div class="tips-content">
+                <h3>What makes HR interviews difficult for you?</h3>
+                <p>Examples: "I struggle with salary negotiation", "I don't know how to answer weakness questions"</p>
+                <div class="input-group">
+                    <input type="text" id="concernInput" placeholder="Enter your concern..." 
+                           style="flex:1; padding:12px 16px; border:2px solid #e0e0e0; border-radius:10px; font-size:15px;">
+                    <button onclick="getHRTips()" class="btn-primary" style="padding:12px 30px; white-space:nowrap;">
+                        Get Tips →
+                    </button>
+                </div>
+                <button onclick="getGeneralTips()" class="btn-secondary" style="margin-top:12px;">
+                    Get General HR Tips
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="tipsResults" style="display: none;">
+        <div class="tips-results">
+            <h3>📋 HR Tips & Sample Answers</h3>
+            <div id="tipsList"></div>
+        </div>
+    </div>
+    
+    {% if saved_tips %}
+    <div class="saved-tips">
+        <h3>📚 Your Saved Tips</h3>
+        <div class="tips-list">
+            {% for tip in saved_tips %}
+            <div class="tip-card">
+                <h4>❓ {{ tip.question }}</h4>
+                <div class="tip-content">
+                    <p><strong>💡 Best Practice:</strong> {{ tip.best_practice }}</p>
+                    <p><strong>📝 Sample Answer:</strong> {{ tip.sample_answer }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Cookie helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getHRTips() {
+    const concern = document.getElementById('concernInput').value.trim();
+    if (!concern) {
+        alert('⚠️ Please enter your concern or click "Get General Tips".');
+        document.getElementById('concernInput').focus();
+        return;
+    }
+    generateTips(concern);
+}
+
+function getGeneralTips() {
+    generateTips('');
+}
+
+function generateTips(concern) {
+    const button = event ? event.target : document.querySelector('.btn-primary');
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = '⏳ Generating...';
+    
+    const tipsResults = document.getElementById('tipsResults');
+    tipsResults.style.display = 'none';
+    
+    fetch('/interview/hr-tips/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ concern: concern })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.tips && data.tips.length > 0) {
+            displayTips(data.tips);
+        } else {
+            alert('❌ No tips generated. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to generate tips. Please try again.');
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.textContent = originalText;
+    });
+}
+
+function displayTips(tips) {
+    const container = document.getElementById('tipsResults');
+    const list = document.getElementById('tipsList');
+    
+    container.style.display = 'block';
+    list.innerHTML = '';
+    
+    tips.forEach((tip, index) => {
+        const card = document.createElement('div');
+        card.className = 'tip-card';
+        card.style.animationDelay = (index * 0.1) + 's';
+        card.innerHTML = `
+            <div class="tip-number">#${index + 1}</div>
+            <h4>❓ ${tip.question || 'No question provided'}</h4>
+            <div class="tip-content">
+                <div class="tip-section">
+                    <span class="tip-label">💡 Best Practice:</span>
+                    <p>${tip.best_practice || 'Not available'}</p>
+                </div>
+                <div class="tip-section">
+                    <span class="tip-label">📝 Sample Answer:</span>
+                    <p>${tip.sample_answer || 'Not available'}</p>
+                </div>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+    
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+<!-- At the very bottom of hr_tips.html, before {% endblock %} -->
+
+<!-- ============ EXIT BUTTON ============ -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+    <button onclick="exitHRTips()" style="
+        background: #dc3545; color: white; padding: 12px 24px; border: none; 
+        border-radius: 50px; cursor: pointer; font-size: 16px; font-weight: bold;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        display: flex; align-items: center; gap: 8px;
+    ">
+        🚪 Exit HR Tips
+    </button>
+</div>
+
+<script>
+function exitHRTips() {
+    if (confirm('Exit HR Tips section?')) {
+        window.location.href = '/interviewprep/';
+    }
+}
+</script>
+{% endblock %}

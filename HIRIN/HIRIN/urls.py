@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('', include('accounts.urls')),
-    path('email-generator/', include('email_generato.urls'))
+    path('email-generator/', include('email_generato.urls')),
+    path('interview/', include('interviewprep.urls')),     
 ]
 
 if settings.DEBUG:

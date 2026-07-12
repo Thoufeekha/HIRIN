@@ -1,0 +1,241 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="result-page">
+
+    <!-- ================= HEADER ================= -->
+    <section class="result-header">
+        <div class="header-left">
+            <h1>🎉 Interview Report</h1>
+            <p>
+                Your AI interview has been completed successfully.
+                Review your performance and identify areas for improvement.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= SCORE ================= -->
+    <section class="overall-score">
+        <div class="score-card">
+            <div class="score-circle">
+                <h1>{{ total_score|floatformat:1 }}</h1>
+                <span>/10</span>
+            </div>
+            <div class="score-info">
+                <h2>Overall Performance</h2>
+                <p>
+                    Based on your interview answers,
+                    communication,
+                    technical knowledge
+                    and confidence.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= STATS ================= -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <h2>{{ answered_questions }}</h2>
+            <p>Answered Questions</p>
+        </div>
+        <div class="stat-card">
+            <h2>{{ total_questions }}</h2>
+            <p>Total Questions</p>
+        </div>
+        <div class="stat-card">
+            <h2>{{ session.get_mode_display }}</h2>
+            <p>Interview Type</p>
+        </div>
+        <div class="stat-card">
+            <h2>
+                {% if total_score >= 8 %}
+                    Excellent
+                {% elif total_score >= 6 %}
+                    Good
+                {% else %}
+                    Needs Improvement
+                {% endif %}
+            </h2>
+            <p>Performance</p>
+        </div>
+    </section>
+
+    <!-- ================= AI PERFORMANCE ANALYSIS ================= -->
+    <section class="analysis-section">
+        <div class="analysis-card">
+            <h2>🤖 AI Performance Analysis</h2>
+            <p>
+                Based on your responses, the AI evaluated your interview
+                performance in multiple areas.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= SKILL ANALYSIS ================= -->
+    <section class="skill-analysis">
+        <div class="skill-card">
+            <div class="skill-title">
+                <span>Communication</span>
+                <span>85%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-fill" style="width:85%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-card">
+            <div class="skill-title">
+                <span>Technical Knowledge</span>
+                <span>90%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-fill" style="width:90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-card">
+            <div class="skill-title">
+                <span>Problem Solving</span>
+                <span>80%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-fill" style="width:80%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-card">
+            <div class="skill-title">
+                <span>Confidence</span>
+                <span>88%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-fill" style="width:88%;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= STRENGTHS & IMPROVEMENTS ================= -->
+    <section class="feedback-grid">
+        <div class="feedback-card strengths">
+            <h2>✅ Your Strengths</h2>
+            <ul>
+                <li>Answered questions confidently.</li>
+                <li>Good understanding of core concepts.</li>
+                <li>Clear communication.</li>
+                <li>Relevant examples were provided.</li>
+                <li>Professional approach.</li>
+            </ul>
+        </div>
+
+        <div class="feedback-card improvements">
+            <h2>📈 Areas to Improve</h2>
+            <ul>
+                <li>Provide more detailed technical explanations.</li>
+                <li>Use project examples wherever possible.</li>
+                <li>Reduce hesitation while answering.</li>
+                <li>Improve structured responses.</li>
+                <li>Practice behavioural questions.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ================= AI SUGGESTION ================= -->
+    <section class="recommendation-card">
+        <h2>💡 AI Recommendation</h2>
+        <p>
+            Continue practicing interviews based on your resume and
+            target job description. Focus on explaining your projects,
+            discussing technical concepts clearly, and using the STAR
+            method for behavioural questions.
+        </p>
+    </section>
+
+    <!-- ================= QUESTION REVIEW ================= -->
+    <section class="review-section">
+        <h2>📝 Question by Question Review</h2>
+        {% for answer in answers %}
+        <div class="review-card">
+            <div class="review-header">
+                <div>
+                    <h3>Question {{ forloop.counter }}</h3>
+                    <span class="question-score">{{ answer.score }}/10</span>
+                </div>
+            </div>
+
+            <div class="review-body">
+                <div class="question-block">
+                    <h4>Question</h4>
+                    <p>{{ answer.question.question_text }}</p>
+                </div>
+
+                <div class="answer-block">
+                    <h4>Your Answer</h4>
+                    <p>{{ answer.answer_text }}</p>
+                </div>
+
+                <div class="feedback-grid">
+                    <div class="feedback-box strengths">
+                        <h4>✅ Strengths</h4>
+                        <ul>
+                            {% for s in answer.strengths %}
+                            <li>{{ s }}</li>
+                            {% empty %}
+                            <li>No strengths available.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="feedback-box weaknesses">
+                        <h4>📈 Improvements</h4>
+                        <ul>
+                            {% for w in answer.weaknesses %}
+                            <li>{{ w }}</li>
+                            {% empty %}
+                            <li>No suggestions available.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sample-answer">
+                    <h4>🤖 AI Suggested Answer</h4>
+                    <p>{{ answer.sample_answer|default:"No sample answer generated." }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- ================= ACTION BUTTONS ================= -->
+    <section class="result-actions">
+        <a href="{% url 'interviewprep:start_interview' %}" class="btn-primary">
+            🔄 Practice Again
+        </a>
+        <button class="btn-secondary" onclick="window.print()">
+            📄 Download Report
+        </button>
+        <a href="{% url 'interviewprep:home' %}" class="btn-dashboard">
+            🏠 Dashboard
+        </a>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <section class="result-footer">
+        <h3>🚀 Keep Improving</h3>
+        <p>
+            Every interview is a learning experience. Continue practicing
+            with different job descriptions and resume versions to improve
+            your technical knowledge, confidence, and communication skills.
+        </p>
+    </section>
+
+</div>
+
+{% endblock %}

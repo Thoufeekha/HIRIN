@@ -1,0 +1,191 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Interview Preparation</h2>
+        <p>
+            Practice interviews, improve your aptitude skills,
+            and prepare for AI mock interviews with intelligent performance tracking.
+        </p>
+    </div>
+</div>
+
+<!-- =======================
+     Statistics
+======================== -->
+
+<!-- <div class="stats-grid"> -->
+
+    <!-- <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fa-solid fa-comments"></i>
+        </div> -->
+
+        <!-- <div>
+            <h3>{{ total_interviews|default:0 }}</h3>
+            <p>Total Interviews</p>
+        </div> -->
+    <!-- </div> -->
+
+    <!-- <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div> -->
+
+        <!-- <div>
+            <h3>{{ completed_interviews|default:0 }}</h3>
+            <p>Completed Interviews</p>
+        </div> -->
+    <!-- </div> -->
+<!-- 
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fa-solid fa-brain"></i>
+        </div> -->
+
+        <!-- <div>
+            <h3>{{ aptitude_tests|default:0 }}</h3>
+            <p>Aptitude Tests</p>
+        </div> -->
+    <!-- </div> -->
+
+    <!-- <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fa-solid fa-chart-line"></i>
+        </div> -->
+
+        <!-- <div>
+            <h3>{{ average_score|default:"0" }}%</h3>
+            <p>Average Aptitude Score</p>
+        </div> -->
+    <!-- </div>
+
+</div> -->
+
+<!-- =======================
+     Feature Cards
+======================== -->
+
+<div class="features-grid-modern">
+
+    <!-- Aptitude Test -->
+
+    <div class="feature-card-modern">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-brain"></i>
+        </div>
+
+        <h3>Aptitude Test</h3>
+
+        <p>
+            Solve AI-generated quantitative, logical reasoning and verbal ability
+            questions with automatic evaluation.
+        </p>
+
+        <div class="feature-tags">
+            <span class="tag">35 Questions</span>
+            <span class="tag">35 Minutes</span>
+        </div>
+
+        <a href="{% url 'interviewprep:aptitude_test' %}" class="feature-btn">
+            Start Test
+        </a>
+
+    </div>
+
+    <!-- AI Mock Interview -->
+
+    <div class="feature-card-modern">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-microphone"></i>
+        </div>
+
+        <h3>AI Mock Interview</h3>
+
+        <p>
+            Upload your resume and job description to receive personalized interview questions with AI evaluation.
+        </p>
+
+        <div class="feature-tags">
+            <span class="tag">Resume Based</span>
+            <span class="tag">Voice AI</span>
+        </div>
+
+        <a href="{% url 'interviewprep:start_interview' %}" class="feature-btn">
+            Start Practice
+        </a>
+
+    </div>
+
+</div>
+
+<!-- =======================
+     Recent Sessions
+======================== -->
+
+{% if recent_sessions %}
+
+<div class="recent-section-modern">
+
+    <div class="section-header">
+
+        <h3>Recent Interview Sessions</h3>
+
+        <span>{{ recent_sessions|length }} Sessions</span>
+
+    </div>
+
+    {% for session in recent_sessions %}
+
+    <div class="session-item-modern">
+
+        <div class="session-info-modern">
+
+            <div class="session-icon-modern">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div>
+
+                <strong>{{ session.get_mode_display }}</strong>
+
+                <br>
+
+                <small>{{ session.created_at|date:"M d, Y H:i" }}</small>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            {% if session.is_completed %}
+                <span class="status-badge-modern completed">
+                    Completed
+                </span>
+            {% else %}
+                <span class="status-badge-modern progress">
+                    In Progress
+                </span>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}
