@@ -1,0 +1,766 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🧠 Aptitude Test</h1>
+    <p>Test your quantitative, logical, and verbal reasoning skills</p>
+</div>
+
+<!-- Test Start Section -->
+<div id="testStartSection">
+    {% if ongoing_test %}
+<div class="test-status-card">
+    <div class="status-icon">⏳</div>
+
+    <div class="status-content">
+        <h3>You have an ongoing test!</h3>
+
+        <p>
+            Starting a new test will replace your previous unfinished test.
+        </p>
+
+        <div class="status-actions">
+            <button onclick="startNewTest()" class="btn-primary">
+                <span>🚀</span> Start New Test
+            </button>
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="test-info-grid">
+        <div class="info-card">
+            <div class="info-icon">📋</div>
+            <h3>Test Details</h3>
+            <ul>
+                <li><span class="label">Questions:</span> <span class="value">35</span></li>
+                <li><span class="label">Time Limit:</span> <span class="value">35 minutes</span></li>
+                <li><span class="label">Categories:</span> <span class="value">Quantitative, Logical, Verbal, Data Interpretation</span></li>
+            </ul>
+            <button onclick="startNewTest()" class="btn-primary btn-large">
+                <span>🚀</span> Start Test Now
+            </button>
+        </div>
+        <div class="info-card tips-card">
+            <div class="info-icon">💡</div>
+            <h3>Tips for Success</h3>
+            <ul>
+                <li>✅ Read each question carefully</li>
+                <li>✅ Manage your time wisely</li>
+                <li>✅ Don't spend too long on one question</li>
+                <li>✅ Review your answers if time permits</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Question Area -->
+<div id="questionArea" style="display: none;">
+    <div class="question-container">
+        <div class="question-header">
+            <div class="progress-info">
+                <span id="questionProgress">Question 1/35</span>
+                <div class="progress-bar-container">
+                    <div class="progress-track">
+                        <div id="questionProgressBar" class="progress-fill-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="timer-display" id="timerDisplay">
+                <span class="timer-icon">⏱️</span>
+                <span class="timer-text">35:00</span>
+            </div>
+        </div>
+        
+        <div class="question-body">
+            <div class="question-meta">
+                <span class="category-badge" id="questionCategory">Category</span>
+                <span class="difficulty-badge" id="questionDifficulty">Medium</span>
+            </div>
+            <h3 id="questionText">Loading question...</h3>
+            
+            <div id="optionsContainer" class="options-grid">
+                <!-- Options will be loaded here -->
+            </div>
+            
+            <!-- Answer Feedback Area -->
+            <div id="answerFeedback" style="display: none;" class="answer-feedback">
+                <div class="feedback-result" id="feedbackResult"></div>
+                <div class="feedback-explanation" id="feedbackExplanation"></div>
+            </div>
+        </div>
+        
+        <div class="question-footer">
+            <button onclick="submitAnswer()" class="btn-primary btn-submit" id="submitBtn">
+                <span>✓</span> Submit Answer
+            </button>
+            <button onclick="nextQuestion()" class="btn-primary btn-next" id="nextBtn" style="display: none;">
+                <span>→</span> Next Question
+            </button>
+            <button onclick="skipQuestion()" class="btn-secondary" id="skipBtn">
+                <span>⏭</span> Skip
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Results Redirect -->
+<div id="resultsArea" style="display: none;">
+    <div class="results-redirect">
+        <div class="loading-spinner">⏳</div>
+        <h3>Loading Results...</h3>
+    </div>
+</div>
+
+<!-- ============ EXIT BUTTON - FLOATING BOTTOM RIGHT ============ -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+    <button onclick="exitAptitudeTest()" style="
+        background: #dc3545; 
+        color: white; 
+        padding: 12px 24px; 
+        border: none; 
+        border-radius: 50px; 
+        cursor: pointer; 
+        font-size: 16px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    " 
+    onmouseover="this.style.transform='scale(1.05)'" 
+    onmouseout="this.style.transform='scale(1)'">
+        🚪 Exit Test
+    </button>
+</div>
+
+<!-- Exit Confirmation Modal -->
+<div id="exitModal" style="
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center;
+">
+    <div style="
+        background: white; 
+        padding: 35px; 
+        border-radius: 15px; 
+        max-width: 450px; 
+        width: 90%;
+        margin: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    ">
+        <div style="text-align: center; font-size: 48px; margin-bottom: 10px;">🚪</div>
+        <h3 style="text-align: center; color: #333; margin-bottom: 10px;">Exit Aptitude Test?</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 15px;">
+            Your progress will be saved. You can continue later.
+        </p>
+        
+        <div style="
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0;
+            text-align: center;
+        ">
+            <div style="font-size: 14px; color: #666;">Progress</div>
+            <div style="font-size: 20px; font-weight: bold; color: #333;">
+                <span id="exitAnswered">0</span>/<span id="exitTotal">0</span>
+            </div>
+            <div style="font-size: 14px; color: #666; margin-top: 5px;">
+                Score: <span id="exitScore">0%</span>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button onclick="closeExitModal()" style="
+                padding: 10px 25px; 
+                border: 2px solid #ddd; 
+                border-radius: 8px; 
+                background: white; 
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            "
+            onmouseover="this.style.background='#f8f9fa'"
+            onmouseout="this.style.background='white'">
+                Cancel
+            </button>
+            <button onclick="confirmExitAptitude()" style="
+                padding: 10px 25px; 
+                border: none; 
+                border-radius: 8px; 
+                background: #dc3545; 
+                color: white; 
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            "
+            onmouseover="this.style.background='#c82333'"
+            onmouseout="this.style.background='#dc3545'">
+                Yes, Exit
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    padding: 15px 25px; 
+    background: #28a745; 
+    color: white; 
+    border-radius: 10px; 
+    z-index: 2000; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    max-width: 400px;
+">
+</div>
+
+<script>
+let currentQuestionId = null;
+let testId = null;
+let totalQuestions = 0;
+let timerInterval = null;
+let timeLeft = 35 * 60;
+let answeredCount = 0;
+let isAnswered = false;
+let correctAnswerIndex = null;
+let userAnswers = [];
+let currentQuestionData = null;
+
+// Cookie helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Continue existing test
+function continueTest(testId) {
+    if (!testId) {
+        // Check localStorage for saved progress
+        const saved = localStorage.getItem('aptitude_progress');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                testId = data.test_id;
+                if (testId) {
+                    document.getElementById('testStartSection').style.display = 'none';
+                    loadQuestion(testId);
+                    return;
+                }
+            } catch(e) {}
+        }
+        
+        // Check session from backend
+        fetch('/interviewprep/aptitude/load-progress/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.has_progress) {
+                testId = data.data.test_id;
+                if (testId) {
+                    document.getElementById('testStartSection').style.display = 'none';
+                    loadQuestion(testId);
+                    return;
+                }
+            }
+            alert('❌ No saved test found. Please start a new test.');
+        })
+        .catch(() => {
+            alert('❌ No saved test found. Please start a new test.');
+        });
+        return;
+    }
+    document.getElementById('testStartSection').style.display = 'none';
+    loadQuestion(testId);
+}
+
+// Start new test
+function startNewTest() {
+    const startBtn = event ? event.target.closest('button') : document.querySelector('.btn-large');
+    if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<span>⏳</span> Generating...';
+    }
+    
+    fetch('/interview/aptitude/generate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            testId = data.test_id;
+            totalQuestions = data.total_questions;
+            userAnswers = [];
+            document.getElementById('testStartSection').style.display = 'none';
+            loadQuestion(testId);
+        } else {
+            alert('❌ Error: ' + data.error);
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<span>🚀</span> Start Test Now';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to start test. Please try again.');
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<span>🚀</span> Start Test Now';
+        }
+    });
+}
+
+// Load question
+function loadQuestion(testId) {
+    if (!testId) {
+        alert('❌ Invalid test ID.');
+        return;
+    }
+    
+    isAnswered = false;
+    correctAnswerIndex = null;
+    document.getElementById('answerFeedback').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'inline-flex';
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('skipBtn').style.display = 'inline-flex';
+    
+    fetch(`/interview/aptitude/question/${testId}/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.completed) {
+            showResults(testId);
+            return;
+        }
+        
+        const question = data.question;
+        currentQuestionId = question.id;
+        currentQuestionData = question;
+        totalQuestions = question.total;
+        answeredCount = question.order - 1;
+        
+        // Show question area
+        document.getElementById('questionArea').style.display = 'block';
+        
+        // Update progress
+        document.getElementById('questionProgress').textContent = 
+            `Question ${question.order}/${question.total}`;
+        
+        // Update progress bar
+        const progressPercent = ((question.order - 1) / question.total) * 100;
+        document.getElementById('questionProgressBar').style.width = progressPercent + '%';
+        
+        // Update question meta
+        document.getElementById('questionCategory').textContent = question.category || 'General';
+        document.getElementById('questionDifficulty').textContent = 
+            question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1);
+        
+        // Update question text
+        document.getElementById('questionText').textContent = question.text;
+        
+        // Generate options
+        const optionsContainer = document.getElementById('optionsContainer');
+        optionsContainer.innerHTML = '';
+        
+        const optionLabels = ['A', 'B', 'C', 'D'];
+        question.options.forEach((option, index) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option-item';
+            optionDiv.dataset.index = index;
+            optionDiv.innerHTML = `
+                <input type="radio" name="answer" value="${index}" id="opt${index}">
+                <label for="opt${index}">
+                    <span class="option-letter">${optionLabels[index]}</span>
+                    <span class="option-text">${option}</span>
+                </label>
+            `;
+            optionDiv.addEventListener('click', function() {
+                if (isAnswered) return;
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                document.querySelectorAll('.option-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+            optionsContainer.appendChild(optionDiv);
+        });
+        
+        // Start timer if not started
+        if (!timerInterval) {
+            startTimer();
+        }
+        
+        // Scroll to question
+        document.getElementById('questionArea').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to load question. Please try again.');
+    });
+}
+
+// Submit answer
+function submitAnswer() {
+    if (isAnswered) return;
+    
+    const selected = document.querySelector('input[name="answer"]:checked');
+    if (!selected) {
+        alert('⚠️ Please select an answer before submitting.');
+        return;
+    }
+    
+    const answer = parseInt(selected.value);
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>⏳</span> Submitting...';
+    
+    fetch('/interview/aptitude/submit/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            question_id: currentQuestionId,
+            selected_answer: answer
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            isAnswered = true;
+            
+            // Store answer
+            userAnswers.push({
+                question_id: currentQuestionId,
+                selected: answer,
+                correct: data.correct_answer,
+                is_correct: data.is_correct,
+                question_text: currentQuestionData ? currentQuestionData.text : '',
+                category: currentQuestionData ? currentQuestionData.category : 'General',
+                difficulty: currentQuestionData ? currentQuestionData.difficulty : 'medium'
+            });
+            
+            correctAnswerIndex = data.correct_answer;
+            
+            const feedbackDiv = document.getElementById('answerFeedback');
+            const resultDiv = document.getElementById('feedbackResult');
+            const explanationDiv = document.getElementById('feedbackExplanation');
+            
+            feedbackDiv.style.display = 'block';
+            
+            const options = document.querySelectorAll('.option-item');
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            let correctOptionText = 'Not available';
+            let selectedOptionText = 'Not available';
+            
+            options.forEach((item, index) => {
+                const text = item.querySelector('.option-text')?.textContent || '';
+                if (index === data.correct_answer) {
+                    correctOptionText = text;
+                }
+                if (index === answer) {
+                    selectedOptionText = text;
+                }
+            });
+            
+            if (data.is_correct) {
+                resultDiv.innerHTML = `
+                    <span class="correct-icon">✅</span>
+                    <span class="correct-text">Correct!</span>
+                `;
+                resultDiv.className = 'feedback-result correct';
+            } else {
+                resultDiv.innerHTML = `
+                    <span class="incorrect-icon">❌</span>
+                    <span class="incorrect-text">Incorrect</span>
+                `;
+                resultDiv.className = 'feedback-result incorrect';
+            }
+            
+            explanationDiv.innerHTML = `
+                <div class="explanation-detail">
+                    <p><strong>Your Answer:</strong> ${selectedOptionText}</p>
+                    <p><strong>Correct Answer:</strong> ${correctOptionText}</p>
+                    ${data.explanation ? `<p><strong>Explanation:</strong> ${data.explanation}</p>` : ''}
+                </div>
+            `;
+            
+            document.querySelectorAll('.option-item').forEach((item, index) => {
+                item.style.pointerEvents = 'none';
+                if (index === data.correct_answer) {
+                    item.classList.add('correct-answer');
+                } else if (index === answer && !data.is_correct) {
+                    item.classList.add('wrong-answer');
+                }
+            });
+            
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('skipBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'inline-flex';
+            
+            if (data.progress.completed) {
+                document.getElementById('nextBtn').innerHTML = '<span>📊</span> View Results';
+                document.getElementById('nextBtn').onclick = function() {
+                    clearInterval(timerInterval);
+                    showResults(testId);
+                };
+            } else {
+                document.getElementById('nextBtn').innerHTML = '<span>→</span> Next Question';
+                document.getElementById('nextBtn').onclick = function() {
+                    loadQuestion(testId);
+                };
+            }
+            
+            feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alert('❌ Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to submit answer. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>✓</span> Submit Answer';
+    });
+}
+
+// Next question
+function nextQuestion() {
+    loadQuestion(testId);
+}
+
+// Skip question
+function skipQuestion() {
+    if (isAnswered) return;
+    if (confirm('⚠️ Skip this question? You can\'t go back.')) {
+        const skipBtn = document.getElementById('skipBtn');
+        skipBtn.disabled = true;
+        skipBtn.innerHTML = '<span>⏳</span> Skipping...';
+        
+        userAnswers.push({
+            question_id: currentQuestionId,
+            selected: null,
+            correct: null,
+            is_correct: false,
+            question_text: currentQuestionData ? currentQuestionData.text : '',
+            category: currentQuestionData ? currentQuestionData.category : 'General',
+            difficulty: currentQuestionData ? currentQuestionData.difficulty : 'medium'
+        });
+        
+        fetch('/interview/aptitude/submit/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                question_id: currentQuestionId,
+                selected_answer: null
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                isAnswered = true;
+                if (data.progress.completed) {
+                    clearInterval(timerInterval);
+                    showResults(testId);
+                } else {
+                    loadQuestion(testId);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Failed to skip question.');
+        })
+        .finally(() => {
+            skipBtn.disabled = false;
+            skipBtn.innerHTML = '<span>⏭</span> Skip';
+        });
+    }
+}
+
+// Show results
+function showResults(testId) {
+    document.getElementById('questionArea').style.display = 'none';
+    document.getElementById('resultsArea').style.display = 'block';
+    window.location.href = `/interview/aptitude/results/${testId}/`;
+}
+
+// Timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.querySelector('.timer-text').textContent = 
+            `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 300) {
+            document.querySelector('.timer-display').classList.add('warning');
+        }
+        if (timeLeft <= 60) {
+            document.querySelector('.timer-display').classList.add('danger');
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('⏰ Time is up!');
+            showResults(testId);
+        }
+    }, 1000);
+}
+
+// ============ EXIT FUNCTIONS ============
+function exitAptitudeTest() {
+    const answered = userAnswers ? userAnswers.filter(a => a && a.selected !== null).length : 0;
+    const total = totalQuestions || 0;
+    
+    let correct = 0;
+    if (userAnswers && userAnswers.length > 0) {
+        userAnswers.forEach((ans) => {
+            if (ans && ans.is_correct) {
+                correct++;
+            }
+        });
+    }
+    const score = answered > 0 ? ((correct / answered) * 100).toFixed(1) : 0;
+    
+    document.getElementById('exitAnswered').textContent = answered;
+    document.getElementById('exitTotal').textContent = total || 35;
+    document.getElementById('exitScore').textContent = score + '%';
+    
+    document.getElementById('exitModal').style.display = 'flex';
+}
+
+function closeExitModal() {
+    document.getElementById('exitModal').style.display = 'none';
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background = type === 'success' ? '#28a745' : 
+                            type === 'error' ? '#dc3545' : 
+                            type === 'warning' ? '#ffc107' : '#28a745';
+    toast.style.color = type === 'warning' ? '#333' : 'white';
+    toast.style.transform = 'translateX(0)';
+    
+    setTimeout(() => {
+        toast.style.transform = 'translateX(400px)';
+    }, 3000);
+}
+
+async function confirmExitAptitude() {
+    closeExitModal();
+    showToast('💾 Saving progress...', 'warning');
+    
+    try {
+        const response = await fetch('/interviewprep/aptitude/save-progress/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                test_id: testId,
+                user_answers: userAnswers,
+                current_question: currentQuestionId,
+                time_left: timeLeft
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('✅ Progress saved!', 'success');
+            setTimeout(() => {
+                window.location.href = '/interview_prep/';
+            }, 1500);
+        } else {
+            // Save locally as backup
+            localStorage.setItem('aptitude_progress', JSON.stringify({
+                test_id: testId,
+                user_answers: userAnswers,
+                current_question: currentQuestionId,
+                time_left: timeLeft,
+                timestamp: new Date().toISOString()
+            }));
+            showToast('📂 Progress saved locally', 'warning');
+            setTimeout(() => {
+                window.location.href = '/interview_prep/';
+            }, 1500);
+        }
+    } catch (error) {
+        console.error('Error saving:', error);
+        localStorage.setItem('aptitude_progress', JSON.stringify({
+            test_id: testId,
+            user_answers: userAnswers,
+            current_question: currentQuestionId,
+            time_left: timeLeft,
+            timestamp: new Date().toISOString()
+        }));
+        showToast('📂 Progress saved locally', 'warning');
+        setTimeout(() => {
+            window.location.href = '/interview_prep/';
+        }, 1500);
+    }
+}
+
+// ESC key to exit
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('exitModal');
+        if (modal.style.display === 'flex') {
+            closeExitModal();
+        } else {
+            exitAptitudeTest();
+        }
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('exitModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeExitModal();
+    }
+});
+</script>
+
+{% endblock %}
