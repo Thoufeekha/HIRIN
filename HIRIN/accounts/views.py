@@ -129,9 +129,17 @@ def jobseeker_login(request):
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
-            login(request, user)
-            return redirect("jobseeker_dashboard")
 
+            login(request, user)
+
+            role = UserRole.objects.get(user=user)
+
+            if role.role == "recruiter":
+                return redirect("recruiter_dashboard")
+
+            elif role.role == "jobseeker":
+                return redirect("jobseeker_dashboard")
+            
         return render(
             request,
             "login.html",
@@ -279,6 +287,12 @@ def jobseeker_profile(request):
 
 @login_required
 def jobseeker_dashboard(request):
+
+    role = UserRole.objects.get(user=request.user)
+
+    if role.role != "jobseeker":
+        return redirect("recruiter_dashboard")
+
     user = request.user
  
     # Real applications for the logged-in user only
@@ -327,6 +341,11 @@ def jobseeker_dashboard(request):
 
 @login_required
 def recruiter_dashboard(request):
+
+    role = UserRole.objects.get(user=request.user)
+
+    if role.role != "recruiter":
+        return redirect("jobseeker_dashboard")
 
     recruiter = RecruiterProfile.objects.get(
         user=request.user
