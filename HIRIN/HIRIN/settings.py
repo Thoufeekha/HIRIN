@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'email_generato',
     'interviewprep',
     'chatbot',
+    'ats',
+
 ]
 
 MIDDLEWARE = [
@@ -66,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.views.notifications',
             ],
         },
     },

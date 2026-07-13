@@ -26,6 +26,7 @@ urlpatterns = [
     path('email-generator/', include('email_generato.urls')),
     path('interview/', include('interviewprep.urls')),
     path('chatbot/', include('chatbot.urls')),     
+    path('ats/', include('ats.urls')),     
 ]
 
 if settings.DEBUG:

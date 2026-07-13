@@ -1,0 +1,152 @@
+.jt-header {
+    margin-bottom: 20px;
+}
+.jt-subtext {
+    color: #6b6b68;
+    font-size: 14px;
+    margin: 4px 0 0;
+}
+.jt-card {
+    background: #ffffff;
+    border: 1px solid #e5e3da;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.jt-pipeline-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+}
+.jt-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+}
+.jt-muted {
+    color: #6b6b68;
+    font-size: 13px;
+}
+.jt-pipeline-stages {
+    display: flex;
+    align-items: center;
+}
+.jt-stage {
+    flex: 1;
+    text-align: center;
+}
+.jt-stage-num {
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0 0 2px;
+}
+.jt-stage-label {
+    font-size: 12px;
+    color: #6b6b68;
+    margin: 0;
+}
+.jt-arrow {
+    color: #b5b3aa;
+    font-style: normal;
+}
+.jt-amber { color: #b98900; }
+.jt-blue { color: #1c6fbd; }
+.jt-green { color: #1d9e75; }
+.jt-red { color: #d1453b; }
+
+.jt-progress-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: #f1efe8;
+    overflow: hidden;
+    display: flex;
+    margin: 20px 0 6px;
+}
+.jt-seg-applied { background: #1d9e75; }
+.jt-seg-shortlisted { background: #efa927; }
+.jt-seg-interviewing { background: #378add; }
+.jt-seg-offer { background: #639922; }
+.jt-seg-rejected { background: #e24b4a; }
+
+.jt-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #8a897f;
+}
+
+.jt-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.jt-filters input[type="text"] {
+    flex: 1;
+    min-width: 180px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #e5e3da;
+    border-radius: 8px;
+}
+.jt-filters select {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #e5e3da;
+    border-radius: 8px;
+}
+.jt-btn-secondary {
+    height: 36px;
+    padding: 0 16px;
+    border: 1px solid #e5e3da;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.jt-table-card {
+    background: #ffffff;
+    border: 1px solid #e5e3da;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.jt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.jt-table th {
+    text-align: left;
+    color: #6b6b68;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e5e3da;
+}
+.jt-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1efe8;
+}
+.jt-truncate {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.jt-empty {
+    text-align: center;
+    color: #8a897f;
+    padding: 24px;
+}
+
+.jt-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+.jt-badge-applied { background: #f1efe8; color: #5f5e5a; }
+.jt-badge-shortlisted { background: #faeeda; color: #854f0b; }
+.jt-badge-interviewing { background: #e6f1fb; color: #0c447c; }
+.jt-badge-offer { background: #eaf3de; color: #27500a; }
+.jt-badge-rejected { background: #fcebeb; color: #791f1f; }

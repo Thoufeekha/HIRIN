@@ -1,0 +1,269 @@
+/* Settings page — extends the design tokens used in profile.css
+   Accent: #1f7a5c (teal-green)  |  Border/cream: #e7e3d8  |  Text: #1b2420 */
+
+.settings-messages {
+    margin-bottom: 20px;
+}
+
+.settings-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.settings-alert-success {
+    background: #e6f4ee;
+    color: #1f7a5c;
+    border: 1px solid #b9e2cf;
+}
+
+.settings-alert-error {
+    background: #fbe9e7;
+    color: #b3261e;
+    border: 1px solid #f3c2bd;
+}
+
+/* Forms */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b6558;
+}
+
+.settings-field input {
+    border: 1px solid #e7e3d8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1b2420;
+    background: #fbfaf7;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.settings-field input:focus {
+    border-color: #1f7a5c;
+    background: #fff;
+}
+
+.settings-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.settings-save-btn {
+    align-self: flex-start;
+    background: #1f7a5c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.settings-save-btn:hover {
+    background: #17624a;
+}
+
+.settings-save-btn-full {
+    align-self: stretch;
+    text-align: center;
+}
+
+/* Toggle switches */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ede4;
+}
+
+.toggle-row:last-of-type {
+    border-bottom: none;
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1b2420;
+}
+
+.toggle-sub {
+    font-size: 12px;
+    color: #8a8478;
+    margin-top: 2px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #e7e3d8;
+    border-radius: 24px;
+    transition: 0.2s;
+}
+
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.switch input:checked + .slider {
+    background-color: #1f7a5c;
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
+}
+
+/* Danger zone */
+.danger-zone {
+    border: 1px solid #f3c2bd;
+    background: #fdf6f5;
+}
+
+.danger-zone h3 {
+    color: #b3261e;
+}
+
+.danger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.danger-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1b2420;
+}
+
+.danger-desc {
+    font-size: 12px;
+    color: #8a8478;
+    margin-top: 4px;
+    max-width: 420px;
+}
+
+.danger-btn {
+    background: #b3261e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.danger-btn:hover {
+    background: #8f1e18;
+}
+
+/* Delete confirmation modal */
+.settings-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(27, 36, 32, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.settings-modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    max-width: 420px;
+    width: 90%;
+}
+
+.settings-modal h3 {
+    color: #b3261e;
+    margin-bottom: 10px;
+}
+
+.settings-modal p {
+    font-size: 14px;
+    color: #6b6558;
+    margin-bottom: 20px;
+}
+
+.settings-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.settings-modal-cancel {
+    background: #f0ede4;
+    color: #1b2420;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .settings-two-col {
+        grid-template-columns: 1fr;
+    }
+    .danger-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

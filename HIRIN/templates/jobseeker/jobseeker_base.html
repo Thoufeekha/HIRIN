@@ -7,12 +7,12 @@
     <title>HIRIN'</title>
 
     <link rel="stylesheet" href="{% static 'css/jobseeker_base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"> -->
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 
 
      {% block extra_css %}
-     {% endblock extra_css %}
+     {% endblock %}
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -92,11 +92,14 @@
     <main class="main-content">
 
         <header class="topbar">
+{% block header_search %}
 
-            <div class="search-box">
-                <input type="text"
-                       placeholder="Search jobs, companies, or roles">
-            </div>
+{% block topbar_search %}
+<div class="search-box">
+    <input type="text"
+        placeholder="Search jobs, companies, or roles">
+</div>
+{% endblock %}
 
             <div class="topbar-right">
 
@@ -121,7 +124,7 @@
                             <i class="fa-regular fa-user"></i> Profile
                         </a>
 
-                        <a href="#">
+                        <a href="{% url 'jobseeker_settings' %}">
                             <i class="fa-solid fa-gear"></i> Settings
                         </a>
 
@@ -134,6 +137,9 @@
                 </div>
 
             </div>
+
+            {% endblock %}
+
 
         </header>
 

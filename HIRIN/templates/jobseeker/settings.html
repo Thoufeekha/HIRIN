@@ -1,0 +1,192 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-header-row">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage your account, security, and preferences</p>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="settings-messages">
+        {% for message in messages %}
+            <div class="settings-alert settings-alert-{{ message.tags }}">
+                <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="profile-grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="profile-main">
+
+        <!-- Account Information -->
+        <div class="profile-card">
+            <h3><i class="fa-regular fa-user"></i> Account Information</h3>
+            <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="account_info">
+
+                <div class="settings-field">
+                    <label for="id_full_name">Full Name</label>
+                    <input type="text" id="id_full_name" name="full_name" value="{{ full_name }}" required>
+                </div>
+
+                <div class="settings-field">
+                    <label for="id_email">Email Address</label>
+                    <input type="email" id="id_email" name="email" value="{{ email }}" required>
+                </div>
+
+                <div class="settings-field">
+                    <label for="id_phone">Phone</label>
+                    <input type="tel" id="id_phone" name="phone" value="{{ profile.phone|default:'' }}" placeholder="+91 98765 43210">
+                </div>
+
+                <button type="submit" class="settings-save-btn">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Change Password -->
+        <div class="profile-card">
+            <h3><i class="fa-solid fa-lock"></i> Change Password</h3>
+            <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="change_password">
+
+                <div class="settings-field">
+                    <label for="id_current_password">Current Password</label>
+                    <input type="password" id="id_current_password" name="current_password" required>
+                </div>
+
+                <div class="settings-two-col">
+                    <div class="settings-field">
+                        <label for="id_new_password">New Password</label>
+                        <input type="password" id="id_new_password" name="new_password" required>
+                    </div>
+                    <div class="settings-field">
+                        <label for="id_confirm_password">Confirm New Password</label>
+                        <input type="password" id="id_confirm_password" name="confirm_password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="settings-save-btn">Update Password</button>
+            </form>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="profile-card danger-zone">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+            <div class="danger-row">
+                <div>
+                    <div class="danger-title">Delete Account</div>
+                    <p class="danger-desc">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                </div>
+                <button type="button" class="danger-btn" onclick="document.getElementById('deleteAccountModal').style.display='flex'">
+                    Delete Account
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="profile-side">
+
+        <!-- Notification Preferences -->
+        <div class="profile-card">
+            <h3><i class="fa-regular fa-bell"></i> Notifications</h3>
+            <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="notifications">
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Job Recommendations</div>
+                        <div class="toggle-sub">Get notified about matching jobs</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_job_recs" {% if profile.notify_job_recs %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Application Updates</div>
+                        <div class="toggle-sub">Status changes on your applications</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_app_updates" {% if profile.notify_app_updates %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Email Newsletter</div>
+                        <div class="toggle-sub">Tips and product updates</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_newsletter" {% if profile.notify_newsletter %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="settings-save-btn settings-save-btn-full">Save Preferences</button>
+            </form>
+        </div>
+
+        <!-- Privacy -->
+        <div class="profile-card">
+            <h3><i class="fa-solid fa-shield-halved"></i> Privacy</h3>
+            <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="privacy">
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Profile Visibility</div>
+                        <div class="toggle-sub">Let recruiters find your profile</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="profile_visible" {% if profile.profile_visible %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="settings-save-btn settings-save-btn-full">Save Privacy</button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteAccountModal" class="settings-modal-overlay">
+    <div class="settings-modal">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Delete your account?</h3>
+        <p>This will permanently remove your profile, resume, and application history. This cannot be undone.</p>
+        <form method="post" action="{% url 'jobseeker_settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="delete_account">
+            <div class="settings-modal-actions">
+                <button type="button" class="settings-modal-cancel" onclick="document.getElementById('deleteAccountModal').style.display='none'">Cancel</button>
+                <button type="submit" class="danger-btn">Yes, Delete My Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
