@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'email_generato',
     'interviewprep',
     'ats',
+    'ghost_hunter',
 ]
 
 MIDDLEWARE = [

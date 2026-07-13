@@ -25,7 +25,9 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('email-generator/', include('email_generato.urls')),
     path('interview/', include('interviewprep.urls')),
-    path('ats/', include('ats.urls')),     
+    path('ats/', include('ats.urls')),
+    path('ghost-hunter/', include('ghost_hunter.urls')),
+
 ]
 
 if settings.DEBUG:
