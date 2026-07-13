@@ -1,0 +1,72 @@
+HIRIN - Recruiter Module
+
+Dashboard
+
+The recruiter dashboard provides hiring statistics including:
+
+- Active Jobs
+- Total Applicants
+- New Applicants
+
+Recent Job Postings
+
+Recruiters can quickly view recently posted jobs.
+
+Job Management
+
+Recruiters can:
+
+- Create New Job Posting
+- View Job Details
+- Close Job
+- Repost Job
+- Monitor Job Status
+
+Job Status
+
+Available statuses include:
+
+- Active
+- Closing Soon
+- Draft
+- Closed
+
+Job Details
+
+Each posting contains:
+
+- Job Title
+- Employment Type
+- Location
+- Posting Date
+- Closing Date
+- Job Description
+- Required Skills
+
+Close Job
+
+Closing a job stops new applications while preserving previously received applications.
+
+Repost Job
+
+Recruiters can reopen a closed job by selecting a new closing date.
+
+Candidate Management
+
+Recruiters can:
+
+- View applicants
+- Review applications
+- Monitor recruitment progress
+
+Search
+
+Recruiters can search using:
+
+- Job Title
+- Candidate Name
+- Skills
+
+Purpose
+
+The Recruiter Module simplifies hiring and applicant management.

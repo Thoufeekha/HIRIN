@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'email_generato',
     'interviewprep',
+    'chatbot',
 ]
 
 MIDDLEWARE = [

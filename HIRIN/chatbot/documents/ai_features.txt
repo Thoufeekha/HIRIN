@@ -1,0 +1,58 @@
+HIRIN - AI Features
+
+Overview
+
+HIRIN integrates Artificial Intelligence to improve the recruitment process.
+
+ATS Resume Evaluation
+
+The AI analyzes resumes and provides ATS compatibility feedback.
+
+Resume Analysis
+
+HIRIN identifies:
+
+- Missing keywords
+- Resume strengths
+- Areas for improvement
+
+Cover Letter Generator
+
+Users upload:
+
+- Resume
+- Job Description
+
+HIRIN generates a customized professional cover letter.
+
+Cold Email Generator
+
+The AI creates personalized cold emails suitable for job applications.
+
+Interview Preparation
+
+AI generates interview questions based on:
+
+- Resume
+- Job Description
+
+AI Mock Interview
+
+Provides:
+
+- Personalized interview questions
+- Performance evaluation
+- AI-generated feedback
+
+Job Recommendations
+
+HIRIN recommends suitable jobs based on:
+
+- Skills
+- Education
+- Resume
+- Experience
+
+Benefits
+
+The AI features help users improve their resumes, prepare for interviews, and apply more effectively.

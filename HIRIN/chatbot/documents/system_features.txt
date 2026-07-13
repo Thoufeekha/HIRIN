@@ -1,0 +1,69 @@
+HIRIN - System Features
+
+Overview
+
+HIRIN is an AI-powered recruitment platform connecting job seekers and recruiters.
+
+User Roles
+
+Job Seeker
+
+Features include:
+
+- Search Jobs
+- Apply for Jobs
+- Track Applications
+- Upload Resume
+- Interview Preparation
+- ATS Resume Evaluation
+- Cover Letter Generator
+
+Recruiter
+
+Features include:
+
+- Create Job Postings
+- Manage Jobs
+- Review Applicants
+- Close Jobs
+- Repost Jobs
+- Track Recruitment
+
+Notifications
+
+Users receive notifications for:
+
+- Job Recommendations
+- Application Updates
+- Recruitment Activities
+
+Search
+
+HIRIN provides search functionality for:
+
+- Jobs
+- Companies
+- Applicants
+- Skills
+
+Security
+
+HIRIN supports:
+
+- Secure Authentication
+- Password Management
+- Privacy Controls
+- Account Deletion
+
+Advantages
+
+- AI-powered recruitment
+- Faster hiring process
+- Personalized recommendations
+- Improved resume quality
+- Better interview preparation
+- Efficient job tracking
+
+Mission
+
+HIRIN aims to simplify recruitment by combining artificial intelligence with an easy-to-use job portal for both job seekers and recruiters.
