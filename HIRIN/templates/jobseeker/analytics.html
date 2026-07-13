@@ -1,0 +1,94 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📊 Performance Analytics</h1>
+    <p>Track your progress and identify areas for improvement</p>
+</div>
+
+<div class="analytics-container">
+    <div class="analytics-section">
+        <h2>🎤 Interview Practice</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ interview_stats.total }}</span>
+                <span class="stat-label">Total Interviews</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ interview_stats.completed }}</span>
+                <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ interview_stats.average_score|floatformat:1 }}</span>
+                <span class="stat-label">Avg Score (/10)</span>
+            </div>
+        </div>
+        
+        {% if interview_stats.recent_scores %}
+        <div class="recent-scores">
+            <h4>Recent Interview Scores</h4>
+            <div class="score-chart">
+                {% for score in interview_stats.recent_scores %}
+                <div class="score-bar">
+                    <div class="bar-fill" style="--height: {{ score.score|floatformat:0 }}; height: calc(var(--height) * 10%);">
+                        {{ score.score }}
+                    </div>
+                    <span class="bar-label">{{ score.date|date:"M d" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="analytics-section">
+        <h2>🧠 Aptitude Tests</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ aptitude_stats.total }}</span>
+                <span class="stat-label">Total Tests</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ aptitude_stats.average_score|floatformat:1 }}%</span>
+                <span class="stat-label">Average Score</span>
+            </div>
+        </div>
+        
+        {% if aptitude_stats.recent_scores %}
+        <div class="recent-scores">
+            <h4>Recent Aptitude Scores</h4>
+            <div class="score-chart">
+                {% for score in aptitude_stats.recent_scores %}
+                <div class="score-bar">
+                    <div class="bar-fill" style="--height: {{ score.score|floatformat:0 }}; height: calc(var(--height) * 1%);">
+                        {{ score.score }}%
+                    </div>
+                    <span class="bar-label">{{ score.date|date:"M d" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if not has_data %}
+    <div class="empty-state">
+        <h3>📭 No Data Yet</h3>
+        <p>Start practicing to see your analytics here!</p>
+        <div class="action-buttons">
+            <a href="{% url 'interviewprep:aptitude_test' %}" class="btn-primary">Take Aptitude Test</a>
+            <a href="{% url 'interviewprep:start_interview' %}" class="btn-primary">Start Interview Practice</a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="action-buttons">
+        <a href="{% url 'interviewprep:home' %}" class="btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

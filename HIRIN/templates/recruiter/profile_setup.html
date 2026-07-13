@@ -1,0 +1,170 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Recruiter Profile Setup
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/register.css' %}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="register-box">
+
+    <h1>
+        Complete Company Profile
+    </h1>
+
+    <p>
+        Help candidates learn more about your company
+    </p>
+
+    {% if error %}
+    <div style="
+        background:#FEE2E2;
+        color:#B91C1C;
+        padding:12px;
+        border-radius:10px;
+        margin-bottom:15px;
+        text-align:center;
+    ">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- Read Only Details -->
+
+        <input type="text"
+               value="{{ recruiter.company_name }}"
+               readonly>
+
+        <input type="email"
+               value="{{ recruiter.company_email }}"
+               readonly>
+
+        <!-- Required Fields -->
+
+        <input type="url"
+               name="company_website"
+               placeholder="Company Website"
+               required>
+
+        <select name="industry"
+                required>
+
+            <option value="">
+                Select Industry
+            </option>
+
+            <option value="Information Technology">
+                Information Technology
+            </option>
+
+            <option value="Healthcare">
+                Healthcare
+            </option>
+
+            <option value="Finance">
+                Finance
+            </option>
+
+            <option value="Education">
+                Education
+            </option>
+
+            <option value="Manufacturing">
+                Manufacturing
+            </option>
+
+            <option value="Retail">
+                Retail
+            </option>
+
+            <option value="Marketing">
+                Marketing
+            </option>
+
+            <option value="Construction">
+                Construction
+            </option>
+
+            <option value="Telecommunications">
+                Telecommunications
+            </option>
+
+            <option value="Transportation">
+                Transportation
+            </option>
+
+            <option value="Hospitality">
+                Hospitality
+            </option>
+
+            <option value="Other">
+                Other
+            </option>
+
+        </select>
+
+        <input type="text"
+               name="company_location"
+               placeholder="Company Location"
+               required>
+
+        <!-- Optional Fields -->
+
+        <input type="text"
+               name="company_phone"
+               placeholder="Company Phone (Optional)">
+
+        <textarea
+            name="company_description"
+            rows="4"
+            placeholder="Company Description (Optional)">
+        </textarea>
+
+        <label style="
+            color:#6B7280;
+            font-size:14px;
+            margin-top:5px;
+        ">
+            Company Logo (Optional)
+        </label>
+
+        <input type="file"
+               name="company_logo"
+               accept="image/*">
+
+        <button type="submit"
+                class="register-btn">
+
+            Save Profile
+
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

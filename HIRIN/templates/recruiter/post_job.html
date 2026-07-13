@@ -1,0 +1,82 @@
+{% extends "recruiter/recruiter_base.html" %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>Post New Job</h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Job Title"
+            required
+        >
+
+        <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            required
+        >
+
+        <select name="employment_type">
+
+            <option value="">
+                Select Employment Type
+            </option>
+
+            <option value="Full Time">
+                Full Time
+            </option>
+
+            <option value="Part Time">
+                Part Time
+            </option>
+
+            <option value="Internship">
+                Internship
+            </option>
+
+            <option value="Contract">
+                Contract
+            </option>
+
+        </select>
+
+        <input
+            type="text"
+            name="salary"
+            placeholder="Salary"
+        >
+        <input
+            type="date"
+            name="valid_until"
+            required
+        >
+        <textarea
+            name="skills"
+            placeholder="Required Skills"
+        ></textarea>
+
+        <textarea
+            name="description"
+            placeholder="Job Description"
+        ></textarea>
+
+        <button type="submit"
+                class="submit-btn">
+
+            Post Job
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

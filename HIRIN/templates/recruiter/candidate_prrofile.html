@@ -1,0 +1,104 @@
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/candidates.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'candidates' %}" class="back-link">
+    <i class="fa-solid fa-arrow-left"></i>
+    Back to Candidates
+</a>
+
+<div class="profile-card">
+
+    <div class="profile-header">
+
+        <div class="candidate-avatar large">
+            {{ candidate.user.first_name|slice:":2"|upper }}
+        </div>
+
+        <div>
+            <h2>{{ candidate.user.first_name|default:candidate.user.email }}</h2>
+            <p>{{ candidate.preferred_job_role }}</p>
+
+            <div class="candidate-meta">
+                <span>
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ candidate.city }}, {{ candidate.state }}, {{ candidate.country }}
+                </span>
+                <span>
+                    <i class="fa-solid fa-briefcase"></i>
+                    {{ candidate.experience_level }}
+                </span>
+                <span>
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    {{ candidate.education }}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="profile-header-actions">
+
+            <a href="{{ candidate.resume.url }}" class="btn-download-lg" download>
+                <i class="fa-solid fa-download"></i>
+                Download Resume
+            </a>
+
+            {% if already_invited %}
+                <span class="btn-invited">
+                    <i class="fa-solid fa-check"></i>
+                    Invited
+                </span>
+            {% else %}
+                <form method="post" action="{% url 'invite_candidate' candidate.id %}" class="invite-form">
+                    {% csrf_token %}
+                    <select name="job_id" class="invite-select">
+                        <option value="">General Interest</option>
+                        {% for job in recruiter_jobs %}
+                        <option value="{{ job.id }}">{{ job.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn-invite">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Invite Candidate
+                    </button>
+                </form>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="profile-section">
+        <h3>Skills</h3>
+        <div class="skill-tags">
+            {% for skill in skills_list %}
+            <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="profile-section">
+        <h3>Contact</h3>
+        <p><i class="fa-solid fa-envelope"></i> {{ candidate.user.email }}</p>
+        <p><i class="fa-solid fa-phone"></i> {{ candidate.phone }}</p>
+        {% if candidate.linkedin %}
+        <p>
+            <i class="fa-brands fa-linkedin"></i>
+            <a href="{{ candidate.linkedin }}" target="_blank">{{ candidate.linkedin }}</a>
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="profile-section">
+        <h3>Field of Study</h3>
+        <p>{{ candidate.field }}</p>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -65,11 +65,11 @@
   {% for job in recommended_jobs %}
   <div class="job-card">
     <div class="job-top">
-      <div class="logo-badge">{{ job.company.name|slice:":2"|upper }}</div>
+      <div class="logo-badge">{{ job.recruiter.company_name|slice:":2"|upper }}</div>
       <div class="match">{{ job.match_percent|default:"—" }}% match</div>
     </div>
     <h3>{{ job.title }}</h3>
-    <p class="meta">{{ job.company.name }} · {{ job.location }}</p>
+    <p class="meta">{{ job.recruiter.company_name }} · {{ job.location }}</p>
     <form method="post" action="{% url 'apply_job' job.id %}">
          
       {% csrf_token %}
@@ -97,8 +97,8 @@
       <tr>
         <td>
           <div class="company-cell">
-            <span class="mini-badge">{{ app.job.company.name|slice:":2"|upper }}</span>
-            {{ app.job.company.name }}
+            <span class="mini-badge">{{ app.job.recruiter.company_name|slice:":2"|upper }}</span>
+            {{ app.job.recruiter.company_name }}
           </div>
         </td>
         <td>{{ app.job.title }}</td>

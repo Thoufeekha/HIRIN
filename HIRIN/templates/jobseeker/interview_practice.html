@@ -1,0 +1,769 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/interviewprep.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="interview-page">
+
+    <!-- ================= HERO BANNER ================= -->
+    <section class="hero-banner">
+        <div class="hero-left">
+            <span class="hero-tag">
+                ✨ AI Powered Interview Preparation
+            </span>
+            <h1>
+                Prepare for Your Next Interview
+                <span>with Personalized AI Questions</span>
+            </h1>
+            <p class="hero-description">
+                Upload your resume and job description. Our AI analyses your profile,
+                matches the required skills and generates interview questions specially
+                tailored for the role you are applying for.
+            </p>
+            <div class="analysis-success">
+                <div class="success-icon">✅</div>
+                <div>
+                    <h3>Your Interview is Ready</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SETUP CARD ================= -->
+    <section id="setupSection">
+        <div class="setup-card">
+            <div class="card-title">
+                <h2>Interview Setup</h2>
+            </div>
+
+            <!-- Resume Upload -->
+            <div class="form-group">
+                <label>
+                    Resume
+                    <span>*</span>
+                </label>
+                <div class="upload-box" id="dropZone">
+                    <div class="upload-icon">📄</div>
+                    <h3>Upload Resume</h3>
+                    <p>PDF only (Maximum 10 MB)</p>
+                    <br>
+                    <input type="file" id="resumeFile" accept=".pdf" hidden>
+                    <button type="button" class="upload-btn" onclick="document.getElementById('resumeFile').click()">
+                        Choose Resume
+                    </button>
+                </div>
+                <div id="selectedFile" class="selected-file" style="display:none;">
+                    <span id="fileName"></span>
+                    <button type="button" onclick="removeResume()">✖</button>
+                </div>
+                <div id="fileNameDisplay" class="selected-file">
+                    <strong>Selected :</strong>
+                    <br>
+                    <span id="fileName"></span>
+                </div>
+            </div>
+
+            <!-- Company -->
+            <div class="form-group">
+                <br>
+                <label>Company Name</label>
+                <br>
+                <input type="text" id="companyName" placeholder="Example : Google">
+            </div>
+            <br>
+
+            <!-- Job Role -->
+            <div class="form-group">
+                <label>
+                    Job Role
+                    <span>*</span>
+                </label>
+                <br>
+                <input type="text" id="jobRole" placeholder="Example : Data Scientist">
+            </div>
+            <br>
+
+            <!-- Job Description -->
+            <div class="form-group">
+                <label>
+                    Job Description
+                    <span>*</span>
+                </label>
+                <textarea id="jobDescription" rows="10" placeholder="Paste the complete Job Description here..."></textarea>
+            </div>
+
+            <!-- Button -->
+            <button type="button" class="start-btn" onclick="saveProfileData()">
+                🚀 Analyse Resume & Generate Interview
+            </button>
+        </div>
+    </section>
+
+    <!-- ================= LOADING ================= -->
+    <section id="loadingSection" style="display:none;">
+        <div class="loading-card">
+            <div class="loader"></div>
+            <h2>AI is analysing your profile...</h2>
+            <p>✓ Reading Resume</p>
+            <p>✓ Extracting Skills</p>
+            <p>✓ Matching Job Description</p>
+            <p>✓ Preparing Personalized Questions</p>
+            <br>
+            <h4>Please wait...</h4>
+        </div>
+    </section>
+
+    <!-- ================= INTERVIEW SELECTION ================= -->
+    <section id="practiceOptions" style="display:none;">
+        <div class="interview-grid">
+            <!-- HR -->
+            <div class="interview-card">
+                <div class="card-top">
+                    <div class="icon">👨‍💼</div>
+                    <span class="badge hr">HR</span>
+                </div>
+                <h3>HR Interview</h3>
+                <p>
+                    Practice behavioural questions, communication,
+                    confidence, teamwork, leadership and company culture.
+                </p>
+                <button class="interview-btn" onclick="startInterview('hr')">
+                    Start HR Interview
+                </button>
+            </div>
+
+            <!-- TECHNICAL -->
+            <div class="interview-card featured">
+                <div class="recommended">⭐ Recommended</div>
+                <div class="card-top">
+                    <div class="icon">💻</div>
+                    <span class="badge tech">Technical</span>
+                </div>
+                <h3>Technical Interview</h3>
+                <p>
+                    AI creates technical questions based on your Resume,
+                    Skills, Projects and the Job Description.
+                </p>
+                <button class="interview-btn" onclick="startInterview('technical')">
+                    Start Technical
+                </button>
+            </div>
+
+            <!-- MIXED -->
+            <div class="interview-card">
+                <div class="card-top">
+                    <div class="icon">🧠</div>
+                    <span class="badge mixed">Mixed</span>
+                </div>
+                <h3>Complete Interview</h3>
+                <p>
+                    A real interview experience including HR,
+                    Technical and Scenario-based questions.
+                </p>
+                <button class="interview-btn" onclick="startInterview('mixed')">
+                    Start Complete Interview
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= AI INTERVIEW ================= -->
+    <section id="interviewQuestionArea" style="display:none;">
+        <div class="ai-interview-container">
+            <!-- Header -->
+            <div class="interview-top">
+                <div>
+                    <h2>AI Interview Session</h2>
+                    <p id="interviewProgress">Question 1 / 10</p>
+                </div>
+                <div class="top-right">
+                    <span id="questionDifficulty" class="difficulty">Medium</span>
+                    <span id="timer">⏱ 02:00</span>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-track">
+                <div id="interviewProgressBar" class="progress-fill"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="question-card">
+                <h3>AI Interviewer</h3>
+                <p id="interviewQuestionText">Loading Question...</p>
+
+                <!-- Voice Controls -->
+                <div class="voice-controls">
+                    <button class="voice-btn" onclick="speakQuestion()">🔊</button>
+                    <button class="voice-btn mic" onclick="startVoiceRecognition()">🎤</button>
+                    <button class="voice-btn stop" onclick="stopVoiceRecognition()">⏹</button>
+                </div>
+
+                <!-- Speech Status -->
+                <div id="speechStatus">
+                    Waiting for your answer...
+                </div>
+
+                <!-- ==========================================
+                     ANSWER CARD - UPDATED WITH ICONS
+                     ========================================== -->
+                <div class="answer-card">
+                    <div class="answer-header">
+                        <div class="answer-icon">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <div>
+                            <h3>Your Answer</h3>
+                            <p>Type your answer or use voice recognition.</p>
+                        </div>
+                    </div>
+
+                    <textarea
+                        id="answerInput"
+                        placeholder="Start typing your answer here..."
+                    ></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="submit-btn" onclick="submitInterviewAnswer()">
+                        <i class="fa-solid fa-check"></i>
+                        Submit Answer
+                    </button>
+
+                    <button class="skip-btn" onclick="skipInterviewQuestion()">
+                        <i class="fa-solid fa-forward"></i>
+                        Skip
+                    </button>
+                </div>
+                <!-- ========================================== -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= EVALUATION ================= -->
+    <section id="evaluationArea" style="display:none;">
+        <div class="evaluation-card">
+            <h2>AI Feedback</h2>
+            <div id="evaluationContent"></div>
+            <div class="evaluation-buttons">
+                <button class="next-btn" onclick="nextInterviewQuestion()">Next Question →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= INTERVIEW COMPLETED ================= -->
+    <section id="interviewResultsArea" style="display:none;">
+        <div class="completion-card">
+            <div class="success-icon">🎉</div>
+            <h1>Interview Completed</h1>
+            <p>Congratulations! Your AI Interview session has been completed.</p>
+            <div id="interviewResultsContent"></div>
+            <div class="completion-buttons">
+                <button class="result-btn" onclick="showInterviewResults(sessionId)">View Complete Report</button>
+                <button class="practice-btn" onclick="location.reload()">Practice Again</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= EXIT FLOATING BUTTON ================= -->
+    <div id="exitButtonContainer" class="exit-button-container">
+        <button class="floating-exit-btn" onclick="exitInterview()">
+            🚪 Exit Interview
+        </button>
+    </div>
+
+    <!-- ================= EXIT MODAL ================= -->
+    <div id="exitModal" class="exit-modal">
+        <div class="exit-box">
+            <div class="exit-icon">⚠️</div>
+            <h2>Exit Interview?</h2>
+            <p>
+                Are you sure you want to leave this interview?
+                Your current progress will be saved.
+            </p>
+            <div class="exit-buttons">
+                <button class="cancel-btn" onclick="closeExitModal()">
+                    Continue Interview
+                </button>
+                <button class="leave-btn" onclick="confirmExitInterview()">
+                    Exit
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// FILE UPLOAD HANDLER - UPDATED WITH REMOVE
+// ============================================
+const fileInput = document.getElementById("resumeFile");
+const dropZone = document.getElementById('dropZone');
+
+fileInput.addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+        document.getElementById("fileName").textContent = this.files[0].name;
+        document.getElementById("selectedFile").style.display = "flex";
+        document.getElementById("dropZone").style.borderColor = "#119378";
+    }
+});
+
+// Remove Resume Function
+function removeResume() {
+    document.getElementById("resumeFile").value = "";
+    document.getElementById("selectedFile").style.display = "none";
+    document.getElementById("fileName").textContent = "";
+    document.getElementById("dropZone").style.borderColor = "#e0e0e0";
+}
+
+// Drag and Drop
+dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '#119378';
+    this.style.background = '#f0f9f7';
+});
+
+dropZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '#e0e0e0';
+    this.style.background = '#f8fbfa';
+});
+
+dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '#e0e0e0';
+    this.style.background = '#f8fbfa';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        document.getElementById('resumeFile').files = files;
+        document.getElementById("fileName").textContent = files[0].name;
+        document.getElementById("selectedFile").style.display = "flex";
+        document.getElementById("dropZone").style.borderColor = "#119378";
+    }
+});
+
+// ============================================
+// SAVE PROFILE DATA
+// ============================================
+function saveProfileData() {
+    const resumeFile = document.getElementById('resumeFile').files[0];
+    const jobDescription = document.getElementById('jobDescription').value.trim();
+    const companyName = document.getElementById('companyName').value.trim();
+    const jobRole = document.getElementById('jobRole').value.trim();
+
+    if (!resumeFile) {
+        alert('⚠️ Please upload your resume.');
+        return;
+    }
+    if (!jobDescription) {
+        alert('⚠️ Please enter the job description.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('resume', resumeFile);
+    formData.append('job_description', jobDescription);
+    formData.append('company_name', companyName);
+    formData.append('job_role', jobRole);
+
+    document.querySelector('.start-btn').disabled = true;
+    document.querySelector('.start-btn').innerHTML = '⏳ Analysing...';
+
+    fetch('/interview/save-profile-data/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('setupSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('practiceOptions').style.display = 'block';
+                document.querySelector('.start-btn').disabled = false;
+                document.querySelector('.start-btn').innerHTML = 'Analyse Resume & Generate Interview';
+            }, 3000);
+        } else {
+            alert('❌ Error: ' + data.error);
+            document.querySelector('.start-btn').disabled = false;
+            document.querySelector('.start-btn').innerHTML = 'Analyse Resume & Generate Interview';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to save. Please try again.');
+        document.querySelector('.start-btn').disabled = false;
+        document.querySelector('.start-btn').innerHTML = 'Analyse Resume & Generate Interview';
+    });
+}
+
+// ============================================
+// COOKIE HELPER
+// ============================================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ============================================
+// INTERVIEW VARIABLES
+// ============================================
+let sessionId = null;
+let currentQuestionId = null;
+let totalQuestions = 0;
+let currentQuestionIndex = 0;
+let timerInterval = null;
+let timeLeft = 120;
+
+// ============================================
+// START INTERVIEW
+// ============================================
+function startInterview(mode) {
+    document.getElementById('practiceOptions').style.display = 'none';
+    document.getElementById('loadingSection').style.display = 'block';
+
+    fetch('/interview/interview/start/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ mode: mode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            sessionId = data.session_id;
+            totalQuestions = data.total_questions;
+            document.getElementById('loadingSection').style.display = 'none';
+            loadInterviewQuestion(sessionId);
+        } else {
+            alert('❌ Error: ' + data.error);
+            document.getElementById('practiceOptions').style.display = 'block';
+            document.getElementById('loadingSection').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to start interview. Please try again.');
+        document.getElementById('practiceOptions').style.display = 'block';
+        document.getElementById('loadingSection').style.display = 'none';
+    });
+}
+
+// ============================================
+// LOAD INTERVIEW QUESTION
+// ============================================
+function loadInterviewQuestion(sessionId) {
+    fetch(`/interview/interview/question/${sessionId}/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.completed) {
+            showInterviewResults(sessionId);
+            return;
+        }
+
+        const question = data.question;
+        currentQuestionId = question.id;
+        currentQuestionIndex = question.order - 1;
+
+        document.getElementById('interviewQuestionArea').style.display = 'block';
+        document.getElementById('evaluationArea').style.display = 'none';
+
+        document.getElementById('interviewProgress').textContent =
+            `Question ${question.order} / ${question.total}`;
+
+        const progressPercent = ((question.order - 1) / question.total) * 100;
+        document.getElementById('interviewProgressBar').style.width = progressPercent + '%';
+
+        document.getElementById('questionDifficulty').textContent =
+            question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1);
+        document.getElementById('interviewQuestionText').textContent = question.text;
+        document.getElementById('answerInput').value = '';
+
+        // Reset timer
+        timeLeft = 120;
+        startTimer();
+
+        document.getElementById('interviewQuestionArea').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to load question. Please try again.');
+    });
+}
+
+// ============================================
+// TIMER
+// ============================================
+function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent =
+            `⏱ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 30) {
+            document.getElementById('timer').style.color = '#e53935';
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('⏰ Time is up!');
+            submitInterviewAnswer();
+        }
+    }, 1000);
+}
+
+// ============================================
+// TEXT TO SPEECH
+// ============================================
+function speakQuestion() {
+    const text = document.getElementById("interviewQuestionText").innerText;
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.rate = 1;
+    speech.pitch = 1;
+    speech.lang = 'en-US';
+    window.speechSynthesis.speak(speech);
+}
+
+// ============================================
+// VOICE RECOGNITION
+// ============================================
+let recognition;
+if ('webkitSpeechRecognition' in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = function() {
+        document.getElementById("speechStatus").innerHTML = "🎤 Listening...";
+    };
+
+    recognition.onend = function() {
+        document.getElementById("speechStatus").innerHTML = "Stopped";
+    };
+
+    recognition.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        document.getElementById("answerInput").value = transcript;
+    };
+}
+
+function startVoiceRecognition() {
+    if (recognition) {
+        recognition.start();
+        document.getElementById("speechStatus").innerHTML = "🎤 Listening... Speak now!";
+    } else {
+        alert('⚠️ Voice recognition is not supported in your browser.');
+    }
+}
+
+function stopVoiceRecognition() {
+    if (recognition) {
+        recognition.stop();
+        document.getElementById("speechStatus").innerHTML = "⏹ Stopped";
+    }
+}
+
+// ============================================
+// SUBMIT INTERVIEW ANSWER
+// ============================================
+function submitInterviewAnswer() {
+    const answer = document.getElementById('answerInput').value.trim();
+    if (!answer) {
+        alert('⚠️ Please type or speak your answer before submitting.');
+        return;
+    }
+
+    clearInterval(timerInterval);
+
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Submitting...';
+
+    fetch('/interview/interview/submit/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            question_id: currentQuestionId,
+            answer: answer
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('interviewQuestionArea').style.display = 'none';
+            document.getElementById('evaluationArea').style.display = 'block';
+
+            const evalData = data.evaluation;
+            document.getElementById('evaluationContent').innerHTML = `
+                <div class="score-display">
+                    <span class="score-number">${evalData.score}/10</span>
+                    <span class="score-label">Score</span>
+                </div>
+                <div class="evaluation-details">
+                    <div class="strengths">
+                        <h4>✅ Strengths</h4>
+                        <ul>${evalData.strengths.map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                    <div class="weaknesses">
+                        <h4>🔧 Areas to Improve</h4>
+                        <ul>${evalData.weaknesses.map(w => `<li>${w}</li>`).join('')}</ul>
+                    </div>
+                    <div class="suggestions">
+                        <h4>💡 Suggestions</h4>
+                        <ul>${evalData.suggestions.map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                    <div class="sample-answer">
+                        <h4>📝 Sample Answer</h4>
+                        <p>${evalData.sample_answer}</p>
+                    </div>
+                </div>
+            `;
+
+            if (data.progress.completed) {
+                document.querySelector('.next-btn').textContent = '📊 View Results';
+                document.querySelector('.next-btn').onclick = function() {
+                    showInterviewResults(sessionId);
+                };
+            }
+
+            document.getElementById('evaluationArea').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert('❌ Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to submit answer. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Submit Answer';
+    });
+}
+
+// ============================================
+// SKIP INTERVIEW QUESTION
+// ============================================
+function skipInterviewQuestion() {
+    if (confirm('⚠️ Skip this question?')) {
+        clearInterval(timerInterval);
+        const skipBtn = document.querySelector('.skip-btn');
+        skipBtn.disabled = true;
+        skipBtn.innerHTML = '⏳ Skipping...';
+
+        fetch('/interview/interview/submit/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                question_id: currentQuestionId,
+                answer: '[Skipped]'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadInterviewQuestion(sessionId);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Failed to skip question.');
+        })
+        .finally(() => {
+            skipBtn.disabled = false;
+            skipBtn.innerHTML = 'Skip';
+        });
+    }
+}
+
+// ============================================
+// NEXT QUESTION
+// ============================================
+function nextInterviewQuestion() {
+    loadInterviewQuestion(sessionId);
+}
+
+// ============================================
+// SHOW INTERVIEW RESULTS - UPDATED
+// ============================================
+function showInterviewResults(sessionId) {
+    clearInterval(timerInterval);
+    window.location.href = `/interview/interview/results/${sessionId}/`;
+}
+
+// ============================================
+// EXIT INTERVIEW
+// ============================================
+function exitInterview() {
+    document.getElementById("exitModal").style.display = "flex";
+}
+
+function closeExitModal() {
+    document.getElementById("exitModal").style.display = "none";
+}
+
+// ============================================
+// CONFIRM EXIT INTERVIEW - UPDATED
+// ============================================
+function confirmExitInterview() {
+    clearInterval(timerInterval);
+    document.getElementById("exitModal").style.display = "none";
+
+    // Stop speech if it's speaking
+    window.speechSynthesis.cancel();
+
+    // Stop voice recognition if it's active
+    if (recognition) {
+        recognition.stop();
+    }
+
+    window.location.href = "/interview_prep/";
+}
+
+// ESC key
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        const modal = document.getElementById("exitModal");
+        if (modal.style.display === "flex") {
+            closeExitModal();
+        } else if (document.getElementById('interviewQuestionArea').style.display === 'block') {
+            exitInterview();
+        }
+    }
+});
+</script>
+{% endblock %}

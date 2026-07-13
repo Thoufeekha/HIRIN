@@ -1,8 +1,5 @@
 
-
 from django.urls import path
-
-
 from . import views
 
 urlpatterns = [
@@ -52,17 +49,11 @@ urlpatterns = [
     
     path(
         "job-tracker/update/<int:application_id>/", 
-         views.update_application_status,
+         views.update_application_jsstatus,
         name="update_application_status"
     ),
 
  
-
-    path(
-    "add-job/",
-    views.add_job,
-    name="add_job"
-   ),
 
     path(
         "jobs/",
@@ -102,13 +93,98 @@ urlpatterns = [
 
     path(
         "logout/",
-        views.jobseeker_logout,
+        views.logout_view,
         name="logout"
     ),
 
     path(
+
         "settings/",
           views.jobseeker_settings,
           name="jobseeker_settings"),
+    path(
+        "recruiter_profile_setup/",
+        views.recruiter_profile_setup,
+        name="recruiter_profile_setup"
+    ),
+
+    path(
+        "recruiter_dashboard/",
+        views.recruiter_dashboard,
+        name="recruiter_dashboard"
+    ),
+
+    path(
+        "post_job/",
+        views.post_job,
+        name="post_job"
+    ),
+
+    path(
+        "job_postings/",
+        views.job_postings,
+        name="job_postings"
+    ),
+
+    path(
+        "publish-job/<int:job_id>/",
+        views.publish_job,
+        name="publish_job"
+    ),
+
+    path(
+        "close-job/<int:job_id>/",
+        views.close_job,
+        name="close_job"
+    ),
+
+    path(
+        "repost-job/<int:job_id>/",
+        views.repost_job,
+        name="repost_job"
+    ),
+
+    path(
+        "view-job/<int:job_id>/",
+        views.view_job,
+        name="view_job"
+    ),
+
+    path(
+        "manage-jobs/",
+        views.manage_jobs, 
+        name="manage_jobs"
+    ),
+
+    path(
+        "candidates/",
+        views.candidates_list,
+        name="candidates"
+    ),
+
+    path(
+        "candidate/<int:candidate_id>/",
+        views.candidate_profile_view,
+        name="candidate_profile"
+    ),
+
+    path(
+        "invite/<int:candidate_id>/",
+        views.invite_candidate,
+        name="invite_candidate"
+    ),
+
+    path(
+        "notification/<int:invitation_id>/read/",
+        views.mark_notification_read,
+        name="mark_notification_read"
+    ),
+
+    path(
+    "applicants/",
+    views.applicants,
+    name="applicants"
+),
+
 
 ]

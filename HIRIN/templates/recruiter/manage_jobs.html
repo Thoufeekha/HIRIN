@@ -1,0 +1,112 @@
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/manage_jobs.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Manage Jobs</h1>
+
+    <div class="header-right">
+
+        <input type="text"
+               class="search-job"
+               placeholder="Search job title...">
+
+    </div>
+
+</div>
+
+
+<div class="job-table">
+
+    <div class="table-head">
+
+        <span>Job</span>
+        <span>Status</span>
+        <span>Applicants</span>
+        <span>Posted</span>
+        <span>Actions</span>
+
+    </div>
+
+
+    {% for job in jobs %}
+
+    <div class="table-row">
+
+        <div>
+
+            <h3>{{ job.title }}</h3>
+
+            <small>
+                {{ job.location }}
+            </small>
+
+        </div>
+
+        <div>
+
+            {% if job.status == "Active" %}
+                <span class="badge active">Active</span>
+
+            {% elif job.status == "Closing Soon" %}
+                <span class="badge closing">Closing Soon</span>
+
+            {% elif job.status == "Closed" %}
+                <span class="badge closed">Closed</span>
+
+            {% else %}
+                <span class="badge draft">Draft</span>
+
+            {% endif %}
+
+        </div>
+
+        <div>
+
+            {{ job.applications.count }}
+
+        </div>
+
+        <div>
+
+            {{ job.created_at|date:"d M Y" }}
+
+        </div>
+
+        <div class="actions">
+
+            <a href="{% url 'view_job' job.id %}">
+                View
+            </a>
+
+            <a href="#">
+                Edit
+            </a>
+
+            <a href="#">
+                Delete
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="empty">
+
+        No Jobs Found
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

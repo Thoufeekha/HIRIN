@@ -32,22 +32,34 @@
         Find and hire the best talent with HIRIN'
     </p>
 
-    <form>
+    {% if error %}
+    <div style="color:red; margin-bottom:10px;">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{% url 'recruiter_register' %}">
+    {% csrf_token %}
 
         <input type="text"
-               placeholder="Recruiter Name">
+            name="recruiter_name"
+            placeholder="Recruiter Name">
 
         <input type="text"
-               placeholder="Company Name">
+            name="company_name"
+            placeholder="Company Name">
 
         <input type="email"
-               placeholder="Company Email">
+            name="email"
+            placeholder="Company Email">
 
         <input type="password"
-               placeholder="Password">
+            name="password1"
+            placeholder="Password">
 
         <input type="password"
-               placeholder="Confirm Password">
+            name="password2"
+            placeholder="Confirm Password">
 
         <button type="submit"
                 class="register-btn">

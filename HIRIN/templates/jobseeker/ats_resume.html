@@ -1,0 +1,249 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ats.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="ats-container">
+
+    <h1 class="ats-title">
+        ATS Resume Evaluator
+    </h1>
+
+    <!-- ================= SHOW FORM WHEN NO RESULT ================= -->
+
+    {% if not result %}
+
+    <form method="POST"
+          enctype="multipart/form-data"
+          class="ats-form">
+
+        {% csrf_token %}
+
+        <label>
+            Job Description
+        </label>
+
+        <textarea
+            name="job_description"
+            placeholder="Paste the complete Job Description here..."
+            required></textarea>
+
+
+        <label>
+            Upload Resume
+        </label>
+
+        <div class="file-upload">
+
+            <input
+                type="file"
+                id="resume"
+                name="resume"
+                accept=".pdf,.doc,.docx"
+                hidden
+                required>
+
+            <label
+                for="resume"
+                class="choose-btn">
+                📄 Choose Resume
+            </label>
+
+            <span id="file-name">
+                No file selected
+            </span>
+
+            <button
+                type="button"
+                id="remove-file"
+                class="remove-btn"
+                style="display:none;">
+                ✖
+            </button>
+
+        </div>
+
+        <button
+            type="submit"
+            class="ats-btn">
+            Evaluate Resume
+        </button>
+
+    </form>
+
+    <!-- ================= SHOW RESULT WHEN AVAILABLE ================= -->
+
+    {% else %}
+
+    <div class="result-card">
+
+        <h2 class="result-title">
+            ATS Evaluation Result
+        </h2>
+
+        <div class="score-wrapper">
+
+            <!-- ATS Score -->
+            <div class="score-card">
+
+                <div class="score-circle">
+                    {{ result.ats_score }}
+                </div>
+
+                <h3>ATS Score</h3>
+
+                <p>{{ result.ats_score }}/100</p>
+
+            </div>
+
+            <!-- Job Match -->
+            <div class="score-card">
+
+                <h3>Job Match</h3>
+
+                <progress
+                    value="{{ result.job_match }}"
+                    max="100">
+                </progress>
+
+                <p>{{ result.job_match }}%</p>
+
+            </div>
+
+        </div>
+
+        <div class="grid-2">
+
+            <div class="info-box">
+
+                <h3>Matched Skills</h3>
+
+                <div class="skill-list">
+
+                    {% for skill in result.matched_skills %}
+                        <span class="skill">{{ skill }}</span>
+                    {% empty %}
+                        <span>No matched skills found.</span>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <div class="info-box">
+
+                <h3>Missing Skills</h3>
+
+                <div class="skill-list">
+
+                    {% for skill in result.missing_skills %}
+                        <span class="skill missing">{{ skill }}</span>
+                    {% empty %}
+                        <span>No missing skills.</span>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="info-box">
+
+            <h3>Strengths</h3>
+
+            <ul>
+
+                {% for item in result.strengths %}
+                    <li>{{ item }}</li>
+                {% empty %}
+                    <li>No strengths found.</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="info-box">
+
+            <h3>Weaknesses</h3>
+
+            <ul>
+
+                {% for item in result.weaknesses %}
+                    <li>{{ item }}</li>
+                {% empty %}
+                    <li>No weaknesses found.</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="info-box">
+
+            <h3>Suggestions</h3>
+
+            <ul>
+
+                {% for item in result.suggestions %}
+                    <li>{{ item }}</li>
+                {% empty %}
+                    <li>No suggestions available.</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <!-- ================= EXIT BUTTON ================= -->
+
+        <div class="report-footer">
+            <a href="{% url 'ats_resume' %}" class="exit-btn">
+                Exit
+            </a>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+
+<script>
+
+const fileInput = document.getElementById("resume");
+const fileName = document.getElementById("file-name");
+const removeBtn = document.getElementById("remove-file");
+
+fileInput.addEventListener("change", function(){
+
+    if(this.files.length){
+
+        fileName.textContent = this.files[0].name;
+
+        removeBtn.style.display = "flex";
+
+    }
+
+});
+
+removeBtn.addEventListener("click", function(){
+
+    fileInput.value="";
+
+    fileName.textContent="No file selected";
+
+    removeBtn.style.display="none";
+
+});
+
+</script>
+
+{% endblock %}

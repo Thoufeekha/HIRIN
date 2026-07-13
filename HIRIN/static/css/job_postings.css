@@ -1,0 +1,171 @@
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.page-header h1{
+    font-size:48px;
+    color:#111827;
+}
+
+.new-job-btn{
+    background:#119378;
+    color:white;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:12px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.new-job-btn:hover{
+    opacity:.9;
+}
+
+.filter-tabs{
+    display:flex;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.filter{
+    padding:10px 18px;
+    border:1px solid #E5E7EB;
+    border-radius:999px;
+    background:white;
+    color:#6B7280;
+    font-size:14px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.filter:hover{
+    border-color:#119378;
+    color:#119378;
+}
+
+.filter.active{
+    background:#119378;
+    color:white;
+    border-color:#119378;
+}
+
+.job-list{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.job-card{
+    background:white;
+    border:1px solid #E5E7EB;
+    border-radius:18px;
+    padding:24px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.job-left h3{
+    font-size:28px;
+    margin-bottom:8px;
+    color:#111827;
+}
+
+.job-left p{
+    color:#6B7280;
+    margin-bottom:6px;
+}
+
+.job-left small{
+    color:#9CA3AF;
+}
+
+.job-right{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.status{
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.status-active{
+    background:#DFF5EE;
+    color:#119378;
+}
+
+.status-closing{
+    background:#FEF3C7;
+    color:#B45309;
+}
+
+.status-draft{
+    background:#E5E7EB;
+    color:#374151;
+}
+
+.status-closed{
+    background:#FEE2E2;
+    color:#DC2626;
+}
+
+.view-btn{
+    color:#119378;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.view-btn:hover{
+    text-decoration:underline;
+}
+
+.empty-card{
+    background:white;
+    border:1px solid #E5E7EB;
+    border-radius:18px;
+    padding:60px;
+    text-align:center;
+}
+
+.empty-card h3{
+    margin-bottom:10px;
+    color:#111827;
+}
+
+.empty-card p{
+    color:#6B7280;
+}
+
+.filter{
+    text-decoration:none;
+    color:#4B5563;
+    display:inline-block;
+}
+
+.filter{
+    text-decoration:none;
+    color:#4B5563;
+    padding:8px 16px;
+    border:1px solid #E5E7EB;
+    border-radius:20px;
+    background:white;
+}
+
+.filter:hover{
+    background:#DFF5EE;
+    color:#119378;
+}
+
+.reposted-date{
+    color:#119378;
+    font-size:14px;
+    font-weight:600;
+}
