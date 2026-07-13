@@ -139,4 +139,40 @@ urlpatterns = [
         name="view_job"
     ),
 
+    path(
+        "manage-jobs/",
+        views.manage_jobs, 
+        name="manage_jobs"
+    ),
+
+    path(
+        "candidates/",
+        views.candidates_list,
+        name="candidates"
+    ),
+
+    path(
+        "candidate/<int:candidate_id>/",
+        views.candidate_profile_view,
+        name="candidate_profile"
+    ),
+
+    path(
+        "invite/<int:candidate_id>/",
+        views.invite_candidate,
+        name="invite_candidate"
+    ),
+
+    path(
+        "notification/<int:invitation_id>/read/",
+        views.mark_notification_read,
+        name="mark_notification_read"
+    ),
+
+    path(
+    "applicants/",
+    views.applicants,
+    name="applicants"
+),
+
 ]

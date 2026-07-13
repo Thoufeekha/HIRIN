@@ -1,7 +1,8 @@
-from django.shortcuts import render,redirect
+from django.db.models import Q
+from django.shortcuts import  render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
-from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job, Application
+from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.utils import timezone
@@ -611,4 +612,259 @@ def view_job(request, job_id):
         request,
         "recruiter/view.html",
         {"job": job}
+    )
+
+def manage_jobs(request):
+
+    recruiter = RecruiterProfile.objects.get(user=request.user)
+
+    jobs = Job.objects.filter(
+        recruiter=recruiter
+    ).order_by("-created_at")
+
+    context = {
+        "jobs": jobs
+    }
+
+    return render(
+        request,
+        "recruiter/manage_jobs.html",
+        context
+    )
+@login_required
+def candidates_list(request):
+
+    recruiter = RecruiterProfile.objects.get(user=request.user)
+
+    skill_query = request.GET.get("skill", "").strip()
+    experience_filter = request.GET.get("experience", "")
+    location_query = request.GET.get("location", "").strip()
+
+    candidates = JobSeekerProfile.objects.filter(
+        profile_completed=True
+    )
+
+    if skill_query:
+        candidates = candidates.filter(
+            skills__icontains=skill_query
+        )
+
+    if experience_filter:
+        candidates = candidates.filter(
+            experience_level=experience_filter
+        )
+
+    if location_query:
+        candidates = candidates.filter(
+            Q(city__icontains=location_query) |
+            Q(state__icontains=location_query) |
+            Q(country__icontains=location_query)
+        )
+
+    candidates = candidates.order_by("-created_at")
+
+    # jobs this recruiter can invite candidates for
+    recruiter_jobs = Job.objects.filter(
+        recruiter=recruiter,
+        is_published=True,
+        is_closed=False
+    )
+
+    # candidates already invited by this recruiter
+    invited_user_ids = Invitation.objects.filter(
+        recruiter=recruiter
+    ).values_list("candidate_id", flat=True)
+
+    context = {
+        "candidates": candidates,
+        "recruiter_jobs": recruiter_jobs,
+        "invited_user_ids": list(invited_user_ids),
+        "skill_query": skill_query,
+        "experience_filter": experience_filter,
+        "location_query": location_query,
+        "experience_choices": JobSeekerProfile.EXPERIENCE_CHOICES,
+    }
+
+    return render(
+        request,
+        "recruiter/candidates.html",
+        context
+    )
+
+
+@login_required
+def candidate_profile_view(request, candidate_id):
+
+    candidate = get_object_or_404(
+        JobSeekerProfile,
+        id=candidate_id
+    )
+
+    skills_list = [
+        s.strip() for s in candidate.skills.split(",") if s.strip()
+    ]
+
+    recruiter = RecruiterProfile.objects.get(user=request.user)
+
+    recruiter_jobs = Job.objects.filter(
+        recruiter=recruiter,
+        is_published=True,
+        is_closed=False
+    )
+
+    already_invited = Invitation.objects.filter(
+        recruiter=recruiter,
+        candidate=candidate.user
+    ).exists()
+
+    context = {
+        "candidate": candidate,
+        "skills_list": skills_list,
+        "recruiter_jobs": recruiter_jobs,
+        "already_invited": already_invited,
+    }
+
+    return render(
+        request,
+        "recruiter/candidate_profile.html",
+        context
+    )
+
+
+@login_required
+def invite_candidate(request, candidate_id):
+
+    if request.method == "POST":
+
+        recruiter = RecruiterProfile.objects.get(user=request.user)
+
+        candidate = get_object_or_404(
+            JobSeekerProfile,
+            id=candidate_id
+        )
+
+        job_id = request.POST.get("job_id")
+
+        job = None
+
+        if job_id:
+            job = Job.objects.filter(
+                id=job_id,
+                recruiter=recruiter
+            ).first()
+
+        already_invited = Invitation.objects.filter(
+            recruiter=recruiter,
+            candidate=candidate.user
+        ).exists()
+
+        if not already_invited:
+
+            Invitation.objects.create(
+                recruiter=recruiter,
+                candidate=candidate.user,
+                job=job
+            )
+
+    return redirect(request.META.get("HTTP_REFERER", "candidates"))
+
+def notifications(request):
+
+    if request.user.is_authenticated:
+
+        invitations = Invitation.objects.filter(
+            candidate=request.user
+        ).order_by("-created_at")[:10]
+
+        unread_notifications_count = Invitation.objects.filter(
+            candidate=request.user,
+            is_read=False
+        ).count()
+
+        return {
+            "notifications": invitations,
+            "unread_notifications_count": unread_notifications_count,
+        }
+
+    return {}
+
+
+@login_required
+def mark_notification_read(request, invitation_id):
+
+    invitation = get_object_or_404(
+        Invitation,
+        id=invitation_id,
+        candidate=request.user
+    )
+
+    invitation.is_read = True
+    invitation.save()
+
+    return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
+
+@login_required
+def applicants(request):
+
+    recruiter = get_object_or_404(
+        RecruiterProfile,
+        user=request.user
+    )
+
+    applications = Application.objects.filter(
+        job__recruiter=recruiter
+    ).select_related(
+        "user",
+        "job"
+    ).order_by("-applied_date")
+
+    return render(
+        request,
+        "recruiter/applicants.html",
+        {
+            "applications": applications
+        }
+    )
+
+
+@login_required
+def update_application_status(request, application_id):
+
+    application = get_object_or_404(
+        Application,
+        id=application_id
+    )
+
+    if request.method == "POST":
+
+        application.status = request.POST.get("status")
+        application.save()
+
+    return redirect("applicants")
+
+
+@login_required
+def add_rejection_reason(request, application_id):
+
+    application = get_object_or_404(
+        Application,
+        id=application_id
+    )
+
+    if request.method == "POST":
+
+        application.rejection_reason = request.POST.get(
+            "rejection_reason"
+        )
+
+        application.save()
+
+        return redirect("applicants")
+
+    return render(
+        request,
+        "recruiter/add_rejection_reason.html",
+        {
+            "application": application
+        }
     )

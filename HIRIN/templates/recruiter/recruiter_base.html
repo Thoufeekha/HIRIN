@@ -48,10 +48,16 @@
                     Job Postings
                 </a>
 
+                <a href="{% url 'manage_jobs' %}"
+                   class="{% if current_url == 'manage_jobs' %}active{% endif %}">
+                   <i class="fa-solid fa-screwdriver-wrench"></i>
+                   Manage Jobs
+                </a>
 
-                <a href="#"
-                   class="{% if current_url == 'applicants' %}active{% endif %}">
-                    <i class="fa-solid fa-users"></i>
+
+                <a href="{% url 'candidates' %}"
+                   class="{% if current_url == 'candidates' %}active{% endif %}">
+                   <i class="fa-solid fa-users"></i>
                     Candidates
                 </a>
 

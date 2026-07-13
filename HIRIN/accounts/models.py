@@ -5,6 +5,8 @@ from datetime import timedelta
 
 # Create your models here.
 
+
+
 class UserRole(models.Model):
 
     ROLE_CHOICES = (
@@ -268,6 +270,7 @@ class Job(models.Model):
 class Application(models.Model):
     STATUS_CHOICES = [
         ("Applied", "Applied"),
+        ("Viewed", "Viewed"),
         ("Shortlisted", "Shortlisted"),
         ("Interviewing", "Interviewing"),
         ("Rejected", "Rejected"),
@@ -275,6 +278,12 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Applied")
+
+    rejection_reason = models.TextField(
+        blank=True,
+        null=True
+    )
+
     applied_date = models.DateTimeField(auto_now_add=True)
  
     class Meta:
@@ -282,3 +291,47 @@ class Application(models.Model):
  
     def __str__(self):
         return f"{self.user.email} -> {self.job.title} ({self.status})"
+    
+
+class Invitation(models.Model):
+
+    recruiter = models.ForeignKey(
+        RecruiterProfile,
+        on_delete=models.CASCADE
+    )
+
+    candidate = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="invitations"
+    )
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    message = models.TextField(
+        blank=True
+    )
+
+    is_read = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.recruiter.company_name} invited {self.candidate.email}"
+
+
+    
+    
+    
+    
