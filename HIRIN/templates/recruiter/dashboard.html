@@ -66,4 +66,215 @@
 
 </div>
 
+<!-- CHATBOT -->
+<div class="chatbot-container">
+
+    <!-- Floating Button -->
+    <button id="chatbotToggle" class="chatbot-toggle">
+        🤖
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatbotBox" class="chatbot-box">
+
+        <div class="chatbot-header">
+            HIRIN AI Assistant
+        </div>
+
+        <div class="chatbot-messages">
+
+            <div class="bot-message">
+                👋 Hi {{ request.user.first_name }},
+                <br><br>
+                Welcome to HIRIN'!
+                <br><br>
+                How can I help you today?
+            </div>
+
+        </div>
+
+        <div class="chatbot-form">
+
+            <input
+                type="text"
+                id="chatInput"
+                placeholder="Type your message..."
+            >
+
+            <button id="sendBtn">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const toggleBtn = document.getElementById("chatbotToggle");
+const chatbotBox = document.getElementById("chatbotBox");
+const sendBtn = document.getElementById("sendBtn");
+const chatInput = document.getElementById("chatInput");
+const messages = document.querySelector(".chatbot-messages");
+
+// Open / Close chatbot
+toggleBtn.addEventListener("click", () => {
+    chatbotBox.classList.toggle("active");
+});
+
+// Send message
+sendBtn.addEventListener("click", async () => {
+
+    const text = chatInput.value.trim();
+
+    if(text === "") return;
+
+    messages.innerHTML += `
+        <div class="user-message">
+            ${text}
+        </div>
+    `;
+
+    chatInput.value = "";
+
+    const response = await fetch("/chatbot/ask/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: text
+        })
+    });
+
+    const data = await response.json();
+
+    messages.innerHTML += `
+        <div class="bot-message">
+            ${data.reply}
+        </div>
+    `;
+
+    messages.scrollTop = messages.scrollHeight;
+});
+
+// Press Enter to send
+chatInput.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        sendBtn.click();
+    }
+});
+</script>
+
+<style>
+/* CHATBOT CONTAINER */
+.chatbot-container{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
+}
+
+/* FLOATING BUTTON */
+.chatbot-toggle{
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    background: #119378;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+/* CHAT WINDOW */
+.chatbot-box{
+    display: none;
+    width: 350px;
+    height: 500px;
+    background: white;
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,.2);
+}
+
+.chatbot-box.active{
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER */
+.chatbot-header{
+    background: #119378;
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* MESSAGE AREA */
+.chatbot-messages{
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+/* BOT MESSAGE */
+.bot-message{
+    background: #e7f6f1;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    max-width: 85%;
+    line-height: 1.5;
+}
+
+/* USER MESSAGE */
+.user-message{
+    background: #119378;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    width: fit-content;
+    max-width: 85%;
+}
+
+/* INPUT AREA */
+.chatbot-form{
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+/* INPUT */
+.chatbot-form input{
+    flex: 1;
+    border: none;
+    padding: 12px;
+    outline: none;
+    font-size: 14px;
+}
+
+/* SEND BUTTON */
+.chatbot-form button{
+    border: none;
+    background: #119378;
+    color: white;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chatbot-form button:hover{
+    background: #0e7a63;
+}
+</style>
+
 {% endblock %}

@@ -27,7 +27,8 @@ urlpatterns = [
     path('interview/', include('interviewprep.urls')),
     path('ats/', include('ats.urls')),
     path('ghost-hunter/', include('ghost_hunter.urls')),
-
+    path('chatbot/', include('chatbot.urls')),     
+    path('ats/', include('ats.urls')),     
 ]
 
 if settings.DEBUG:

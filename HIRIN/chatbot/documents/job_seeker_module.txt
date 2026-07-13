@@ -1,0 +1,88 @@
+HIRIN - Job Seeker Module
+
+Dashboard
+
+The dashboard displays:
+
+- Profile Completion
+- Jobs Applied
+- Shortlisted Applications
+- Interviewing Applications
+- Rejected Applications
+
+Recommended Jobs
+
+HIRIN recommends jobs based on:
+
+- Resume
+- Skills
+- Education
+- Experience
+
+Recent Applications
+
+Users can monitor recently submitted applications.
+
+Profile
+
+Users can manage:
+
+- Personal Information
+- Education
+- Experience
+- Skills
+- Preferred Job Role
+- Resume
+- LinkedIn
+- Portfolio
+
+Resume Upload
+
+Users can upload and replace their latest resume in PDF format.
+
+ATS Resume Evaluator
+
+The ATS Resume Evaluator analyzes resumes and provides feedback to improve ATS compatibility.
+
+Email & Cover Letter Generator
+
+Users upload:
+- Resume
+- Job Description
+
+HIRIN automatically generates:
+
+- Professional Cover Letter
+- Cold Email
+
+Interview Preparation
+
+Includes:
+
+Aptitude Test
+- 35 Questions
+- 35 Minutes
+- Automatic Evaluation
+
+AI Mock Interview
+
+Users upload:
+
+- Resume
+- Job Description
+
+HIRIN generates personalized interview questions and provides AI-based feedback.
+
+Job Tracker
+
+Users can monitor application status including:
+
+- Applied
+- Shortlisted
+- Interview Scheduled
+- Selected
+- Rejected
+
+Benefits
+
+The Job Seeker module helps users prepare, apply, and track their job search efficiently.

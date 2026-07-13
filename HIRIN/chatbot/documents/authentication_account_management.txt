@@ -1,0 +1,85 @@
+HIRIN - Authentication and Account Management
+
+Overview
+
+HIRIN allows two types of users to access the platform:
+1. Job Seeker
+2. Recruiter
+
+User Registration
+
+Users can register by selecting their role as either Job Seeker or Recruiter.
+
+Required information includes:
+- Full Name
+- Email Address
+- Phone Number
+- Password
+
+After successful registration, users can log in using their registered email and password.
+
+User Login
+
+Users enter:
+- Email Address
+- Password
+
+After successful authentication, users are redirected to their respective dashboards.
+
+Profile Management
+
+Every user has a profile where they can:
+
+- View personal information
+- Edit profile details
+- Update education and experience
+- Update skills
+- Upload resume (Job Seeker)
+- Add LinkedIn profile
+- Add portfolio website
+
+Settings
+
+The Settings page allows users to:
+
+Account Information
+- Update full name
+- Update email address
+- Update phone number
+
+Password Management
+- Change password using:
+  - Current Password
+  - New Password
+  - Confirm Password
+
+Notification Preferences
+Users can enable or disable:
+- Job Recommendations
+- Application Updates
+- Email Newsletter
+
+Privacy
+
+Users can control profile visibility.
+
+When enabled:
+Recruiters can discover the profile.
+
+When disabled:
+The profile remains hidden from recruiters.
+
+Delete Account
+
+Users may permanently delete their account.
+
+Deleting an account permanently removes:
+- Personal information
+- Resume
+- Applications
+- AI generated content
+- User preferences
+
+Logout
+
+Users can securely log out from their account through the profile menu.
