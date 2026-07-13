@@ -529,7 +529,7 @@ def interview_prep(request):
 def logout_view(request):
     logout(request)
 
-    return redirect("jobseeker_login")
+    return redirect("/")
 
 @login_required
 def jobseeker_settings(request):
