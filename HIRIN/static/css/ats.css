@@ -1,0 +1,594 @@
+/* ===========================
+   ATS RESUME EVALUATOR
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+.ats-container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.ats-title{
+    font-size:32px;
+    color:#135e5a;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+/* ===========================
+   FORM
+=========================== */
+
+.ats-form{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    margin-bottom:35px;
+}
+
+.ats-form label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:#24514d;
+}
+
+.ats-form textarea{
+
+    width:100%;
+
+    min-height:220px;
+
+    border:1px solid #d8e8e5;
+
+    border-radius:12px;
+
+    padding:16px;
+
+    resize:vertical;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.3s;
+
+    margin-bottom:25px;
+
+    background:#fafdfd;
+}
+
+.ats-form textarea:focus{
+
+    border-color:#159a8c;
+
+    box-shadow:0 0 0 3px rgba(21,154,140,.15);
+}
+
+
+/* ===========================
+UPLOAD
+=========================== */
+
+.file-upload{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px;
+
+    border:2px dashed #159a8c;
+
+    border-radius:14px;
+
+    background:#f7fffd;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+}
+
+.choose-btn{
+
+    background:#159a8c;
+
+    color:#fff;
+
+    padding:12px 22px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.3s;
+}
+
+.choose-btn:hover{
+
+    background:#0f7c70;
+}
+
+#file-name{
+
+    color:#666;
+
+    font-size:15px;
+
+    flex:1;
+}
+
+.remove-btn{
+
+    width:35px;
+
+    height:35px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#dc3545;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:18px;
+
+    transition:.3s;
+}
+
+.remove-btn:hover{
+
+    transform:scale(1.1);
+
+    background:#c62828;
+}
+
+
+/* ===========================
+BUTTON
+=========================== */
+
+.ats-btn{
+
+    background:#159a8c;
+
+    color:#fff;
+
+    border:none;
+
+    padding:15px 30px;
+
+    border-radius:10px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.3s;
+}
+
+.ats-btn:hover{
+
+    background:#117a70;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+
+
+/* ===========================
+RESULT CARD
+=========================== */
+
+.result-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.result-title{
+
+    font-size:28px;
+
+    color:#135e5a;
+
+    margin-bottom:30px;
+}
+
+
+
+/* ===========================
+SCORE SECTION
+=========================== */
+
+.score-wrapper{
+
+    display:grid;
+
+    grid-template-columns:300px 1fr;
+
+    gap:40px;
+
+    margin-bottom:35px;
+}
+
+.score-card{
+
+    background:#f7fffd;
+
+    border-radius:16px;
+
+    padding:30px;
+
+    text-align:center;
+
+    border:1px solid #d7ece8;
+}
+
+.score-card p{
+
+    margin-top:15px;
+
+    font-weight:600;
+
+    color:#24514d;
+}
+
+
+/* ===========================
+ATS SCORE
+=========================== */
+
+.score-circle{
+
+    width:170px;
+
+    height:170px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    border:12px solid #159a8c;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:42px;
+
+    color:#159a8c;
+
+    font-weight:700;
+
+    background:#fff;
+}
+
+
+/* ===========================
+JOB MATCH BAR
+=========================== */
+
+/* Progress Bar - Native HTML5 <progress> element */
+progress{
+    width:100%;
+    height:18px;
+    appearance:none;
+    -webkit-appearance:none;
+}
+
+progress::-webkit-progress-bar{
+    background:#e5ecec;
+    border-radius:20px;
+}
+
+progress::-webkit-progress-value{
+    background:linear-gradient(90deg,#159a8c,#27c4b3);
+    border-radius:20px;
+}
+
+progress::-moz-progress-bar{
+    background:linear-gradient(90deg,#159a8c,#27c4b3);
+    border-radius:20px;
+}
+
+/* Fallback for older browsers */
+.progress-container{
+
+    width:100%;
+
+    height:18px;
+
+    background:#dfecea;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin:25px 0;
+}
+
+.progress-bar{
+
+    height:100%;
+
+    background:linear-gradient(90deg,#159a8c,#27c4b3);
+
+    border-radius:20px;
+}
+
+.score-card h3{
+
+    color:#159a8c;
+
+    font-size:42px;
+}
+
+
+/* ===========================
+GRID
+=========================== */
+
+.grid-2{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin-bottom:30px;
+}
+
+
+/* ===========================
+CARDS
+=========================== */
+
+.info-box{
+
+    background:#fdfefe;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    border:1px solid #dbeae8;
+
+    margin-bottom:25px;
+}
+
+.info-box h3{
+
+    color:#135e5a;
+
+    margin-bottom:20px;
+}
+
+.info-box ul{
+
+    padding-left:20px;
+}
+
+.info-box li{
+
+    margin-bottom:10px;
+
+    color:#444;
+
+    line-height:1.6;
+}
+
+
+/* ===========================
+SKILLS
+=========================== */
+
+.skill-list{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+}
+
+.skill{
+
+    background:#dff7f4;
+
+    color:#0b6f64;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.skill.missing{
+
+    background:#ffe7e7;
+
+    color:#b32424;
+}
+
+
+/* ===========================
+HOVER
+=========================== */
+
+.info-box:hover{
+
+    transform:translateY(-4px);
+
+    transition:.3s;
+
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+}
+
+.score-card:hover{
+
+    transform:translateY(-4px);
+
+    transition:.3s;
+
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+}
+
+
+/* ===========================
+SCROLLBAR
+=========================== */
+
+textarea::-webkit-scrollbar{
+
+    width:8px;
+}
+
+textarea::-webkit-scrollbar-thumb{
+
+    background:#159a8c;
+
+    border-radius:20px;
+}
+
+/* ===========================
+FOOTER & EXIT BUTTON
+=========================== */
+
+.report-footer{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:30px;
+}
+
+.exit-btn{
+    display:inline-block;
+    width:150px;
+    padding:12px 20px;
+    text-align:center;
+    background:#dc3545;
+    color:#fff !important;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:600;
+}
+
+.exit-btn:hover{
+    background:#b52a37;
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:950px){
+
+    .score-wrapper{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .grid-2{
+
+        grid-template-columns:1fr;
+    }
+
+    .score-circle{
+
+        width:150px;
+
+        height:150px;
+
+        font-size:38px;
+    }
+
+}
+
+@media(max-width:650px){
+
+    .ats-title{
+
+        font-size:26px;
+    }
+
+    .ats-form{
+
+        padding:20px;
+    }
+
+    .result-card{
+
+        padding:20px;
+    }
+
+    .file-upload{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .choose-btn{
+
+        width:100%;
+
+        text-align:center;
+    }
+
+    .ats-btn{
+
+        width:100%;
+    }
+
+    .exit-btn{
+        width:100%;
+    }
+}
