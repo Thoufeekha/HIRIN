@@ -6,8 +6,9 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_company_job_application'),
+        ('accounts', '0002_invitation'),
     ]
+
 
     operations = [
         migrations.AddField(
