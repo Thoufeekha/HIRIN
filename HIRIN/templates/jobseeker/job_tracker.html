@@ -95,7 +95,7 @@
         <tbody>
             {% for app in applications %}
             <tr>
-                <td>{{ app.job.company.name }}</td>
+                <td>{{ app.job.recruiter.company_name }}</td>
                 <td class="jt-muted">{{ app.job.title }}</td>
                 <td class="jt-muted">{{ app.applied_date|date:"d M Y" }}</td>
                 <td>

@@ -300,36 +300,120 @@ def jobseeker_dashboard(request):
         return redirect("recruiter_dashboard")
 
     user = request.user
- 
-    # Real applications for the logged-in user only
+
     applications = Application.objects.filter(user=user)
- 
+
     applied_count = applications.count()
-    shortlisted_count = applications.filter(status="Shortlisted").count()
-    interviewing_count = applications.filter(status="Interviewing").count()
-    rejected_count = applications.filter(status="Rejected").count()
- 
-    recent_applications = applications[:3]  # already ordered by -applied_date
- 
-    recommended_jobs = Job.objects.filter(
-    is_published=True,
-    is_closed=False
-    ).order_by("-created_at")[:3]
- 
-    # Profile completeness — pulls from the profile this user filled during setup
+    shortlisted_count = applications.filter(
+        status="Shortlisted"
+    ).count()
+
+    interviewing_count = applications.filter(
+        status="Interviewing"
+    ).count()
+
+    rejected_count = applications.filter(
+        status="Rejected"
+    ).count()
+
+    recent_applications = applications[:3]
+    applied_job_ids = list(
+    applications.values_list(
+        "job_id",
+        flat=True
+    )
+    )
+
     try:
         profile = JobSeekerProfile.objects.get(user=user)
+
         completeness = profile.completeness_percent()
+
+        user_skills = {
+            skill.strip().lower()
+            for skill in profile.skills.split(",")
+            if skill.strip()
+        }
+
+        jobs = Job.objects.filter(
+            is_published=True,
+            is_closed=False
+        )
+
+        recommended_jobs = []
+
+        for job in jobs:
+
+            job_skills = {
+                skill.strip().lower()
+                for skill in job.skills.split(",")
+                if skill.strip()
+            }
+
+            # Skill Match %
+            if job_skills:
+                skill_match = (
+                    len(user_skills.intersection(job_skills))
+                    / len(job_skills)
+                ) * 100
+            else:
+                skill_match = 0
+
+            # Role Match Bonus
+            role_match = (
+                profile.preferred_job_role.lower()
+                in job.title.lower()
+            )
+
+            final_match = skill_match
+
+            if role_match:
+                final_match += 25
+
+            final_match = min(round(final_match), 100)
+
+            if final_match > 0:
+                recommended_jobs.append({
+                    "job": job,
+                    "match": final_match
+                })
+
+        recommended_jobs = sorted(
+            recommended_jobs,
+            key=lambda x: x["match"],
+            reverse=True
+        )[:3]
+
     except JobSeekerProfile.DoesNotExist:
+
         completeness = 0
- 
+
+        recommended_jobs = [
+            {
+                "job": job,
+                "match": 0
+            }
+            for job in Job.objects.filter(
+                is_published=True,
+                is_closed=False
+            ).order_by("-created_at")[:3]
+        ]
+
     circumference = 138.2
-    ring_offset = round(circumference - (completeness / 100 * circumference), 1)
- 
+
+    ring_offset = round(
+        circumference - (completeness / 100 * circumference),
+        1
+    )
+
     full_name = user.first_name or user.email
+
     name_parts = full_name.split()
-    initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "U"
- 
+
+    initials = "".join(
+        [p[0].upper() for p in name_parts[:2]]
+    ) if name_parts else "U"
+
     context = {
         "full_name": full_name,
         "email": user.email,
@@ -340,10 +424,16 @@ def jobseeker_dashboard(request):
         "rejected_count": rejected_count,
         "recent_applications": recent_applications,
         "recommended_jobs": recommended_jobs,
+        "applied_job_ids": applied_job_ids,
         "completeness": completeness,
         "ring_offset": ring_offset,
     }
-    return render(request, "jobseeker/dashboard.html", context)
+
+    return render(
+        request,
+        "jobseeker/dashboard.html",
+        context
+    )
 
 @login_required
 def recruiter_dashboard(request):
@@ -381,61 +471,119 @@ def recruiter_dashboard(request):
 
 @login_required
 def job_tracker(request):
+
     applications = Application.objects.filter(
         user=request.user
-    ).select_related("job", "job__company")
- 
-    # ---- Search ----
+    ).select_related(
+        "job",
+        "job__recruiter"
+    )
+
+    # Search
     search_query = request.GET.get("q", "").strip()
+
     if search_query:
         applications = applications.filter(
             Q(job__title__icontains=search_query) |
-            Q(job__company__name__icontains=search_query)
+            Q(
+                job__recruiter__company_name__icontains=
+                search_query
+            )
         )
- 
-    # ---- Filter by status ----
+
+    # Status Filter
     status_filter = request.GET.get("status", "")
+
     if status_filter:
-        applications = applications.filter(status=status_filter)
- 
-    # ---- Sort ----
+        applications = applications.filter(
+            status=status_filter
+        )
+
+    # Sorting
     sort_by = request.GET.get("sort", "newest")
+
     if sort_by == "oldest":
-        applications = applications.order_by("applied_date")
+
+        applications = applications.order_by(
+            "applied_date"
+        )
+
     elif sort_by == "company":
-        applications = applications.order_by("job__company__name")
+
+        applications = applications.order_by(
+            "job__recruiter__company_name"
+        )
+
     else:
-        applications = applications.order_by("-applied_date")
- 
-    # ---- Pipeline stats (for the funnel summary) ----
-    all_applications = Application.objects.filter(user=request.user)
+
+        applications = applications.order_by(
+            "-applied_date"
+        )
+
+    # Pipeline Stats
+    all_applications = Application.objects.filter(
+        user=request.user
+    )
+
     total_count = all_applications.count()
- 
+
     status_counts = {
-        "Applied": all_applications.filter(status="Applied").count(),
-        "Shortlisted": all_applications.filter(status="Shortlisted").count(),
-        "Interviewing": all_applications.filter(status="Interviewing").count(),
-        "Offer": all_applications.filter(status="Offer").count(),
-        "Rejected": all_applications.filter(status="Rejected").count(),
+        "Applied": all_applications.filter(
+            status="Applied"
+        ).count(),
+
+        "Shortlisted": all_applications.filter(
+            status="Shortlisted"
+        ).count(),
+
+        "Interviewing": all_applications.filter(
+            status="Interviewing"
+        ).count(),
+
+        "Offer": all_applications.filter(
+            status="Offer"
+        ).count(),
+
+        "Rejected": all_applications.filter(
+            status="Rejected"
+        ).count(),
     }
- 
+
     def pct(count):
-        return round((count / total_count) * 100) if total_count else 0
- 
-    status_percents = {key: pct(value) for key, value in status_counts.items()}
- 
+
+        return round(
+            (count / total_count) * 100
+        ) if total_count else 0
+
+    status_percents = {
+        key: pct(value)
+        for key, value in status_counts.items()
+    }
+
     context = {
+
         "applications": applications,
+
         "total_count": total_count,
+
         "status_counts": status_counts,
+
         "status_percents": status_percents,
+
         "search_query": search_query,
+
         "status_filter": status_filter,
+
         "sort_by": sort_by,
+
         "status_choices": Application.STATUS_CHOICES,
     }
-    return render(request, "jobseeker/job_tracker.html")
 
+    return render(
+        request,
+        "jobseeker/job_tracker.html",
+        context
+    )
 
  
  
@@ -484,11 +632,17 @@ def apply_job(request, job_id):
 
     job = Job.objects.get(id=job_id)
 
-    Application.objects.create(
+    already_applied = Application.objects.filter(
         user=request.user,
-        job=job,
-        status="Applied"
-    )
+        job=job
+    ).exists()
+
+    if not already_applied:
+        Application.objects.create(
+            user=request.user,
+            job=job,
+            status="Applied"
+        )
 
     return redirect("jobseeker_dashboard")
 

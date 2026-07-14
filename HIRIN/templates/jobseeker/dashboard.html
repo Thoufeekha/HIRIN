@@ -62,25 +62,51 @@
   <a href="{% url 'job_list' %}">See all →</a>
 </div>
 <div class="rec-grid">
-  {% for job in recommended_jobs %}
-  <div class="job-card">
-    <div class="job-top">
-      <div class="logo-badge">{{ job.recruiter.company_name|slice:":2"|upper }}</div>
-      <div class="match">{{ job.match_percent|default:"—" }}% match</div>
-    </div>
-    <h3>{{ job.title }}</h3>
-    <p class="meta">{{ job.recruiter.company_name }} · {{ job.location }}</p>
-    <form method="post" action="{% url 'apply_job' job.id %}">
-         
-      {% csrf_token %}
-      <button type="submit" class="apply-btn">Apply now</button>
-    </form>
-            
+  {% for item in recommended_jobs %}
+    <div class="job-card">
 
-  </div>
-  {% empty %}
-  <p style="color:var(--ink-soft);">No recommendations yet — complete your profile to get matched with jobs.</p>
+        <div class="job-top">
+
+            <div class="logo-badge">
+                {{ item.job.recruiter.company_name|slice:":2"|upper }}
+            </div>
+
+            <div class="match">
+                {{ item.match }}% match
+            </div>
+
+        </div>
+
+        <h3>{{ item.job.title }}</h3>
+
+        <p class="meta">
+            {{ item.job.recruiter.company_name }} · {{ item.job.location }}
+        </p>
+
+        {% if item.job.id in applied_job_ids %}
+
+          <button class="apply-btn" disabled>
+              Applied
+          </button>
+
+          {% else %}
+
+          <form method="post" action="{% url 'apply_job' item.job.id %}">
+              {% csrf_token %}
+              <button type="submit" class="apply-btn">
+                  Apply now
+              </button>
+          </form>
+
+        {% endif %}
+
+    </div>
+    {% empty %}
+    <p style="color:var(--ink-soft);">
+        No recommendations yet — complete your profile to get matched with jobs.
+    </p>
   {% endfor %}
+
 </div>
 
 <div class="section-head">
