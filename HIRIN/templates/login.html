@@ -31,11 +31,19 @@
         Login to your HIRIN' account
     </p>
 
-    {% if error %}
+   {% if messages %}
+    {% for message in messages %}
         <div class="error-message">
-            {{ error }}
+            {{ message }}
         </div>
-    {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+{% endif %}
 
     <form method="POST">
 

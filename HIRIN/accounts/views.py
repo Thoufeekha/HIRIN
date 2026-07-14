@@ -404,18 +404,13 @@ def jobseeker_dashboard(request):
 
     except JobSeekerProfile.DoesNotExist:
 
-        completeness = 0
+        logout(request)
+        messages.error(
+            request,
+            "Your account has been deleted .Please contact the administrator."
 
-        recommended_jobs = [
-            {
-                "job": job,
-                "match": 0
-            }
-            for job in Job.objects.filter(
-                is_published=True,
-                is_closed=False
-            ).order_by("-created_at")[:3]
-        ]
+        )
+        return redirect("login")   
 
     circumference = 138.2
 
