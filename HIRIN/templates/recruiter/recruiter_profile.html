@@ -1,0 +1,208 @@
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/recruiter_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+    <!-- Header -->
+    <div class="profile-header">
+        <div>
+            <h1>Recruiter Profile</h1>
+            <p>Manage your company information and recruiter details.</p>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{% url 'recruiter_profile_setup' %}" class="edit-btn">
+                <i class="fa-solid fa-pen"></i>
+                Edit Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview -->
+    <div class="overview-grid">
+        <div class="overview-card">
+            <small>Total Employees</small>
+            <h2>{{ recruiter.total_employees }}</h2>
+        </div>
+
+        <div class="overview-card">
+            <small>Established</small>
+            <h2>{{ recruiter.founded_year|default:"N/A" }}</h2>
+        </div>
+
+        <div class="overview-card">
+            <small>Industry</small>
+            <h2>{{ recruiter.industry }}</h2>
+        </div>
+
+        <div class="overview-card">
+            <small>Rating</small>
+            <h2>⭐ {{ recruiter.company_rating }}</h2>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+
+        <!-- LEFT -->
+        <div>
+
+            <!-- Company Information -->
+            <div class="profile-card">
+                <h3>
+                    <i class="fa-solid fa-building"></i>
+                    Company Information
+                </h3>
+
+                <div class="company-header">
+                    {% if recruiter.company_logo %}
+                    <img src="{{ recruiter.company_logo.url }}">
+                    {% else %}
+                    <div class="logo-placeholder">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <h2>{{ recruiter.company_name }}</h2>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span>Recruiter</span>
+                    <strong>{{ recruiter.recruiter_name }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Email</span>
+                    <strong>{{ recruiter.company_email }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Phone</span>
+                    <strong>{{ recruiter.company_phone }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Website</span>
+                    <strong>
+                        {% if recruiter.company_website %}
+                        <a href="{{ recruiter.company_website }}" target="_blank">
+                            {{ recruiter.company_website }}
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Industry</span>
+                    <strong>{{ recruiter.industry }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Location</span>
+                    <strong>{{ recruiter.company_location }}</strong>
+                </div>
+            </div>
+
+            <!-- About -->
+            <div class="profile-card">
+                <h3>
+                    <i class="fa-solid fa-circle-info"></i>
+                    About Company
+                </h3>
+
+                {% if recruiter.company_description %}
+                <p class="about-company">
+                    {{ recruiter.company_description }}
+                </p>
+                {% else %}
+                <p class="about-company empty-text">
+                    No company description added yet.
+                </p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+
+            <!-- Quick Contact -->
+            <div class="profile-card">
+                <h3>
+                    <i class="fa-solid fa-address-card"></i>
+                    Quick Contact
+                </h3>
+
+                <div class="info-row">
+                    <span>Email</span>
+                    <strong>{{ recruiter.company_email }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Phone</span>
+                    <strong>{{ recruiter.company_phone }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Website</span>
+                    <strong>
+                        {% if recruiter.company_website %}
+                        <a href="{{ recruiter.company_website }}" target="_blank">
+                            Visit Website
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Location</span>
+                    <strong>{{ recruiter.company_location }}</strong>
+                </div>
+            </div>
+
+            <!-- Company Highlights -->
+            <div class="profile-card">
+                <h3>
+                    <i class="fa-solid fa-award"></i>
+                    Company Highlights
+                </h3>
+
+                <div class="highlight-list">
+                    <span>
+                        <i class="fa-solid fa-check"></i>
+                        Verified Employer
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-building"></i>
+                        {{ recruiter.industry }}
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{ recruiter.company_location }}
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-globe"></i>
+                        Professional Recruiter
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

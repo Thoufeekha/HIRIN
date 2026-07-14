@@ -1,13 +1,12 @@
+
 from django.db.models import Q
 from django.shortcuts import  render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
 from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application
 from django.contrib.auth.decorators import login_required
-
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-
 from django.contrib.auth import authenticate
 from django.utils import timezone
 
@@ -212,31 +211,37 @@ def jobseeker_profile_setup(request):
 @login_required
 def recruiter_profile_setup(request):
 
-    recruiter = RecruiterProfile.objects.get(
+    recruiter = get_object_or_404(
+        RecruiterProfile,
         user=request.user
     )
 
     if request.method == "POST":
 
-        recruiter.company_website = request.POST.get(
-            "company_website"
-        )
+        recruiter.recruiter_name = request.POST.get("recruiter_name")
 
-        recruiter.industry = request.POST.get(
-            "industry"
-        )
+        recruiter.company_name = request.POST.get("company_name")
 
-        recruiter.company_location = request.POST.get(
-            "company_location"
-        )
+        recruiter.company_email = request.POST.get("company_email")
 
-        recruiter.company_phone = request.POST.get(
-            "company_phone"
-        )
+        recruiter.company_phone = request.POST.get("company_phone")
 
-        recruiter.company_description = request.POST.get(
-            "company_description"
-        )
+
+        recruiter.company_website = request.POST.get("company_website")
+
+        recruiter.industry = request.POST.get("industry")
+
+        recruiter.company_location = request.POST.get("company_location")
+
+        recruiter.company_description = request.POST.get("company_description")
+
+        recruiter.total_employees = request.POST.get("total_employees") or 1
+
+        recruiter.founded_year = request.POST.get("founded_year")
+
+        recruiter.company_rating = request.POST.get("company_rating") or 5.0
+
+        
 
         if request.FILES.get("company_logo"):
 
@@ -248,17 +253,30 @@ def recruiter_profile_setup(request):
 
         recruiter.save()
 
+        messages.success(
+            request,
+            "Profile updated successfully."
+        )
         return redirect(
-            "recruiter_dashboard"
+            "recruiter_profile"
         )
 
+    context = {
+
+        "recruiter": recruiter
+
+    }
+
     return render(
+
         request,
-        "recruiter/profile_setup.html",
-        {
-            "recruiter": recruiter
-        }
+
+        "recruiter/recruiter_profile_edit.html",
+
+        context
+
     )
+
 
 
 @login_required
@@ -300,36 +318,120 @@ def jobseeker_dashboard(request):
         return redirect("recruiter_dashboard")
 
     user = request.user
- 
-    # Real applications for the logged-in user only
+
     applications = Application.objects.filter(user=user)
- 
+
     applied_count = applications.count()
-    shortlisted_count = applications.filter(status="Shortlisted").count()
-    interviewing_count = applications.filter(status="Interviewing").count()
-    rejected_count = applications.filter(status="Rejected").count()
- 
-    recent_applications = applications[:3]  # already ordered by -applied_date
- 
-    recommended_jobs = Job.objects.filter(
-    is_published=True,
-    is_closed=False
-    ).order_by("-created_at")[:3]
- 
-    # Profile completeness — pulls from the profile this user filled during setup
+    shortlisted_count = applications.filter(
+        status="Shortlisted"
+    ).count()
+
+    interviewing_count = applications.filter(
+        status="Interviewing"
+    ).count()
+
+    rejected_count = applications.filter(
+        status="Rejected"
+    ).count()
+
+    recent_applications = applications[:3]
+    applied_job_ids = list(
+    applications.values_list(
+        "job_id",
+        flat=True
+    )
+    )
+
     try:
         profile = JobSeekerProfile.objects.get(user=user)
+
         completeness = profile.completeness_percent()
+
+        user_skills = {
+            skill.strip().lower()
+            for skill in profile.skills.split(",")
+            if skill.strip()
+        }
+
+        jobs = Job.objects.filter(
+            is_published=True,
+            is_closed=False
+        )
+
+        recommended_jobs = []
+
+        for job in jobs:
+
+            job_skills = {
+                skill.strip().lower()
+                for skill in job.skills.split(",")
+                if skill.strip()
+            }
+
+            # Skill Match %
+            if job_skills:
+                skill_match = (
+                    len(user_skills.intersection(job_skills))
+                    / len(job_skills)
+                ) * 100
+            else:
+                skill_match = 0
+
+            # Role Match Bonus
+            role_match = (
+                profile.preferred_job_role.lower()
+                in job.title.lower()
+            )
+
+            final_match = skill_match
+
+            if role_match:
+                final_match += 25
+
+            final_match = min(round(final_match), 100)
+
+            if final_match > 0:
+                recommended_jobs.append({
+                    "job": job,
+                    "match": final_match
+                })
+
+        recommended_jobs = sorted(
+            recommended_jobs,
+            key=lambda x: x["match"],
+            reverse=True
+        )[:3]
+
     except JobSeekerProfile.DoesNotExist:
+
         completeness = 0
- 
+
+        recommended_jobs = [
+            {
+                "job": job,
+                "match": 0
+            }
+            for job in Job.objects.filter(
+                is_published=True,
+                is_closed=False
+            ).order_by("-created_at")[:3]
+        ]
+
     circumference = 138.2
-    ring_offset = round(circumference - (completeness / 100 * circumference), 1)
- 
+
+    ring_offset = round(
+        circumference - (completeness / 100 * circumference),
+        1
+    )
+
     full_name = user.first_name or user.email
+
     name_parts = full_name.split()
-    initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "U"
- 
+
+    initials = "".join(
+        [p[0].upper() for p in name_parts[:2]]
+    ) if name_parts else "U"
+
     context = {
         "full_name": full_name,
         "email": user.email,
@@ -340,10 +442,16 @@ def jobseeker_dashboard(request):
         "rejected_count": rejected_count,
         "recent_applications": recent_applications,
         "recommended_jobs": recommended_jobs,
+        "applied_job_ids": applied_job_ids,
         "completeness": completeness,
         "ring_offset": ring_offset,
     }
-    return render(request, "jobseeker/dashboard.html", context)
+
+    return render(
+        request,
+        "jobseeker/dashboard.html",
+        context
+    )
 
 @login_required
 def recruiter_dashboard(request):
@@ -381,61 +489,119 @@ def recruiter_dashboard(request):
 
 @login_required
 def job_tracker(request):
+
     applications = Application.objects.filter(
         user=request.user
-    ).select_related("job", "job__company")
- 
-    # ---- Search ----
+    ).select_related(
+        "job",
+        "job__recruiter"
+    )
+
+    # Search
     search_query = request.GET.get("q", "").strip()
+
     if search_query:
         applications = applications.filter(
             Q(job__title__icontains=search_query) |
-            Q(job__company__name__icontains=search_query)
+            Q(
+                job__recruiter__company_name__icontains=
+                search_query
+            )
         )
- 
-    # ---- Filter by status ----
+
+    # Status Filter
     status_filter = request.GET.get("status", "")
+
     if status_filter:
-        applications = applications.filter(status=status_filter)
- 
-    # ---- Sort ----
+        applications = applications.filter(
+            status=status_filter
+        )
+
+    # Sorting
     sort_by = request.GET.get("sort", "newest")
+
     if sort_by == "oldest":
-        applications = applications.order_by("applied_date")
+
+        applications = applications.order_by(
+            "applied_date"
+        )
+
     elif sort_by == "company":
-        applications = applications.order_by("job__company__name")
+
+        applications = applications.order_by(
+            "job__recruiter__company_name"
+        )
+
     else:
-        applications = applications.order_by("-applied_date")
- 
-    # ---- Pipeline stats (for the funnel summary) ----
-    all_applications = Application.objects.filter(user=request.user)
+
+        applications = applications.order_by(
+            "-applied_date"
+        )
+
+    # Pipeline Stats
+    all_applications = Application.objects.filter(
+        user=request.user
+    )
+
     total_count = all_applications.count()
- 
+
     status_counts = {
-        "Applied": all_applications.filter(status="Applied").count(),
-        "Shortlisted": all_applications.filter(status="Shortlisted").count(),
-        "Interviewing": all_applications.filter(status="Interviewing").count(),
-        "Offer": all_applications.filter(status="Offer").count(),
-        "Rejected": all_applications.filter(status="Rejected").count(),
+        "Applied": all_applications.filter(
+            status="Applied"
+        ).count(),
+
+        "Shortlisted": all_applications.filter(
+            status="Shortlisted"
+        ).count(),
+
+        "Interviewing": all_applications.filter(
+            status="Interviewing"
+        ).count(),
+
+        "Offer": all_applications.filter(
+            status="Offer"
+        ).count(),
+
+        "Rejected": all_applications.filter(
+            status="Rejected"
+        ).count(),
     }
- 
+
     def pct(count):
-        return round((count / total_count) * 100) if total_count else 0
- 
-    status_percents = {key: pct(value) for key, value in status_counts.items()}
- 
+
+        return round(
+            (count / total_count) * 100
+        ) if total_count else 0
+
+    status_percents = {
+        key: pct(value)
+        for key, value in status_counts.items()
+    }
+
     context = {
+
         "applications": applications,
+
         "total_count": total_count,
+
         "status_counts": status_counts,
+
         "status_percents": status_percents,
+
         "search_query": search_query,
+
         "status_filter": status_filter,
+
         "sort_by": sort_by,
+
         "status_choices": Application.STATUS_CHOICES,
     }
-    return render(request, "jobseeker/job_tracker.html")
 
+    return render(
+        request,
+        "jobseeker/job_tracker.html",
+        context
+    )
 
  
  
@@ -443,6 +609,7 @@ def job_tracker(request):
 def update_application_jsstatus(request, application_id):
     application = get_object_or_404(Application, id=application_id)
  
+
     if request.method == "POST":
         new_status = request.POST.get("status")
         valid_statuses = dict(Application.STATUS_CHOICES)
@@ -484,11 +651,17 @@ def apply_job(request, job_id):
 
     job = Job.objects.get(id=job_id)
 
-    Application.objects.create(
+    already_applied = Application.objects.filter(
         user=request.user,
-        job=job,
-        status="Applied"
-    )
+        job=job
+    ).exists()
+
+    if not already_applied:
+        Application.objects.create(
+            user=request.user,
+            job=job,
+            status="Applied"
+        )
 
     return redirect("jobseeker_dashboard")
 
@@ -597,6 +770,31 @@ def jobseeker_settings(request):
     return render(request, "jobseeker/settings.html", context)
 
     return redirect("home")
+
+
+@login_required
+def recruiter_profile(request):
+     
+    recruiter = get_object_or_404(
+        RecruiterProfile,
+        user=request.user
+    )
+
+    context = {
+        "recruiter": recruiter
+    }
+
+    return render(
+        request,
+        "recruiter/recruiter_profile.html",
+        context
+    )
+    
+
+
+@login_required
+def recruiter_settings(request):
+    return render(request, "recruiter/recruiter_settings.html")
 
 @login_required
 def post_job(request):
@@ -948,69 +1146,95 @@ def mark_notification_read(request, invitation_id):
 
     return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
 
-@login_required
-def applicants(request):
-
-    recruiter = get_object_or_404(
-        RecruiterProfile,
-        user=request.user
-    )
-
-    applications = Application.objects.filter(
-        job__recruiter=recruiter
-    ).select_related(
-        "user",
-        "job"
-    ).order_by("-applied_date")
-
-    return render(
-        request,
-        "recruiter/applicants.html",
-        {
-            "applications": applications
-        }
-    )
-
 
 @login_required
-def update_application_recstatus(request, application_id):
+def manage_applications(request, job_id=None):
+    recruiter = get_object_or_404(RecruiterProfile, user=request.user)
+    
+    if job_id:
+        job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
+        applications = Application.objects.filter(job=job).select_related('user', 'job').order_by('-applied_date')
+    else:
+        jobs = Job.objects.filter(recruiter=recruiter)
+        applications = Application.objects.filter(job__in=jobs).select_related('user', 'job').order_by('-applied_date')         
+        search_query = request.GET.get('q', '').strip()
 
-    application = get_object_or_404(
-        Application,
-        id=application_id
-    )
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        applications = applications.filter(job__title__icontains=search_query)
 
-    if request.method == "POST":
+    status_counts = {
+        'Viewed': applications.filter(status='Viewed').count(),
+        'Shortlisted': applications.filter(status='Shortlisted').count(),
+        'Interviewing': applications.filter(status='Interviewing').count(),
+        'Rejected': applications.filter(status='Rejected').count(),
+    }
+    
+    context = {
+        'applications': applications,
+        'selected_job': job_id,
+        'search_query': search_query,
+        'jobs': Job.objects.filter(recruiter=recruiter, is_published=True),
+        'status_counts': status_counts,
+        'status_choices': Application.STATUS_CHOICES,
 
-        application.status = request.POST.get("status")
-        application.save()
+    }
+    return render(request, 'recruiter/manage_applications.html', context)
 
-    return redirect("applicants")
 
+@login_required
+def update_application_status(request, application_id):
+    application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        
+        valid_statuses = dict(Application.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            application.status = new_status
+            
+            if new_status != 'Rejected':
+                application.rejection_reason = ''
+            
+            application.save()
+            messages.success(request, f"Application status updated to {new_status}.")
+            
+            
+            if new_status == 'Rejected':
+                return redirect('add_rejection_reason', application_id=application_id)
+            
+            return redirect('manage_applications')
+        else:
+            messages.error(request, "Invalid status selected.")
+            return redirect('manage_applications')
+    
+    context = {
+        'application': application,
+        'status_choices': Application.STATUS_CHOICES,
+    }
+    return render(request, 'recruiter/update_status.html', context)
 
 @login_required
 def add_rejection_reason(request, application_id):
-
-    application = get_object_or_404(
-        Application,
-        id=application_id
-    )
-
-    if request.method == "POST":
-
-        application.rejection_reason = request.POST.get(
-            "rejection_reason"
-        )
-
+    application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
+    
+    if application.status != 'Rejected':
+        messages.error(request, "Only rejected applications can have a reason added.")
+        return redirect('manage_applications')
+    
+    if request.method == 'POST':
+        rejection_reason = request.POST.get('rejection_reason', '').strip()
+        application.rejection_reason = rejection_reason if rejection_reason else None
         application.save()
-
-        return redirect("applicants")
-
-    return render(
-        request,
-        "recruiter/add_rejection_reason.html",
-        {
-            "application": application
-        }
-    )
-
+        
+        if rejection_reason:
+            messages.success(request, "Rejection reason added successfully.")
+        else:
+            messages.info(request, "Application rejected without a reason.")
+        
+        return redirect('manage_applications')
+    
+    context = {
+        'application': application,
+    }
+    return render(request, 'recruiter/add_rejection_reason.html', context)

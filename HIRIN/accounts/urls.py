@@ -109,6 +109,30 @@ urlpatterns = [
     ),
 
     path(
+    "recruiter/profile/",
+    views.recruiter_profile,
+    name="recruiter_profile"
+),
+
+path(
+    "recruiter/profile/edit/",
+    views.recruiter_profile_setup,
+    name="recruiter_profile_setup",
+),
+
+# path(
+#     "recruiter/profile/delete/",
+#     views.delete_recruiter_profile,
+#     name="delete_recruiter_profile",
+# ),
+
+path(
+    "recruiter/settings/",
+    views.recruiter_settings,
+    name="recruiter_settings"
+),
+
+    path(
         "recruiter_dashboard/",
         views.recruiter_dashboard,
         name="recruiter_dashboard"
@@ -181,10 +205,30 @@ urlpatterns = [
     ),
 
     path(
-    "applicants/",
-    views.applicants,
-    name="applicants"
-),
+        "manage-applications/",
+        views.manage_applications,
+        name="manage_applications"
+        ),
+
+
+    path(
+        "manage-applications/job/<int:job_id>/",
+        views.manage_applications,
+        name="manage_applications_job"
+    ),
+
+
+    path(
+        "update-application-status/<int:application_id>/",
+        views.update_application_status,
+        name="update_application_status"
+    ),
+
+    path(
+        "add-rejection-reason/<int:application_id>/",
+        views.add_rejection_reason,
+        name="add_rejection_reason"
+    ),
 
 
 ]

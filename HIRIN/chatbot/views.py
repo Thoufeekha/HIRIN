@@ -2,7 +2,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .chatbot_code.router import get_response
+# from .chatbot_code.router import get_response
+
+
+# Temporary fix - chatbot disabled
 
 import json
 
