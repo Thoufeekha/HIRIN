@@ -84,18 +84,18 @@
     </aside>
 
     <main class="main-content">
-{% if current_url == 'recruiter_dashboard' %}
 
+{% if current_url != 'manage_applications' and current_url != 'manage_applications_job' %}
         <header class="topbar">
 
+            {% if current_url == 'recruiter_dashboard' %}
             <div class="search-box">
                 <input type="text"
                        placeholder="Search jobs, applicants, skills">
             </div>
-{% endif %}
-
-{% if current_url != 'manage_applications' and current_url != 'manage_applications_job' %}
-
+            {% else %}
+            <div></div>
+            {% endif %}
 
             <div class="topbar-right">
 
