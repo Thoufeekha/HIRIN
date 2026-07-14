@@ -1,13 +1,12 @@
+
 from django.db.models import Q
 from django.shortcuts import  render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
 from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application
 from django.contrib.auth.decorators import login_required
-
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-
 from django.contrib.auth import authenticate
 from django.utils import timezone
 
@@ -212,31 +211,37 @@ def jobseeker_profile_setup(request):
 @login_required
 def recruiter_profile_setup(request):
 
-    recruiter = RecruiterProfile.objects.get(
+    recruiter = get_object_or_404(
+        RecruiterProfile,
         user=request.user
     )
 
     if request.method == "POST":
 
-        recruiter.company_website = request.POST.get(
-            "company_website"
-        )
+        recruiter.recruiter_name = request.POST.get("recruiter_name")
 
-        recruiter.industry = request.POST.get(
-            "industry"
-        )
+        recruiter.company_name = request.POST.get("company_name")
 
-        recruiter.company_location = request.POST.get(
-            "company_location"
-        )
+        recruiter.company_email = request.POST.get("company_email")
 
-        recruiter.company_phone = request.POST.get(
-            "company_phone"
-        )
+        recruiter.company_phone = request.POST.get("company_phone")
 
-        recruiter.company_description = request.POST.get(
-            "company_description"
-        )
+
+        recruiter.company_website = request.POST.get("company_website")
+
+        recruiter.industry = request.POST.get("industry")
+
+        recruiter.company_location = request.POST.get("company_location")
+
+        recruiter.company_description = request.POST.get("company_description")
+
+        recruiter.total_employees = request.POST.get("total_employees") or 1
+
+        recruiter.founded_year = request.POST.get("founded_year")
+
+        recruiter.company_rating = request.POST.get("company_rating") or 5.0
+
+        
 
         if request.FILES.get("company_logo"):
 
@@ -248,17 +253,30 @@ def recruiter_profile_setup(request):
 
         recruiter.save()
 
+        messages.success(
+            request,
+            "Profile updated successfully."
+        )
         return redirect(
-            "recruiter_dashboard"
+            "recruiter_profile"
         )
 
+    context = {
+
+        "recruiter": recruiter
+
+    }
+
     return render(
+
         request,
-        "recruiter/profile_setup.html",
-        {
-            "recruiter": recruiter
-        }
+
+        "recruiter/recruiter_profile_edit.html",
+
+        context
+
     )
+
 
 
 @login_required
@@ -443,6 +461,7 @@ def job_tracker(request):
 def update_application_jsstatus(request, application_id):
     application = get_object_or_404(Application, id=application_id)
  
+
     if request.method == "POST":
         new_status = request.POST.get("status")
         valid_statuses = dict(Application.STATUS_CHOICES)
@@ -597,6 +616,31 @@ def jobseeker_settings(request):
     return render(request, "jobseeker/settings.html", context)
 
     return redirect("home")
+
+
+@login_required
+def recruiter_profile(request):
+     
+    recruiter = get_object_or_404(
+        RecruiterProfile,
+        user=request.user
+    )
+
+    context = {
+        "recruiter": recruiter
+    }
+
+    return render(
+        request,
+        "recruiter/recruiter_profile.html",
+        context
+    )
+    
+
+
+@login_required
+def recruiter_settings(request):
+    return render(request, "recruiter/recruiter_settings.html")
 
 @login_required
 def post_job(request):
@@ -948,69 +992,95 @@ def mark_notification_read(request, invitation_id):
 
     return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
 
-@login_required
-def applicants(request):
-
-    recruiter = get_object_or_404(
-        RecruiterProfile,
-        user=request.user
-    )
-
-    applications = Application.objects.filter(
-        job__recruiter=recruiter
-    ).select_related(
-        "user",
-        "job"
-    ).order_by("-applied_date")
-
-    return render(
-        request,
-        "recruiter/applicants.html",
-        {
-            "applications": applications
-        }
-    )
-
 
 @login_required
-def update_application_recstatus(request, application_id):
+def manage_applications(request, job_id=None):
+    recruiter = get_object_or_404(RecruiterProfile, user=request.user)
+    
+    if job_id:
+        job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
+        applications = Application.objects.filter(job=job).select_related('user', 'job').order_by('-applied_date')
+    else:
+        jobs = Job.objects.filter(recruiter=recruiter)
+        applications = Application.objects.filter(job__in=jobs).select_related('user', 'job').order_by('-applied_date')         
+        search_query = request.GET.get('q', '').strip()
 
-    application = get_object_or_404(
-        Application,
-        id=application_id
-    )
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        applications = applications.filter(job__title__icontains=search_query)
 
-    if request.method == "POST":
+    status_counts = {
+        'Viewed': applications.filter(status='Viewed').count(),
+        'Shortlisted': applications.filter(status='Shortlisted').count(),
+        'Interviewing': applications.filter(status='Interviewing').count(),
+        'Rejected': applications.filter(status='Rejected').count(),
+    }
+    
+    context = {
+        'applications': applications,
+        'selected_job': job_id,
+        'search_query': search_query,
+        'jobs': Job.objects.filter(recruiter=recruiter, is_published=True),
+        'status_counts': status_counts,
+        'status_choices': Application.STATUS_CHOICES,
 
-        application.status = request.POST.get("status")
-        application.save()
+    }
+    return render(request, 'recruiter/manage_applications.html', context)
 
-    return redirect("applicants")
 
+@login_required
+def update_application_status(request, application_id):
+    application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        
+        valid_statuses = dict(Application.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            application.status = new_status
+            
+            if new_status != 'Rejected':
+                application.rejection_reason = ''
+            
+            application.save()
+            messages.success(request, f"Application status updated to {new_status}.")
+            
+            
+            if new_status == 'Rejected':
+                return redirect('add_rejection_reason', application_id=application_id)
+            
+            return redirect('manage_applications')
+        else:
+            messages.error(request, "Invalid status selected.")
+            return redirect('manage_applications')
+    
+    context = {
+        'application': application,
+        'status_choices': Application.STATUS_CHOICES,
+    }
+    return render(request, 'recruiter/update_status.html', context)
 
 @login_required
 def add_rejection_reason(request, application_id):
-
-    application = get_object_or_404(
-        Application,
-        id=application_id
-    )
-
-    if request.method == "POST":
-
-        application.rejection_reason = request.POST.get(
-            "rejection_reason"
-        )
-
+    application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
+    
+    if application.status != 'Rejected':
+        messages.error(request, "Only rejected applications can have a reason added.")
+        return redirect('manage_applications')
+    
+    if request.method == 'POST':
+        rejection_reason = request.POST.get('rejection_reason', '').strip()
+        application.rejection_reason = rejection_reason if rejection_reason else None
         application.save()
-
-        return redirect("applicants")
-
-    return render(
-        request,
-        "recruiter/add_rejection_reason.html",
-        {
-            "application": application
-        }
-    )
-
+        
+        if rejection_reason:
+            messages.success(request, "Rejection reason added successfully.")
+        else:
+            messages.info(request, "Application rejected without a reason.")
+        
+        return redirect('manage_applications')
+    
+    context = {
+        'application': application,
+    }
+    return render(request, 'recruiter/add_rejection_reason.html', context)

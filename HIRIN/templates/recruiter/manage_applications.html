@@ -1,0 +1,163 @@
+{% extends 'recruiter/recruiter_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/manage_applications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="applications-top-row">
+        <h1 class="dashboard-title" style="margin-bottom:0;font-size:36px;">Applications</h1>
+        <form method="GET" action="{% url 'manage_applications' %}" class="job-search-form">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" placeholder="Search by job title..." value="{{ search_query }}">
+        </form>
+        <div class="applications-top-spacer"></div>
+        <button class="notification-btn">
+            <i class="fa-regular fa-bell"></i>
+        </button>
+        <div class="user-menu-wrapper">
+            <button id="avatarBtn" class="profile-circle">
+                {{ request.user.first_name|slice:":2"|upper }}
+            </button>
+            <div id="userMenu" class="user-dropdown">
+                <div class="user-dropdown-header">
+                    <strong>{{ request.user.first_name }}</strong>
+                    <span>{{ request.user.email }}</span>
+                </div>
+                <a href="{% url 'recruiter_profile' %}">
+                    <i class="fa-regular fa-user"></i>
+                    Profile
+                </a>
+                <a href="{% url 'recruiter_settings' %}">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+                <a href="{% url 'logout' %}" class="logout-link">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="applications-link-row">
+        <a href="{% url 'manage_applications' %}" class="view-all-link">
+            View all applications <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+
+    <!-- Status Summary Cards -->
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="stat-card status-viewed">
+            <p><i class="fas fa-eye"></i> Viewed</p>
+            <h2>{{ status_counts.Viewed|default:0 }}</h2>
+        </div>
+        <div class="stat-card status-shortlisted">
+            <p><i class="fas fa-star"></i> Shortlisted</p>
+            <h2>{{ status_counts.Shortlisted|default:0 }}</h2>
+        </div>
+        <div class="stat-card status-interviewing">
+            <p><i class="fas fa-comments"></i> Interviewing</p>
+            <h2>{{ status_counts.Interviewing|default:0 }}</h2>
+        </div>
+        <div class="stat-card status-rejected">
+            <p><i class="fas fa-times-circle"></i> Rejected</p>
+            <h2>{{ status_counts.Rejected|default:0 }}</h2>
+        </div>
+    </div>
+
+    {% if applications %}
+    <div class="jobs-container" style="padding:0;overflow:hidden;">
+        <div class="applications-table-wrapper">
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Job Title</th>
+                        <th>Applied Date</th>
+                        <th>Status</th>
+                        <th>Rejection Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr data-app-id="{{ app.id }}">
+                        <td>
+                            <strong>{{ app.user.get_full_name|default:app.user.username }}</strong>
+                            <br>
+                            <span class="applicant-email">{{ app.user.email }}</span>
+                        </td>
+                        <td>{{ app.job.title }}</td>
+                        <td>{{ app.applied_date|date:"d M Y" }}</td>
+                        <td>
+                            <span class="status-badge status-{{ app.status|lower }}">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if app.status == 'Rejected' %}
+                            <form method="POST" action="{% url 'add_rejection_reason' app.id %}" class="inline-form">
+                                {% csrf_token %}
+                                <div class="reason-group">
+                                    <input type="text"
+                                           name="rejection_reason"
+                                           class="reason-input"
+                                           value="{{ app.rejection_reason|default:'' }}"
+                                           placeholder="Enter reason...">
+                                    <button type="submit" class="reason-save-btn" title="Save">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </div>
+                            </form>
+                            {% else %}
+                            <span class="no-reason">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'update_application_status' app.id %}" class="inline-form">
+                                {% csrf_token %}
+                                <select name="status" class="status-select"
+                                        onchange="if(this.value=='Rejected'){if(!confirm('This application will be rejected. Continue?')){this.value='{{ app.status }}';return;}this.form.submit();}else{this.form.submit();}">
+                                    <option value="">Select</option>
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if value == app.status %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-info-circle"></i> No applications found.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Auto scroll to last updated row -->
+{% if request.GET.updated %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const row = document.querySelector(`[data-app-id="{{ request.GET.updated }}"]`);
+    if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.style.backgroundColor = '#DFF5EE';
+        setTimeout(() => {
+            row.style.backgroundColor = '';
+        }, 3000);
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

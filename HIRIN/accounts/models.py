@@ -176,6 +176,7 @@ class RecruiterProfile(models.Model):
         blank=True
     )
 
+
     company_description = models.TextField(
         blank=True
     )
@@ -188,6 +189,20 @@ class RecruiterProfile(models.Model):
 
     profile_completed = models.BooleanField(
         default=False
+    )
+
+    total_employees = models.PositiveIntegerField(
+        default=1
+    )
+
+    founded_year = models.PositiveIntegerField(
+        blank=True,null=True
+    )
+
+    company_rating = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        default=5.0
     )
 
 class Job(models.Model):

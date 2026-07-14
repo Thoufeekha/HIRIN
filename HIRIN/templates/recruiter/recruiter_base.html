@@ -60,6 +60,12 @@
                    <i class="fa-solid fa-users"></i>
                     Candidates
                 </a>
+                  
+                <a href="{% url 'manage_applications' %}"
+                 class="{% if current_url == 'manage_applications' %}active{% endif %}">
+                 <i class="fa-solid fa-users"></i>
+                  Applications
+                </a>
 
 
             </nav>
@@ -78,6 +84,7 @@
     </aside>
 
     <main class="main-content">
+{% if current_url == 'recruiter_dashboard' %}
 
         <header class="topbar">
 
@@ -85,6 +92,10 @@
                 <input type="text"
                        placeholder="Search jobs, applicants, skills">
             </div>
+{% endif %}
+
+{% if current_url != 'manage_applications' and current_url != 'manage_applications_job' %}
+
 
             <div class="topbar-right">
 
@@ -92,13 +103,42 @@
                     <i class="fa-regular fa-bell"></i>
                 </button>
 
-                <div class="profile-circle">
-                    {{ request.user.first_name|slice:":2"|upper }}
-                </div>
+                <div class="user-menu-wrapper">
+
+    <button id="avatarBtn" class="profile-circle">
+        {{ request.user.first_name|slice:":2"|upper }}
+    </button>
+
+    <div id="userMenu" class="user-dropdown">
+
+        <div class="user-dropdown-header">
+            <strong>{{ request.user.first_name }}</strong>
+            <span>{{ request.user.email }}</span>
+        </div>
+
+        <a href="{% url 'recruiter_profile' %}">
+            <i class="fa-regular fa-user"></i>
+            Profile
+        </a>
+
+        <a href="{% url 'recruiter_settings' %}">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </a>
+
+        <a href="{% url 'logout' %}" class="logout-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
+    </div>
+
+</div>
 
             </div>
 
         </header>
+{% endif %}
 
         <section class="content">
 
@@ -112,6 +152,28 @@
 </div>
 
 {% endwith %}
+
+<script>
+const avatarBtn = document.getElementById("avatarBtn");
+const userMenu = document.getElementById("userMenu");
+
+if (avatarBtn && userMenu) {
+
+    avatarBtn.addEventListener("click", function(e){
+        e.stopPropagation();
+        userMenu.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function(){
+        userMenu.classList.remove("open");
+    });
+
+    userMenu.addEventListener("click", function(e){
+        e.stopPropagation();
+    });
+
+}
+</script>
 
 </body>
 </html>

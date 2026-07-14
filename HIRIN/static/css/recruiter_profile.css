@@ -1,0 +1,387 @@
+/* ===========================
+   Recruiter Profile
+=========================== */
+
+.profile-page{
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+/* Header */
+
+.profile-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.profile-header h1{
+    font-size:28px;
+    color:#1f2937;
+    margin-bottom:5px;
+}
+
+.profile-header p{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.profile-actions{
+    display:flex;
+    gap:12px;
+}
+
+.edit-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #119378;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .25s;
+}
+
+.edit-btn:hover{
+    background:#0f7b65;
+}
+
+
+
+
+.edit-btn:hover{
+
+    background:#0f7b65;
+
+}
+
+
+
+
+/* ===========================
+   Overview Cards
+=========================== */
+
+.overview-grid{
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+
+}
+
+.overview-card{
+
+    background:white;
+    border-radius:14px;
+    padding:22px;
+
+    border:1px solid #e5e7eb;
+
+    transition:.25s;
+
+}
+
+.overview-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+}
+
+.overview-card small{
+
+    color:#6b7280;
+    font-size:13px;
+
+}
+
+.overview-card h2{
+
+    margin-top:10px;
+    color:#119378;
+    font-size:28px;
+
+}
+
+
+/* ===========================
+   Main Grid
+=========================== */
+
+.profile-grid{
+
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+
+}
+
+
+/* ===========================
+   Cards
+=========================== */
+
+.profile-card{
+
+    background:white;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:14px;
+
+    padding:24px;
+
+    margin-bottom:25px;
+
+}
+
+.profile-card h3{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    color:#1f2937;
+
+    margin-bottom:20px;
+
+    font-size:18px;
+
+}
+
+.profile-card h3 i{
+
+    color:#119378;
+
+}
+
+
+/* ===========================
+   Company Header
+=========================== */
+
+.company-header{
+
+    display:flex;
+    align-items:center;
+    gap:18px;
+
+    margin-bottom:25px;
+
+}
+
+.company-header img{
+
+    width:90px;
+    height:90px;
+
+    border-radius:18px;
+
+    object-fit:cover;
+
+}
+
+
+
+.logo-placeholder{
+
+    width:80px;
+    height:80px;
+
+    border-radius:16px;
+
+    background:#dff5ee;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:#119378;
+
+    font-size:32px;
+    font-weight:700;
+
+}
+
+.company-header h2{
+
+    color:#1f2937;
+    margin-bottom:6px;
+
+}
+
+.company-header span{
+
+    color:#6b7280;
+    font-size:14px;
+
+}
+
+
+/* ===========================
+   Information Rows
+=========================== */
+
+.info-row{
+
+    display:flex;
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #edf2f7;
+
+}
+
+.info-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.info-row span{
+
+    color:#6b7280;
+
+}
+
+.info-row strong{
+
+    color:#1f2937;
+
+    font-weight:600;
+
+    text-align:right;
+
+}
+
+.info-row a{
+
+    color:#119378;
+
+    text-decoration:none;
+
+}
+
+.info-row a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/* ===========================
+   About Company
+=========================== */
+
+.about-company{
+
+    line-height:1.8;
+
+    color:#4b5563;
+
+    font-size:15px;
+
+}
+
+.empty-text{
+    color:#9ca3af;
+    font-style:italic;
+}
+
+
+/* ===========================
+   Company Highlights
+=========================== */
+
+.highlight-list span{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+}
+
+.highlight-list i{
+
+color:#119378;
+
+}
+
+
+
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media(max-width:1100px){
+
+.overview-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.profile-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:700px){
+
+.profile-header{
+
+flex-direction:column;
+align-items:flex-start;
+gap:18px;
+
+}
+
+.profile-actions{
+
+width:100%;
+
+}
+
+.edit-btn,
+.delete-btn{
+
+flex:1;
+justify-content:center;
+
+}
+
+.overview-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.info-row{
+
+flex-direction:column;
+align-items:flex-start;
+gap:8px;
+
+}
+
+.company-header{
+
+flex-direction:column;
+align-items:flex-start;
+
+}
+
+}
