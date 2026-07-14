@@ -218,11 +218,11 @@ def recruiter_profile_setup(request):
 
     if request.method == "POST":
 
-        recruiter.recruiter_name = request.POST.get("recruiter_name")
+        # recruiter.recruiter_name = request.POST.get("recruiter_name")
 
-        recruiter.company_name = request.POST.get("company_name")
+        # recruiter.company_name = request.POST.get("company_name")
 
-        recruiter.company_email = request.POST.get("company_email")
+        # recruiter.company_email = request.POST.get("company_email")
 
         recruiter.company_phone = request.POST.get("company_phone")
 
@@ -268,13 +268,9 @@ def recruiter_profile_setup(request):
     }
 
     return render(
-
         request,
-
-        "recruiter/recruiter_profile_edit.html",
-
-        context
-
+        "recruiter/profile_setup.html",
+        context,
     )
 
 
