@@ -122,14 +122,17 @@
                             <form method="POST" action="{% url 'update_application_status' app.id %}" class="inline-form">
                                 {% csrf_token %}
                                 <select name="status" class="status-select"
-                                        onchange="if(this.value=='Rejected'){if(!confirm('This application will be rejected. Continue?')){this.value='{{ app.status }}';return;}this.form.submit();}else{this.form.submit();}">
-                                    <option value="">Select</option>
-                                    {% for value, label in status_choices %}
-                                    <option value="{{ value }}" {% if value == app.status %}selected{% endif %}>
-                                        {{ label }}
+                                    onchange="if(this.value=='Rejected'){if(!confirm('This application will be rejected. Continue?')){this.value='{{ app.status }}';return;}this.form.submit();}else{this.form.submit();}">
+                                <option value="">Select</option>
+
+                                {% for value, label in status_choices %}
+                                    {% if value != "Offer" %}
+                                        <option value="{{ value }}" {% if value == app.status %}selected{% endif %}>
+                                            {{ label }}
                                     </option>
-                                    {% endfor %}
-                                </select>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                             </form>
                         </td>
                     </tr>
