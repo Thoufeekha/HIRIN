@@ -537,26 +537,45 @@ def job_tracker(request):
     total_count = all_applications.count()
 
     status_counts = {
-        "Applied": all_applications.filter(
-            status="Applied"
-        ).count(),
+    "Applied": all_applications.filter(
+        status__in=[
+            "Applied",
+            "Viewed",
+            "Shortlisted",
+            "Interviewing",
+            "Offer",
+            "Rejected",
+        ]
+    ).count(),
 
-        "Shortlisted": all_applications.filter(
-            status="Shortlisted"
-        ).count(),
+    "Shortlisted": all_applications.filter(
+        status__in=[
+            "Shortlisted",
+            "Interviewing",
+            "Offer",
+            "Rejected",
+        ]
+    ).count(),
 
-        "Interviewing": all_applications.filter(
-            status="Interviewing"
-        ).count(),
+    "Interviewing": all_applications.filter(
+        status__in=[
+            "Interviewing",
+            "Offer",
+            "Rejected",
+        ]
+    ).count(),
 
-        "Offer": all_applications.filter(
-            status="Offer"
-        ).count(),
+    "Offer": all_applications.filter(
+        status__in=[
+            "Offer",
+            "Rejected",
+        ]
+    ).count(),
 
-        "Rejected": all_applications.filter(
-            status="Rejected"
-        ).count(),
-    }
+    "Rejected": all_applications.filter(
+        status="Rejected"
+    ).count(),
+}
 
     def pct(count):
 
@@ -1155,11 +1174,22 @@ def manage_applications(request, job_id=None):
         applications = applications.filter(job__title__icontains=search_query)
 
     status_counts = {
-        'Viewed': applications.filter(status='Viewed').count(),
-        'Shortlisted': applications.filter(status='Shortlisted').count(),
-        'Interviewing': applications.filter(status='Interviewing').count(),
-        'Rejected': applications.filter(status='Rejected').count(),
-    }
+    'Viewed': applications.filter(
+        status__in=['Viewed', 'Shortlisted', 'Interviewing', 'Rejected']
+    ).count(),
+
+    'Shortlisted': applications.filter(
+        status__in=['Shortlisted', 'Interviewing', 'Rejected']
+    ).count(),
+
+    'Interviewing': applications.filter(
+        status__in=['Interviewing', 'Rejected']
+    ).count(),
+
+    'Rejected': applications.filter(
+        status='Rejected'
+    ).count(),
+}
     
     context = {
         'applications': applications,
