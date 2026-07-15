@@ -292,12 +292,35 @@ class Application(models.Model):
         ("Viewed", "Viewed"),
         ("Shortlisted", "Shortlisted"),
         ("Interviewing", "Interviewing"),
-        ("Offer", "Offer"),          
+        ("Offer", "Offer"),
         ("Rejected", "Rejected"),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Applied")
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="applications"
+    )
+
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        related_name="applications"
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="Applied"
+    )
+
+    # ADD THESE
+    match_score = models.FloatField(default=0)
+
+    matched_skills = models.TextField(
+        blank=True,
+        null=True
+    )
 
     rejection_reason = models.TextField(
         blank=True,
@@ -307,11 +330,11 @@ class Application(models.Model):
     applied_date = models.DateTimeField(auto_now_add=True)
     status_updated_at = models.DateTimeField(auto_now=True)
 
-    notes = models.TextField(blank=True, null=True) 
-    
+    notes = models.TextField(blank=True, null=True)
+
     class Meta:
         ordering = ["-applied_date"]
- 
+
     def __str__(self):
         return f"{self.user.email} -> {self.job.title} ({self.status})"
     
