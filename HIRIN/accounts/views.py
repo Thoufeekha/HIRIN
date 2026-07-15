@@ -1,9 +1,10 @@
 
 from django.db.models import Q
 from django.shortcuts import  render,redirect,get_object_or_404
+from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
-from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application,Notification
+from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application,Notification,Job,RecruiterProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -997,6 +998,36 @@ def manage_jobs(request):
         "recruiter/manage_jobs.html",
         context
     )
+@login_required
+def edit_job(request, job_id):
+    recruiter_profile = get_object_or_404(RecruiterProfile, user=request.user)
+    job = get_object_or_404(Job, id=job_id, recruiter=recruiter_profile) 
+
+    if request.method == "POST":
+        job.title = request.POST.get('title')
+        job.location = request.POST.get('location')
+        job.employment_type = request.POST.get('employment_type') or job.employment_type
+        job.salary = request.POST.get('salary')
+        job.skills = request.POST.get('skills', job.skills)
+        job.description = request.POST.get('description')
+        job.valid_until = request.POST.get('valid_until') or job.valid_until
+        
+        job.save()
+        messages.success(request, "Job updated successfully.")
+        return redirect('manage_jobs')
+       
+        
+    return render(request, 'recruiter/edit_job.html', {'job': job})
+
+@login_required
+@require_POST
+def delete_job(request, job_id):
+    recruiter_profile = get_object_or_404(RecruiterProfile, user=request.user)
+    job = get_object_or_404(Job, id=job_id, recruiter=recruiter_profile)
+    job.delete()
+    messages.success(request, "Job deleted successfully.")
+    return redirect('manage_jobs')
+
 @login_required
 def candidates_list(request):
 

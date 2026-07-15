@@ -1,0 +1,121 @@
+/* Edit Job Page */
+
+.edit-job-form-container {
+    max-width: 700px;
+    margin: 30px 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 30px 35px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.edit-job-form .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-job-form label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.edit-job-form input[type="text"],
+.edit-job-form input[type="date"],
+.edit-job-form select,
+.edit-job-form textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    color: #111827;
+    background: #fafafa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.edit-job-form input[type="text"]:focus,
+.edit-job-form input[type="date"]:focus,
+.edit-job-form select:focus,
+.edit-job-form textarea:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+    background: #ffffff;
+}
+
+.edit-job-form textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+}
+
+/* Checkbox groups (Published / Closed) */
+.edit-job-form .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+.edit-job-form .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.edit-job-form .checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #14b8a6;
+    cursor: pointer;
+}
+
+/* Action buttons */
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-save {
+    background: #14b8a6;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #0d9488;
+}
+
+.btn-cancel {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+}
+
+.btn-cancel:hover {
+    color: #374151;
+    text-decoration: underline;
+}
+
+/* Page header (reuse if not already styled globally) */
+.page-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 20px;
+}

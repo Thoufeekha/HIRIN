@@ -81,16 +81,23 @@
 
         <div class="actions">
 
-            <a href="{% url 'view_job' job.id %}">
+            <!-- <a href="{% url 'view_job' job.id %}">
                 View
-            </a>
+            </a> -->
 
-            <a href="#">
+            <a href="{% url 'edit_job' job.id %}">
                 Edit
             </a>
 
-            <a href="#">
-                Delete
+            <form action="{% url 'delete_job' job.id %}" method="post" class="delete-form" style="display:inline;">
+                {% csrf_token %}
+
+                <button type="submit" class="delete-btn" onclick="return confirm('Delete this job? This cannot be undone.');">
+
+                   Delete
+                </button>
+            </form>
+
             </a>
 
         </div>
