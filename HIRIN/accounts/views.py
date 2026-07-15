@@ -667,17 +667,56 @@ def apply_job(request, job_id):
     ).exists()
 
     if not already_applied:
+
+        profile = JobSeekerProfile.objects.get(
+            user=request.user
+        )
+
+        job_skills = {
+            skill.strip().lower()
+            for skill in job.skills.split(",")
+            if skill.strip()
+        }
+
+        candidate_skills = {
+            skill.strip().lower()
+            for skill in profile.skills.split(",")
+            if skill.strip()
+        }
+
+        matched_skills = job_skills.intersection(
+            candidate_skills
+        )
+
+        # Base score
+        if job_skills:
+            match_score = round(
+                (len(matched_skills) / len(job_skills)) * 100
+            )
+        else:
+            match_score = 0
+
+        # Role bonus
+        if profile.preferred_job_role.lower() in job.title.lower():
+            match_score += 20
+
+        match_score = min(match_score, 100)
+
         Application.objects.create(
             user=request.user,
             job=job,
-            status="Applied"
+            status="Applied",
+            match_score=match_score,
+            matched_skills=", ".join(
+                sorted(matched_skills)[:5]
+            )
         )
 
         Notification.objects.create(
-        recipient=job.recruiter.user,
-        message=f"{request.user.first_name or request.user.email} applied for {job.title}",
-        link=reverse("manage_applications", args=[job.id])
-    )
+            recipient=job.recruiter.user,
+            message=f"{request.user.first_name or request.user.email} applied for {job.title}",
+            link=reverse("manage_applications")
+        )
 
     return redirect("jobseeker_dashboard")
 

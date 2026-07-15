@@ -80,7 +80,7 @@
                         <th>Job Title</th>
                         <th>Applied Date</th>
                         <th>Status</th>
-                        <th>Rejection Reason</th>
+                        <th>Job Match</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -100,23 +100,29 @@
                             </span>
                         </td>
                         <td>
-                            {% if app.status == 'Rejected' %}
-                            <form method="POST" action="{% url 'add_rejection_reason' app.id %}" class="inline-form">
-                                {% csrf_token %}
-                                <div class="reason-group">
-                                    <input type="text"
-                                           name="rejection_reason"
-                                           class="reason-input"
-                                           value="{{ app.rejection_reason|default:'' }}"
-                                           placeholder="Enter reason...">
-                                    <button type="submit" class="reason-save-btn" title="Save">
-                                        <i class="fas fa-save"></i>
-                                    </button>
+                            <div class="match-container">
+
+                                {% if app.match_score >= 80 %}
+                                    <span class="match-badge high">
+                                        {{ app.match_score|floatformat:0 }}% Match
+                                    </span>
+
+                                {% elif app.match_score >= 60 %}
+                                    <span class="match-badge medium">
+                                        {{ app.match_score|floatformat:0 }}% Match
+                                    </span>
+
+                                {% else %}
+                                    <span class="match-badge low">
+                                        {{ app.match_score|floatformat:0 }}% Match
+                                    </span>
+                                {% endif %}
+
+                                <div class="matched-skills">
+                                    {{ app.matched_skills|default:"No matching skills found" }}
                                 </div>
-                            </form>
-                            {% else %}
-                            <span class="no-reason">—</span>
-                            {% endif %}
+
+                            </div>
                         </td>
                         <td>
                             <form method="POST" action="{% url 'update_application_status' app.id %}" class="inline-form">
