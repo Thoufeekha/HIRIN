@@ -230,5 +230,17 @@ path(
         name="add_rejection_reason"
     ),
 
+    path(
+        "job/<int:job_id>/",
+        views.job_detail,
+        name="job_detail"
+    ),
+
+    path(
+        "notification/general/<int:notification_id>/read/",
+        views.mark_general_notification_read,
+        name="mark_general_notification_read"
+    ),
+
 
 ]

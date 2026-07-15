@@ -3,13 +3,13 @@ from django.db.models import Q
 from django.shortcuts import  render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
-from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application
+from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application,Notification
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
-
+from django.urls import reverse
 
 # Create your views here.
 def jobseeker_register(request):
@@ -673,6 +673,12 @@ def apply_job(request, job_id):
             status="Applied"
         )
 
+        Notification.objects.create(
+        recipient=job.recruiter.user,
+        message=f"{request.user.first_name or request.user.email} applied for {job.title}",
+        link=reverse("manage_applications", args=[job.id])
+    )
+
     return redirect("jobseeker_dashboard")
 
 @login_required
@@ -682,11 +688,32 @@ def job_list(request):
         is_closed=False
     )
 
-    return render(
-        request,
-        "jobseeker/job_list.html",
-        {"jobs": jobs}
+
+    search_query = request.GET.get("q", "").strip()
+
+    if search_query:
+        jobs = jobs.filter(
+            Q(title__icontains=search_query) |
+            Q(skills__icontains=search_query) |
+            Q(location__icontains=search_query) |
+            Q(recruiter__company_name__icontains=search_query)
+        )
+
+    applied_job_ids = list(
+        Application.objects.filter(
+            user=request.user
+        ).values_list("job_id", flat=True)
     )
+
+    context = {
+        "jobs": jobs,
+        "search_query": search_query,
+        "applied_job_ids": applied_job_ids,
+    }
+
+
+    return render(request,"jobseeker/job_list.html",{"jobs": jobs}
+)
 
 @login_required
 def ats_resume(request):
@@ -853,6 +880,7 @@ def job_postings(request):
     )
 
     status_filter = request.GET.get("status")
+    search_query = request.GET.get("q", "").strip()
 
     all_jobs = Job.objects.filter(
         recruiter=recruiter
@@ -861,38 +889,22 @@ def job_postings(request):
     # Counts
     all_count = all_jobs.count()
 
-    active_count = 0
-    closing_count = 0
-    draft_count = 0
-    closed_count = 0
+    active_count = sum(1 for job in all_jobs if job.status == "Active")
+    closing_count = sum(1 for job in all_jobs if job.status == "Closing Soon")
+    draft_count = sum(1 for job in all_jobs if job.status == "Draft")
+    closed_count = sum(1 for job in all_jobs if job.status == "Closed")
 
-    for job in all_jobs:
+    jobs_qs = all_jobs
 
-        if job.status == "Active":
-            active_count += 1
+    if search_query:
+        jobs_qs = jobs_qs.filter(
+            Q(title__icontains=search_query) | Q(skills__icontains=search_query)
+        )
 
-        elif job.status == "Closing Soon":
-            closing_count += 1
-
-        elif job.status == "Draft":
-            draft_count += 1
-
-        elif job.status == "Closed":
-            closed_count += 1
-
-    # Filtering
     if status_filter:
-
-        jobs = []
-
-        for job in all_jobs:
-
-            if job.status == status_filter:
-                jobs.append(job)
-
+        jobs = [job for job in jobs_qs if job.status == status_filter]
     else:
-
-        jobs = all_jobs
+        jobs = list(jobs_qs)
 
     return render(
         request,
@@ -905,6 +917,7 @@ def job_postings(request):
             "draft_count": draft_count,
             "closed_count": closed_count,
             "current_status": status_filter,
+            "search_query": search_query,
         }
     )
 
@@ -1125,24 +1138,55 @@ def invite_candidate(request, candidate_id):
 
 def notifications(request):
 
-    if request.user.is_authenticated:
+    if not request.user.is_authenticated:
+        return {}
 
-        invitations = Invitation.objects.filter(
-            candidate=request.user
-        ).order_by("-created_at")[:10]
+    items = []
 
-        unread_notifications_count = Invitation.objects.filter(
+    invitations = Invitation.objects.filter(
+        candidate=request.user
+    ).order_by("-created_at")[:10]
+
+    for inv in invitations:
+        items.append({
+            "message": f"{inv.recruiter.company_name} invited you"
+                       + (f" to apply for {inv.job.title}" if inv.job else ""),
+            "link": reverse("mark_notification_read", args=[inv.id]),
+            "is_read": inv.is_read,
+            "created_at": inv.created_at,
+        })
+
+    general = Notification.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at")[:10]
+
+    for n in general:
+        items.append({
+            "message": n.message,
+            "link": reverse("mark_general_notification_read", args=[n.id]),
+            "is_read": n.is_read,
+            "created_at": n.created_at,
+        })
+
+    items.sort(key=lambda x: x["created_at"], reverse=True)
+    items = items[:10]
+
+    unread_count = (
+        Invitation.objects.filter(
             candidate=request.user,
             is_read=False
         ).count()
+        +
+        Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).count()
+    )
 
-        return {
-            "notifications": invitations,
-            "unread_notifications_count": unread_notifications_count,
-        }
-
-    return {}
-
+    return {
+        "topnav_notifications": items,
+        "unread_notifications_count": unread_count,
+    }
 
 @login_required
 def mark_notification_read(request, invitation_id):
@@ -1155,9 +1199,46 @@ def mark_notification_read(request, invitation_id):
 
     invitation.is_read = True
     invitation.save()
+    
+    if invitation.job:
+        return redirect("job_detail", job_id=invitation.job.id)
 
     return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
 
+@login_required
+def mark_general_notification_read(request, notification_id):
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        recipient=request.user
+    )
+
+    notification.is_read = True
+    notification.save()
+
+    if notification.link:
+        return redirect(notification.link)
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def job_detail(request, job_id):
+
+    job = get_object_or_404(Job, id=job_id)
+
+    already_applied = Application.objects.filter(
+        user=request.user,
+        job=job
+    ).exists()
+
+    context = {
+        "job": job,
+        "already_applied": already_applied,
+        "can_apply": job.is_published and not job.is_closed,
+    }
+
+    return render(request, "jobseeker/job_detail.html", context)
 
 @login_required
 def manage_applications(request, job_id=None):
@@ -1220,6 +1301,25 @@ def update_application_status(request, application_id):
                 application.rejection_reason = ''
             
             application.save()
+
+            status_messages = {
+                "Viewed": f"Your application for {application.job.title} was viewed",
+                "Shortlisted": f"You've been shortlisted for {application.job.title}",
+                "Interviewing": f"You're moving to interview stage for {application.job.title}",
+                "Rejected": f"Your application for {application.job.title} was not selected",
+            }
+
+            Notification.objects.create(
+            recipient=application.user,
+            message=status_messages.get(
+                new_status,
+                f"Your application status updated to {new_status}"
+            ),
+            link=reverse("job_tracker")
+        )
+
+
+            
             messages.success(request, f"Application status updated to {new_status}.")
             
             

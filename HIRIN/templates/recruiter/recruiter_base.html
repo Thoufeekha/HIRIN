@@ -89,19 +89,45 @@
         <header class="topbar">
 
             {% if current_url == 'recruiter_dashboard' %}
-            <div class="search-box">
-                <input type="text"
-                       placeholder="Search jobs, applicants, skills">
-            </div>
+            <form method="get" action="{% url 'job_postings' %}" class="search-box">
+                <input type="text" name="q"
+                       placeholder="Search jobs, applicants, skills"
+                       value="{{ request.GET.q }}">
+            </form>
             {% else %}
             <div></div>
             {% endif %}
 
             <div class="topbar-right">
 
-                <button class="notification-btn">
+                <!-- <button class="notification-btn">
                     <i class="fa-regular fa-bell"></i>
-                </button>
+                </button> -->
+
+                <div class="notif-wrapper">
+
+                    <button id="notifBtn" class="notification-btn">
+                        <i class="fa-regular fa-bell"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="notif-badge">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </button>
+
+                    <div id="notifDropdown" class="notif-dropdown">
+                        <div class="notif-dropdown-header">Notifications</div>
+                        <div class="notif-list">
+                            {% for n in topnav_notifications %}
+                            <a href="{{ n.link }}" class="notif-item {% if not n.is_read %}unread{% endif %}">
+                                <p>{{ n.message }}</p>
+                                <span class="notif-time">{{ n.created_at|timesince }} ago</span>
+                            </a>
+                            {% empty %}
+                            <div class="notif-empty">No notifications yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
 
                 <div class="user-menu-wrapper">
 
@@ -158,20 +184,28 @@ const avatarBtn = document.getElementById("avatarBtn");
 const userMenu = document.getElementById("userMenu");
 
 if (avatarBtn && userMenu) {
-
     avatarBtn.addEventListener("click", function(e){
         e.stopPropagation();
         userMenu.classList.toggle("open");
     });
-
     document.addEventListener("click", function(){
         userMenu.classList.remove("open");
     });
-
     userMenu.addEventListener("click", function(e){
         e.stopPropagation();
     });
+}
 
+  const notifBtn = document.getElementById('notifBtn');
+  const notifDropdown = document.getElementById('notifDropdown');
+  
+  if (notifBtn && notifDropdown) {
+    notifBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notifDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => notifDropdown.classList.remove('open'));
+    notifDropdown.addEventListener('click', (e) => e.stopPropagation());
 }
 </script>
 

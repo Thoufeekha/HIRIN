@@ -15,6 +15,32 @@
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+.notif-wrapper { position: relative; }
+.notification-btn { position: relative; }
+.notif-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: #e0483e; color: #fff; font-size: 10px;
+    min-width: 16px; height: 16px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px; font-weight: 700;
+}
+.notif-dropdown {
+    display: none; position: absolute; top: 44px; right: 0;
+    width: 320px; max-height: 400px; overflow-y: auto;
+    background: #fff; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15); z-index: 999;
+}
+.notif-dropdown.open { display: block; }
+.notif-dropdown-header { padding: 14px 16px; font-weight: 700; border-bottom: 1px solid #eee; }
+.notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; text-decoration: none; color: #1b2420; }
+.notif-item:hover { background: #f7f7f7; }
+.notif-item.unread { background: #e7f6f1; }
+.notif-item p { margin: 0 0 4px; font-size: 13.5px; }
+.notif-time { font-size: 11.5px; color: #888; }
+.notif-empty { padding: 20px; text-align: center; color: #888; font-size: 13px; }
+</style>
 </head>
 <body>
 
@@ -92,16 +118,47 @@
 
         <header class="topbar">
 
-            <div class="search-box">
+            <form method="get" action="{% url 'job_list' %}" class="search-box">
+                <input type="text" name="q"
+                       placeholder="Search jobs, companies, or roles"
+                       value="{{ request.GET.q }}">
+            </form>
+
+            <!-- <div class="search-box">
                 <input type="text"
                        placeholder="Search jobs, companies, or roles">
-            </div>
+            </div> -->
 
             <div class="topbar-right">
 
-                <button class="notification-btn">
+                <div class="notif-wrapper">
+
+                    <button id="notifBtn" class="notification-btn">
+                        <i class="fa-regular fa-bell"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="notif-badge">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </button>
+
+                    <div id="notifDropdown" class="notif-dropdown">
+                        <div class="notif-dropdown-header">Notifications</div>
+                        <div class="notif-list">
+                            {% for n in topnav_notifications %}
+                            <a href="{{ n.link }}" class="notif-item {% if not n.is_read %}unread{% endif %}">
+                                <p>{{ n.message }}</p>
+                                <span class="notif-time">{{ n.created_at|timesince }} ago</span>
+                            </a>
+                            {% empty %}
+                            <div class="notif-empty">No notifications yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- <button class="notification-btn">
                     <i class="fa-regular fa-bell"></i>
-                </button>
+                </button> -->
 
                 <div class="user-menu-wrapper">
 
@@ -151,13 +208,14 @@
 
 <script>
   const avatarBtn = document.getElementById('avatarBtn');
-  const menu = document.getElementById('userMenu');
-  if (avatarBtn && menu) {
-    avatarBtn.addEventListener('click', (e) => {
+  const notifDropdown = document.getElementById('notifDropdown');
+  if (notifBtn && notifDropdown) {
+    notifBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      menu.classList.toggle('open');
+      notifDropdown.classList.toggle('open');
     });
-    document.addEventListener('click', () => menu.classList.remove('open'));
+    document.addEventListener('click', () => notifDropdown.classList.remove('open'));
+    notifDropdown.addEventListener('click', (e) => e.stopPropagation());
   }
 </script>
 

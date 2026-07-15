@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
-
+from django.urls import reverse
 # Create your models here.
 
 
@@ -353,6 +353,74 @@ class Invitation(models.Model):
     def __str__(self):
         return f"{self.recruiter.company_name} invited {self.candidate.email}"
 
+class Notification(models.Model):
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications"
+    )
+
+    message = models.CharField(max_length=255)
+
+    link = models.CharField(
+        max_length=255,
+        blank=True
+    )
+
+    is_read = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.message
+
+def notifications(request):
+
+    if not request.user.is_authenticated:
+        return {}
+
+    items = []
+
+    invitations = Invitation.objects.filter(
+        candidate=request.user
+    ).order_by("-created_at")[:10]
+
+    for inv in invitations:
+        items.append({
+            "message": f"{inv.recruiter.company_name} invited you"
+                       + (f" to apply for {inv.job.title}" if inv.job else ""),
+            "link": reverse("mark_notification_read", args=[inv.id]),
+            "is_read": inv.is_read,
+            "created_at": inv.created_at,
+        })
+
+    general = notifications.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at")[:10]
+
+    for n in general:
+        items.append({
+            "message": n.message,
+            "link": reverse("mark_general_notification_read", args=[n.id]),
+            "is_read": n.is_read,
+            "created_at": n.created_at,
+        })
+
+    items.sort(key=lambda x: x["created_at"], reverse=True)
+    items = items[:10]
+
+    unread_count = (
+        Invitation.objects.filter(candidate=request.user, is_read=False).count()
+        + notifications.objects.filter(recipient=request.user, is_read=False).count()
+    )
+
+    return {
+        "topnav_notifications": items,
+        "unread_notifications_count": unread_count,
+    }
 
     
     

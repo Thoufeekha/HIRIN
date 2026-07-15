@@ -1,0 +1,29 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% block content %}
+
+<div class="apps-card" style="max-width:700px; padding:24px;">
+
+  <h1 class="dashboard-title">{{ job.title }}</h1>
+  <p class="meta">{{ job.recruiter.company_name }} · {{ job.location }} · {{ job.employment_type }}</p>
+  {% if job.salary %}<p class="meta">Salary: {{ job.salary }}</p>{% endif %}
+
+  <h3 style="margin-top:20px;">Skills</h3>
+  <p>{{ job.skills }}</p>
+
+  <h3 style="margin-top:20px;">Description</h3>
+  <p style="white-space:pre-line;">{{ job.description }}</p>
+
+  {% if already_applied %}
+    <button class="apply-btn" disabled style="margin-top:20px;">Already Applied</button>
+  {% elif can_apply %}
+    <form method="post" action="{% url 'apply_job' job.id %}" style="margin-top:20px;">
+      {% csrf_token %}
+      <button type="submit" class="apply-btn">Apply Now</button>
+    </form>
+  {% else %}
+    <p style="margin-top:20px; color:#e0483e;">This job is no longer accepting applications.</p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "jobseeker/jobseeker_base.html" %}
+{% block content %}
+
+<h1 class="dashboard-title">All Jobs</h1>
+
+{% if search_query %}
+<p style="color:var(--ink-soft); margin-bottom:16px;">Showing results for "{{ search_query }}"</p>
+{% endif %}
+
+<div class="rec-grid">
+  {% for job in jobs %}
+  <div class="job-card">
+    <div class="job-top">
+      <div class="logo-badge">{{ job.recruiter.company_name|slice:":2"|upper }}</div>
+    </div>
+    <h3><a href="{% url 'job_detail' job.id %}" style="color:inherit; text-decoration:none;">{{ job.title }}</a></h3>
+    <p class="meta">{{ job.recruiter.company_name }} · {{ job.location }}</p>
+    <p class="meta">{{ job.employment_type }}{% if job.salary %} · {{ job.salary }}{% endif %}</p>
+
+    {% if job.id in applied_job_ids %}
+      <button class="apply-btn" disabled>Applied</button>
+    {% else %}
+      <a href="{% url 'job_detail' job.id %}" class="apply-btn" style="display:inline-block; text-align:center; text-decoration:none;">View & Apply</a>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p style="color:var(--ink-soft);">No jobs found{% if search_query %} for "{{ search_query }}"{% endif %}.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
