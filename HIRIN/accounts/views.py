@@ -980,7 +980,9 @@ def candidates_list(request):
 
     if skill_query:
         candidates = candidates.filter(
-            skills__icontains=skill_query
+            Q(skills__icontains=skill_query) |
+            Q(preferred_job_role__icontains=skill_query) |
+            Q(user__first_name__icontains=skill_query)
         )
 
     if experience_filter:
