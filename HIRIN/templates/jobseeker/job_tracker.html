@@ -38,24 +38,32 @@
             <p class="jt-stage-label">Interviewing</p>
         </div>
         <i class="jt-arrow">&rarr;</i>
-        <div class="jt-stage">
+        <!-- <div class="jt-stage">
             <p class="jt-stage-num jt-green">{{ status_counts.Offer }}</p>
             <p class="jt-stage-label">Offer</p>
-        </div>
+        </div> -->
+        <i class="jt-arrow">&rarr;</i>
+
+    <div class="jt-stage">
+        <p class="jt-stage-num jt-red">{{ status_counts.Rejected }}</p>
+        <p class="jt-stage-label">Rejected</p>
     </div>
+        
+    </div>
+
 
     <div class="jt-progress-bar">
         <div class="jt-seg jt-seg-applied" style="width: {{ status_percents.Applied }}%;"></div>
         <div class="jt-seg jt-seg-shortlisted" style="width: {{ status_percents.Shortlisted }}%;"></div>
         <div class="jt-seg jt-seg-interviewing" style="width: {{ status_percents.Interviewing }}%;"></div>
-        <div class="jt-seg jt-seg-offer" style="width: {{ status_percents.Offer }}%;"></div>
+        <!-- <div class="jt-seg jt-seg-offer" style="width: {{ status_percents.Offer }}%;"></div> -->
         <div class="jt-seg jt-seg-rejected" style="width: {{ status_percents.Rejected }}%;"></div>
     </div>
     <div class="jt-progress-labels">
         <span>Applied {{ status_percents.Applied }}%</span>
         <span>Shortlisted {{ status_percents.Shortlisted }}%</span>
         <span>Interviewing {{ status_percents.Interviewing }}%</span>
-        <span>Offer {{ status_percents.Offer }}%</span>
+        <!-- <span>Offer {{ status_percents.Offer }}%</span> -->
         <span class="jt-red">Rejected {{ status_percents.Rejected }}%</span>
     </div>
 </div>

@@ -292,7 +292,6 @@ class Application(models.Model):
         ("Viewed", "Viewed"),
         ("Shortlisted", "Shortlisted"),
         ("Interviewing", "Interviewing"),
-        ("Offer", "Offer"),
         ("Rejected", "Rejected"),
     ]
 
@@ -312,7 +311,16 @@ class Application(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default="Applied"
+    
     )
+
+    last_stage = models.CharField(
+    max_length=20,
+    blank=True,
+    null=True
+    )
+
+    
 
     # ADD THESE
     match_score = models.FloatField(default=0)
