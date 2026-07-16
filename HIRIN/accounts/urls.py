@@ -251,5 +251,17 @@ path(
         name="mark_general_notification_read"
     ),
 
+    path(
+        "notifications/clear/",
+        views.clear_notifications,
+        name="clear_notifications"
+    ),
+
+    path(
+        "notifications/clear/jobseeker/",
+        views.clear_notificationsjs,
+        name="clear_notificationsjs"
+    ),
+
 
 ]

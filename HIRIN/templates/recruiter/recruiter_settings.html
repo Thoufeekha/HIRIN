@@ -1,20 +1,82 @@
-{% extends "recruiter_base.html" %}
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<h1>Settings</h1>
+<div class="profile-header-row">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage recruiter preferences and automation tools</p>
+    </div>
+</div>
 
-<div class="card">
+{% if messages %}
+<div class="settings-messages">
+    {% for message in messages %}
+    <div class="settings-alert settings-alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    <a href="{% url 'change_password' %}" class="setting-btn">
-        Change Password
-    </a>
+<div class="profile-grid">
 
-    <br><br>
+    <div class="profile-main">
 
-    <a href="{% url 'logout' %}" class="setting-btn logout">
-        Logout
-    </a>
+        <div class="profile-card">
+
+            <h3>
+                <i class="fa-solid fa-robot"></i>
+                Candidate Agent
+            </h3>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="toggle-row">
+
+                    <div>
+                        <div class="toggle-label">
+                            Automatic Candidate Invitations
+                        </div>
+
+                        <div class="toggle-sub">
+                            Automatically find candidates with
+                            90%+ match and invite them to apply.
+                        </div>
+                    </div>
+
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            name="candidate_agent_enabled"
+                            {% if recruiter.candidate_agent_enabled %}
+                            checked
+                            {% endif %}
+                        >
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="settings-save-btn settings-save-btn-full"
+                >
+                    Save Settings
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
 

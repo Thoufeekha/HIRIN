@@ -88,7 +88,7 @@
 {% if current_url != 'manage_applications' and current_url != 'manage_applications_job' %}
         <header class="topbar">
 
-            {% if current_url == 'recruiter_dashboard' %}
+            <!-- {% if current_url == 'recruiter_dashboard' %}
             <form method="get" action="{% url 'job_postings' %}" class="search-box">
                 <input type="text" name="q"
                        placeholder="Search jobs, applicants, skills"
@@ -96,7 +96,7 @@
             </form>
             {% else %}
             <div></div>
-            {% endif %}
+            {% endif %} -->
 
             <div class="topbar-right">
 
@@ -114,7 +114,16 @@
                     </button>
 
                     <div id="notifDropdown" class="notif-dropdown">
-                        <div class="notif-dropdown-header">Notifications</div>
+                        <div class="notif-dropdown-header">
+
+                            <span>Notifications</span>
+
+                            <a href="{% url 'clear_notifications' %}">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+
+                        </div>
+                        <!-- <div class="notif-dropdown-header">Notifications</div> -->
                         <div class="notif-list">
                             {% for n in topnav_notifications %}
                             <a href="{{ n.link }}" class="notif-item {% if not n.is_read %}unread{% endif %}">

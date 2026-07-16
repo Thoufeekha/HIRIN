@@ -1,0 +1,77 @@
+{% extends "recruiter/recruiter_base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Agent Invites</h2>
+    <p>{{ job.title }}</p>
+</div>
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>
+            Invited Candidates
+        </h3>
+
+        <span>
+            {{ invitations.count }} Candidates
+        </span>
+
+    </div>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Match</th>
+                <th>Invited On</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for invitation in invitations %}
+
+            <tr>
+
+                <td>
+                    {{ invitation.candidate.first_name }}
+                </td>
+
+                <td>
+                    {{ invitation.candidate.email }}
+                </td>
+
+                <td>
+                    {{ invitation.match_score }}%
+                </td>
+
+                <td>
+                    {{ invitation.created_at|date:"d M Y" }}
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4">
+                    No candidates were invited.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

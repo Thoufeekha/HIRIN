@@ -141,7 +141,16 @@
                     </button>
 
                     <div id="notifDropdown" class="notif-dropdown">
-                        <div class="notif-dropdown-header">Notifications</div>
+                        <!-- <div class="notif-dropdown-header">Notifications</div> -->
+                        <div class="notif-dropdown-header">
+
+                            <span>Notifications</span>
+
+                            <a href="{% url 'clear_notificationsjs' %}">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+
+                        </div>
                         <div class="notif-list">
                             {% for n in topnav_notifications %}
                             <a href="{{ n.link }}" class="notif-item {% if not n.is_read %}unread{% endif %}">

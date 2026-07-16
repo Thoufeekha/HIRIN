@@ -205,6 +205,10 @@ class RecruiterProfile(models.Model):
         default=5.0
     )
 
+    candidate_agent_enabled = models.BooleanField(
+        default=True
+    )
+
 class Job(models.Model):
 
     EMPLOYMENT_CHOICES = [
@@ -358,6 +362,11 @@ class Invitation(models.Model):
         blank=True
     )
 
+    match_score = models.FloatField(
+        default=0
+    )
+
+
     message = models.TextField(
         blank=True
     )
@@ -420,7 +429,7 @@ def notifications(request):
             "created_at": inv.created_at,
         })
 
-    general = notifications.objects.filter(
+    general = Notification.objects.filter(
         recipient=request.user
     ).order_by("-created_at")[:10]
 
@@ -436,8 +445,15 @@ def notifications(request):
     items = items[:10]
 
     unread_count = (
-        Invitation.objects.filter(candidate=request.user, is_read=False).count()
-        + notifications.objects.filter(recipient=request.user, is_read=False).count()
+        Invitation.objects.filter(
+            candidate=request.user,
+            is_read=False
+        ).count()
+        +
+        Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).count()
     )
 
     return {

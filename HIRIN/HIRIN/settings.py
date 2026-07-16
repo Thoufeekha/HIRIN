@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'chatbot',
     'ats',
     'ghost_hunter',
+    'candidate_agent',
 ]
 
 MIDDLEWARE = [

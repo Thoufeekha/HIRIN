@@ -11,6 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.urls import reverse
+from candidate_agent.working.agent import run_candidate_graph
 
 # Create your views here.
 def jobseeker_register(request):
@@ -871,7 +872,36 @@ def recruiter_profile(request):
 
 @login_required
 def recruiter_settings(request):
-    return render(request, "recruiter/recruiter_settings.html")
+
+    recruiter = RecruiterProfile.objects.get(
+        user=request.user
+    )
+
+    if request.method == "POST":
+
+        recruiter.candidate_agent_enabled = (
+            "candidate_agent_enabled"
+            in request.POST
+        )
+
+        recruiter.save()
+
+        messages.success(
+            request,
+            "Settings updated successfully."
+        )
+
+        return redirect(
+            "recruiter_settings"
+        )
+
+    return render(
+        request,
+        "recruiter/recruiter_settings.html",
+        {
+            "recruiter": recruiter
+        }
+    )
 
 @login_required
 def post_job(request):
@@ -882,7 +912,7 @@ def post_job(request):
 
     if request.method == "POST":
 
-        Job.objects.create(
+        job = Job.objects.create(
 
             recruiter=recruiter,
 
@@ -968,6 +998,10 @@ def publish_job(request, job_id):
 
     job.is_published = True
     job.save()
+
+    run_candidate_graph(
+        job.id
+    )
 
     return redirect("job_postings")
 
@@ -1431,3 +1465,33 @@ def add_rejection_reason(request, application_id):
         'application': application,
     }
     return render(request, 'recruiter/add_rejection_reason.html', context)
+
+@login_required
+def clear_notifications(request):
+
+    Notification.objects.filter(
+        recipient=request.user
+    ).delete()
+
+    return redirect(request.META.get(
+        "HTTP_REFERER",
+        "recruiter_dashboard"
+    ))
+
+@login_required
+def clear_notificationsjs(request):
+
+    Notification.objects.filter(
+        recipient=request.user
+    ).delete()
+
+    Invitation.objects.filter(
+        candidate=request.user
+    ).delete()
+
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER",
+            "jobseeker_dashboard"
+        )
+    )
