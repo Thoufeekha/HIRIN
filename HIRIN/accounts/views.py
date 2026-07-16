@@ -1,10 +1,9 @@
 
 from django.db.models import Q
 from django.shortcuts import  render,redirect,get_object_or_404
-from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout
-from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application,Notification,Job,RecruiterProfile
+from .models import JobSeekerProfile, RecruiterProfile, UserRole, Job,Invitation,Application,Notification
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -318,19 +317,35 @@ def jobseeker_dashboard(request):
     user = request.user
 
     applications = Application.objects.filter(user=user)
+    print("========== DASHBOARD ==========")
+
+    for app in applications:
+        print(
+        "Job:", app.job.title,
+        "| Status:", app.status,
+        "| Last Stage:", app.last_stage
+    )
 
     applied_count = applications.count()
-    shortlisted_count = applications.filter(
-        status="Shortlisted"
-    ).count()
 
-    interviewing_count = applications.filter(
-        status="Interviewing"
-    ).count()
+    shortlisted_count = 0
+    interviewing_count = 0
+    rejected_count = 0
 
-    rejected_count = applications.filter(
-        status="Rejected"
-    ).count()
+    for app in applications:
+
+        if app.status == "Rejected":
+            rejected_count += 1
+
+        if app.status == "Interviewing" or app.last_stage == "Interviewing":
+            interviewing_count += 1
+
+        if (
+            app.status == "Shortlisted"
+            or app.status == "Interviewing"
+            or app.last_stage in ["Shortlisted", "Interviewing"]
+        ):
+            shortlisted_count += 1
 
     recent_applications = applications[:3]
     applied_job_ids = list(
@@ -536,49 +551,33 @@ def job_tracker(request):
         user=request.user
     )
 
+    print("========== JOB TRACKER ==========")
+    for app in all_applications:
+        print(
+        app.job.title,
+        app.status,
+        app.last_stage
+    )
     total_count = all_applications.count()
 
     status_counts = {
-    "Applied": all_applications.filter(
-        status__in=[
-            "Applied",
-            "Viewed",
-            "Shortlisted",
-            "Interviewing",
-            "Offer",
-            "Rejected",
-        ]
-    ).count(),
+    "Applied": total_count,
 
     "Shortlisted": all_applications.filter(
-        status__in=[
-            "Shortlisted",
-            "Interviewing",
-            "Offer",
-            "Rejected",
-        ]
+        Q(status="Shortlisted") |
+        Q(status="Interviewing") |
+        Q(status="Rejected", last_stage__in=["Shortlisted", "Interviewing"])
     ).count(),
 
     "Interviewing": all_applications.filter(
-        status__in=[
-            "Interviewing",
-            "Offer",
-            "Rejected",
-        ]
-    ).count(),
-
-    "Offer": all_applications.filter(
-        status__in=[
-            "Offer",
-            "Rejected",
-        ]
+        Q(status="Interviewing") |
+        Q(status="Rejected", last_stage="Interviewing")
     ).count(),
 
     "Rejected": all_applications.filter(
         status="Rejected"
     ).count(),
 }
-
     def pct(count):
 
         return round(
@@ -669,56 +668,18 @@ def apply_job(request, job_id):
     ).exists()
 
     if not already_applied:
-
-        profile = JobSeekerProfile.objects.get(
-            user=request.user
-        )
-
-        job_skills = {
-            skill.strip().lower()
-            for skill in job.skills.split(",")
-            if skill.strip()
-        }
-
-        candidate_skills = {
-            skill.strip().lower()
-            for skill in profile.skills.split(",")
-            if skill.strip()
-        }
-
-        matched_skills = job_skills.intersection(
-            candidate_skills
-        )
-
-        # Base score
-        if job_skills:
-            match_score = round(
-                (len(matched_skills) / len(job_skills)) * 100
-            )
-        else:
-            match_score = 0
-
-        # Role bonus
-        if profile.preferred_job_role.lower() in job.title.lower():
-            match_score += 20
-
-        match_score = min(match_score, 100)
-
         Application.objects.create(
-            user=request.user,
-            job=job,
-            status="Applied",
-            match_score=match_score,
-            matched_skills=", ".join(
-                sorted(matched_skills)[:5]
-            )
-        )
+        user=request.user,
+        job=job,
+        status="Applied",
+        last_stage="Applied"
+)
 
         Notification.objects.create(
-            recipient=job.recruiter.user,
-            message=f"{request.user.first_name or request.user.email} applied for {job.title}",
-            link=reverse("manage_applications")
-        )
+        recipient=job.recruiter.user,
+        message=f"{request.user.first_name or request.user.email} applied for {job.title}",
+        link=reverse("manage_applications", args=[job.id])
+    )
 
     return redirect("jobseeker_dashboard")
 
@@ -751,6 +712,7 @@ def job_list(request):
         "search_query": search_query,
         "applied_job_ids": applied_job_ids,
     }
+
 
 
     return render(request,"jobseeker/job_list.html",{"jobs": jobs}
@@ -1072,36 +1034,6 @@ def manage_jobs(request):
         context
     )
 @login_required
-def edit_job(request, job_id):
-    recruiter_profile = get_object_or_404(RecruiterProfile, user=request.user)
-    job = get_object_or_404(Job, id=job_id, recruiter=recruiter_profile) 
-
-    if request.method == "POST":
-        job.title = request.POST.get('title')
-        job.location = request.POST.get('location')
-        job.employment_type = request.POST.get('employment_type') or job.employment_type
-        job.salary = request.POST.get('salary')
-        job.skills = request.POST.get('skills', job.skills)
-        job.description = request.POST.get('description')
-        job.valid_until = request.POST.get('valid_until') or job.valid_until
-        
-        job.save()
-        messages.success(request, "Job updated successfully.")
-        return redirect('manage_jobs')
-       
-        
-    return render(request, 'recruiter/edit_job.html', {'job': job})
-
-@login_required
-@require_POST
-def delete_job(request, job_id):
-    recruiter_profile = get_object_or_404(RecruiterProfile, user=request.user)
-    job = get_object_or_404(Job, id=job_id, recruiter=recruiter_profile)
-    job.delete()
-    messages.success(request, "Job deleted successfully.")
-    return redirect('manage_jobs')
-
-@login_required
 def candidates_list(request):
 
     recruiter = RecruiterProfile.objects.get(user=request.user)
@@ -1360,23 +1292,36 @@ def manage_applications(request, job_id=None):
     if search_query:
         applications = applications.filter(job__title__icontains=search_query)
 
+    viewed = 0
+    shortlisted = 0
+    interviewing = 0
+    rejected = 0
+
+    for app in applications:
+
+    # Viewed count
+        if app.status in ["Viewed", "Shortlisted", "Interviewing", "Rejected"]:
+            viewed += 1
+
+    # Shortlisted & Interviewing counts
+        if app.last_stage == "Shortlisted":
+            shortlisted += 1
+
+        elif app.last_stage == "Interviewing":
+            shortlisted += 1
+            interviewing += 1
+
+    # Rejected count
+        if app.status == "Rejected":
+            rejected += 1
+
     status_counts = {
-    'Viewed': applications.filter(
-        status__in=['Viewed', 'Shortlisted', 'Interviewing', 'Rejected']
-    ).count(),
+    "Viewed": viewed,
+    "Shortlisted": shortlisted,
+    "Interviewing": interviewing,
+    "Rejected": rejected,
+    }
 
-    'Shortlisted': applications.filter(
-        status__in=['Shortlisted', 'Interviewing', 'Rejected']
-    ).count(),
-
-    'Interviewing': applications.filter(
-        status__in=['Interviewing', 'Rejected']
-    ).count(),
-
-    'Rejected': applications.filter(
-        status='Rejected'
-    ).count(),
-}
     
     context = {
         'applications': applications,
@@ -1390,21 +1335,40 @@ def manage_applications(request, job_id=None):
     return render(request, 'recruiter/manage_applications.html', context)
 
 
+
 @login_required
 def update_application_status(request, application_id):
-    application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
-    
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        
+    application = get_object_or_404(
+        Application,
+        id=application_id,
+        job__recruiter__user=request.user
+    )
+
+    if request.method == "POST":
+        print(request.POST)
+
+        new_status = request.POST.get("status")
+        print("Received status:", new_status)
         valid_statuses = dict(Application.STATUS_CHOICES)
+
         if new_status in valid_statuses:
+
+            if new_status != "Rejected":
+                application.last_stage = new_status
+
             application.status = new_status
-            
-            if new_status != 'Rejected':
-                application.rejection_reason = ''
-            
+
+            if new_status != "Rejected":
+                application.rejection_reason = ""
+
             application.save()
+            print("Saved status:", application.status)
+            application.refresh_from_db()
+
+            print("========== AFTER SAVE ==========")
+            print("Status:", application.status)
+            print("Last Stage:", application.last_stage)
+            print("================================")
 
             status_messages = {
                 "Viewed": f"Your application for {application.job.title} was viewed",
@@ -1414,33 +1378,43 @@ def update_application_status(request, application_id):
             }
 
             Notification.objects.create(
-            recipient=application.user,
-            message=status_messages.get(
-                new_status,
-                f"Your application status updated to {new_status}"
-            ),
-            link=reverse("job_tracker")
-        )
+                recipient=application.user,
+                message=status_messages.get(
+                    new_status,
+                    f"Your application status updated to {new_status}"
+                ),
+                link=reverse("job_tracker")
+            )
 
+            messages.success(
+                request,
+                f"Application status updated to {new_status}."
+            )
 
-            
-            messages.success(request, f"Application status updated to {new_status}.")
-            
-            
-            if new_status == 'Rejected':
-                return redirect('add_rejection_reason', application_id=application_id)
-            
-            return redirect('manage_applications')
+            messages.success(
+                request,
+                f"Application status updated to {new_status}."
+)
+
+            return redirect("manage_applications")  
+
         else:
-            messages.error(request, "Invalid status selected.")
-            return redirect('manage_applications')
-    
-    context = {
-        'application': application,
-        'status_choices': Application.STATUS_CHOICES,
-    }
-    return render(request, 'recruiter/update_status.html', context)
+            messages.error(
+                request,
+                "Invalid status selected."
+            )
+            return redirect("manage_applications")
 
+    context = {
+        "application": application,
+        "status_choices": Application.STATUS_CHOICES,
+    }
+
+    return render(
+        request,
+        "recruiter/update_status.html",
+        context
+    )
 @login_required
 def add_rejection_reason(request, application_id):
     application = get_object_or_404(Application, id=application_id, job__recruiter__user=request.user)
@@ -1495,3 +1469,36 @@ def clear_notificationsjs(request):
             "jobseeker_dashboard"
         )
     )
+
+@login_required
+def edit_job(request, job_id):
+    recruiter = get_object_or_404(RecruiterProfile, user=request.user)
+    job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
+
+    if request.method == "POST":
+        job.title = request.POST.get("title")
+        job.location = request.POST.get("location")
+        job.employment_type = request.POST.get("employment_type")
+        job.salary = request.POST.get("salary")
+        job.valid_until = request.POST.get("valid_until")
+        job.skills = request.POST.get("skills")
+        job.description = request.POST.get("description")
+        job.save()
+
+        messages.success(request, "Job updated successfully.")
+        return redirect("job_postings")
+
+    return render(request, "recruiter/edit_job.html", {"job": job})
+
+
+@login_required
+def delete_job(request, job_id):
+    recruiter = get_object_or_404(RecruiterProfile, user=request.user)
+    job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
+
+    if request.method == "POST":
+        job.delete()
+        messages.success(request, "Job deleted successfully.")
+        return redirect("job_postings")
+
+    return render(request, "recruiter/delete_job.html", {"job": job})
