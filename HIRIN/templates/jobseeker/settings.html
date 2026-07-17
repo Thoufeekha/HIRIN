@@ -101,27 +101,27 @@
     </div>
 
     <!-- RIGHT COLUMN -->
-    <div class="profile-side">
+     <!-- <div class="profile-side">
 
-        <!-- Notification Preferences -->
-        <div class="profile-card">
+         <! Notification Preferences  -->
+        <!-- <div class="profile-card">
             <h3><i class="fa-regular fa-bell"></i> Notifications</h3>
             <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="notifications">
 
                 <div class="toggle-row">
-                    <div>
-                        <div class="toggle-label">Job Recommendations</div>
+                    <div> -->
+                        <!-- <div class="toggle-label">Job Recommendations</div>
                         <div class="toggle-sub">Get notified about matching jobs</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" name="notify_job_recs" {% if profile.notify_job_recs %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
-                </div>
+                </div> -->
 
-                <div class="toggle-row">
+                <!-- <div class="toggle-row">
                     <div>
                         <div class="toggle-label">Application Updates</div>
                         <div class="toggle-sub">Status changes on your applications</div>
@@ -130,9 +130,9 @@
                         <input type="checkbox" name="notify_app_updates" {% if profile.notify_app_updates %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
-                </div>
+                </div>  -->
 
-                <div class="toggle-row">
+                <!-- <div class="toggle-row">
                     <div>
                         <div class="toggle-label">Email Newsletter</div>
                         <div class="toggle-sub">Tips and product updates</div>
@@ -145,10 +145,10 @@
 
                 <button type="submit" class="settings-save-btn settings-save-btn-full">Save Preferences</button>
             </form>
-        </div>
+        </div> -->
 
         <!-- Privacy -->
-        <div class="profile-card">
+        <!-- <div class="profile-card">
             <h3><i class="fa-solid fa-shield-halved"></i> Privacy</h3>
             <form method="post" action="{% url 'jobseeker_settings' %}" class="settings-form">
                 {% csrf_token %}
@@ -167,11 +167,11 @@
 
                 <button type="submit" class="settings-save-btn settings-save-btn-full">Save Privacy</button>
             </form>
-        </div>
-
+        </div> -->
+<!-- 
     </div>
 
-</div>
+</div>  --> 
 
 <!-- Delete Account Confirmation Modal -->
 <div id="deleteAccountModal" class="settings-modal-overlay">
