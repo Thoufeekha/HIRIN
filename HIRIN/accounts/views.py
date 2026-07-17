@@ -1033,16 +1033,51 @@ def view_job(request, job_id):
         {"job": job}
     )
 
+# def manage_jobs(request):
+
+#     recruiter = RecruiterProfile.objects.get(user=request.user)
+
+#     jobs = Job.objects.filter(
+#         recruiter=recruiter
+#     ).order_by("-created_at")
+
+#     context = {
+#         "jobs": jobs
+#     }
+
+#     return render(
+#         request,
+#         "recruiter/manage_jobs.html",
+#         context
+#     )
+
+
+
+
+
+@login_required
 def manage_jobs(request):
 
     recruiter = RecruiterProfile.objects.get(user=request.user)
 
     jobs = Job.objects.filter(
-        recruiter=recruiter
-    ).order_by("-created_at")
+        recruiter=recruiter 
+    )
+
+    search_query = request.GET.get("q", "").strip()
+
+    if search_query:
+        jobs = jobs.filter(
+            Q(title__icontains=search_query) |
+            Q(location__icontains=search_query) |
+            Q(skills__icontains=search_query)
+        )
+
+    jobs = jobs.order_by("-created_at")
 
     context = {
-        "jobs": jobs
+        "jobs": jobs,
+        "search_query": search_query,
     }
 
     return render(
@@ -1050,6 +1085,7 @@ def manage_jobs(request):
         "recruiter/manage_jobs.html",
         context
     )
+
 @login_required
 def candidates_list(request):
 
@@ -1508,14 +1544,23 @@ def edit_job(request, job_id):
     return render(request, "recruiter/edit_job.html", {"job": job})
 
 
+# @login_required
+# def delete_job(request, job_id):
+#     recruiter = get_object_or_404(RecruiterProfile, user=request.user)
+#     job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
+
+#     if request.method == "POST":
+#         job.delete()
+#         messages.success(request, "Job deleted successfully.")
+#         return redirect("job_postings")
+
+#     return render(request, "recruiter/delete_job.html", {"job": job})
 @login_required
 def delete_job(request, job_id):
     recruiter = get_object_or_404(RecruiterProfile, user=request.user)
     job = get_object_or_404(Job, id=job_id, recruiter=recruiter)
 
-    if request.method == "POST":
-        job.delete()
-        messages.success(request, "Job deleted successfully.")
-        return redirect("job_postings")
+    job.delete()
+    messages.success(request, "Job deleted successfully.")
 
-    return render(request, "recruiter/delete_job.html", {"job": job})
+    return redirect("job_postings")
