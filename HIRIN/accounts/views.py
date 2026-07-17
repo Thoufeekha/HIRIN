@@ -964,9 +964,8 @@ def publish_job(request, job_id):
     job.is_published = True
     job.save()
 
-    run_candidate_graph(
-        job.id
-    )
+    if job.recruiter.candidate_agent_enabled:
+        run_candidate_graph(job.id)
 
     return redirect("job_postings")
 

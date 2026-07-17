@@ -1,3 +1,5 @@
+##nodes.py
+
 import os
 import json
 from dotenv import load_dotenv
@@ -312,6 +314,9 @@ def invite_candidates(state):
     )
 
     recruiter = job.recruiter
+
+    if not recruiter.candidate_agent_enabled:
+        return state
 
     invited = []
 
