@@ -850,6 +850,40 @@ def recruiter_profile(request):
     
 
 
+# @login_required
+# def recruiter_settings(request):
+
+#     recruiter = RecruiterProfile.objects.get(
+#         user=request.user
+#     )
+
+#     if request.method == "POST":
+
+#         recruiter.candidate_agent_enabled = (
+#             "candidate_agent_enabled"
+#             in request.POST
+#         )
+
+#         recruiter.save()
+
+#         messages.success(
+#             request,
+#             "Settings updated successfully."
+#         )
+
+#         return redirect(
+#             "recruiter_settings"
+#         )
+
+#     return render(
+#         request,
+#         "recruiter/recruiter_settings.html",
+#         {
+#             "recruiter": recruiter
+#         }
+#     )
+
+
 @login_required
 def recruiter_settings(request):
 
@@ -859,17 +893,107 @@ def recruiter_settings(request):
 
     if request.method == "POST":
 
-        recruiter.candidate_agent_enabled = (
-            "candidate_agent_enabled"
-            in request.POST
-        )
+        form_type = request.POST.get("form_type")
 
-        recruiter.save()
+        # Account Information
+        if form_type == "account_info":
 
-        messages.success(
-            request,
-            "Settings updated successfully."
-        )
+            recruiter.recruiter_name = request.POST.get(
+                "recruiter_name"
+            )
+
+            recruiter.company_email = request.POST.get(
+                "company_email"
+            )
+
+            recruiter.company_phone = request.POST.get(
+                "company_phone"
+            )
+
+            recruiter.company_website = request.POST.get(
+                "company_website"
+            )
+
+            recruiter.save()
+
+            messages.success(
+                request,
+                "Account information updated."
+            )
+
+        # Candidate Agent
+        elif form_type == "candidate_agent":
+
+            recruiter.candidate_agent_enabled = (
+                "candidate_agent_enabled"
+                in request.POST
+            )
+
+            recruiter.save()
+
+            messages.success(
+                request,
+                "Candidate Agent settings updated."
+            )
+
+        # Change Password
+        elif form_type == "change_password":
+
+            current_pw = request.POST.get(
+                "current_password"
+            )
+
+            new_pw = request.POST.get(
+                "new_password"
+            )
+
+            confirm_pw = request.POST.get(
+                "confirm_password"
+            )
+
+            if not request.user.check_password(
+                current_pw
+            ):
+                messages.error(
+                    request,
+                    "Current password is incorrect."
+                )
+
+            elif new_pw != confirm_pw:
+
+                messages.error(
+                    request,
+                    "Passwords do not match."
+                )
+
+            else:
+
+                request.user.set_password(
+                    new_pw
+                )
+
+                request.user.save()
+
+                update_session_auth_hash(
+                    request,
+                    request.user
+                )
+
+                messages.success(
+                    request,
+                    "Password updated successfully."
+                )
+
+        # Delete Account
+        elif form_type == "delete_account":
+
+            user = request.user
+
+            logout(request)
+
+            user.delete()
+
+            return redirect("/")
 
         return redirect(
             "recruiter_settings"
