@@ -479,15 +479,30 @@ def recruiter_dashboard(request):
 
     recent_jobs = all_jobs.order_by("-created_at")[:5]
 
-    active_jobs = sum(
-        1 for job in all_jobs
-        if job.status in ["Active", "Closing Soon"]
-    )
+    active_jobs = all_jobs.filter(
+        is_published=True,
+        is_closed=False
+    ).count()
+
+    total_applicants = Application.objects.filter(
+        job__recruiter=recruiter
+    ).count()
+
+    new_this_week = Application.objects.filter(
+        job__recruiter=recruiter,
+        applied_date__gte=timezone.now() - timezone.timedelta(days=7)
+    ).count()
+
+    print("Total Jobs:", all_jobs.count())
+    print("Total Applications:", total_applicants)
 
     context = {
-        "active_jobs": active_jobs,
-        "recent_jobs": recent_jobs,
-    }
+    "recruiter_name": recruiter.recruiter_name,
+    "active_jobs": active_jobs,
+    "total_applicants": total_applicants,
+    "new_this_week": new_this_week,
+    "recent_jobs": recent_jobs,
+}
 
     return render(
         request,

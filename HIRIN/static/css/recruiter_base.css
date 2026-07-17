@@ -193,6 +193,13 @@ body{
     color:#111827;
 }
 
+.dashboard-subtitle{
+    color:#6B7280;
+    font-size:18px;
+    margin-top:-18px;
+    margin-bottom:30px;
+}
+
 .stats-grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -201,20 +208,25 @@ body{
 }
 
 .stat-card{
-    background:#fff;
-    border:1px solid #E5E7EB;
-    border-radius:18px;
+    background:#0D5C4F;
+    border:none;
+    border-radius:20px;
     padding:25px;
+    color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
 .stat-card p{
-    color:#6B7280;
+    color:#D6F3EB;
     margin-bottom:12px;
+    font-size:16px;
+    font-weight:500;
 }
 
 .stat-card h2{
     font-size:42px;
-    color:#111827;
+    color:#FFFFFF;
+    font-weight:700;
 }
 
 .jobs-container{
