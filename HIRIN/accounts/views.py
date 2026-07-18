@@ -701,22 +701,78 @@ def apply_job(request, job_id):
 
     return redirect("jobseeker_dashboard")
 
+# @login_required
+# def job_list(request):
+#     jobs = Job.objects.filter(
+#         is_published=True,
+#         is_closed=False
+#     )
+
+
+#     search_query = request.GET.get("q", "").strip()
+
+#     if search_query:
+#         jobs = jobs.filter(
+#             Q(title__icontains=search_query) |
+#             Q(skills__icontains=search_query) |
+#             Q(location__icontains=search_query) |
+#             Q(recruiter__company_name__icontains=search_query)
+#         )
+
+#     applied_job_ids = list(
+#         Application.objects.filter(
+#             user=request.user
+#         ).values_list("job_id", flat=True)
+#     )
+
+#     context = {
+#         "jobs": jobs,
+#         "search_query": search_query,
+#         "applied_job_ids": applied_job_ids,
+#     }
+
+
+
+#     return render(request,"jobseeker/job_list.html",{"jobs": jobs}
+# )
+
 @login_required
 def job_list(request):
+
     jobs = Job.objects.filter(
         is_published=True,
         is_closed=False
     )
 
-
     search_query = request.GET.get("q", "").strip()
+    location = request.GET.get("location", "").strip()
+    experience = request.GET.get("experience", "").strip()
+    employment_type = request.GET.get("employment_type", "").strip()
 
+    # Search
     if search_query:
         jobs = jobs.filter(
             Q(title__icontains=search_query) |
             Q(skills__icontains=search_query) |
-            Q(location__icontains=search_query) |
             Q(recruiter__company_name__icontains=search_query)
+        )
+
+    # Location
+    if location:
+        jobs = jobs.filter(
+            location__icontains=location
+        )
+
+    # Experience
+    if experience:
+        jobs = jobs.filter(
+            experience_level=experience
+        )
+
+    # Job Type
+    if employment_type:
+        jobs = jobs.filter(
+            employment_type=employment_type
         )
 
     applied_job_ids = list(
@@ -731,10 +787,11 @@ def job_list(request):
         "applied_job_ids": applied_job_ids,
     }
 
-
-
-    return render(request,"jobseeker/job_list.html",{"jobs": jobs}
-)
+    return render(
+        request,
+        "jobseeker/job_list.html",
+        context
+    )
 
 @login_required
 def ats_resume(request):
@@ -1027,6 +1084,8 @@ def post_job(request):
             employment_type=request.POST.get(
                 "employment_type"
             ),
+
+            experience_level=request.POST.get("experience_level"),
 
             salary=request.POST.get("salary"),
 
@@ -1656,6 +1715,7 @@ def edit_job(request, job_id):
         job.title = request.POST.get("title")
         job.location = request.POST.get("location")
         job.employment_type = request.POST.get("employment_type")
+        job.experience_level = request.POST.get("experience_level")
         job.salary = request.POST.get("salary")
         job.valid_until = request.POST.get("valid_until")
         job.skills = request.POST.get("skills")

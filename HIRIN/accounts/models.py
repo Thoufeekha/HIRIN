@@ -218,6 +218,13 @@ class Job(models.Model):
         ("Contract", "Contract"),
     ]
 
+    EXPERIENCE_CHOICES = [
+        ("Fresher", "Fresher"),
+        ("0-2 Years", "0-2 Years"),
+        ("2-5 Years", "2-5 Years"),
+        ("5+ Years", "5+ Years"),
+    ]
+
     recruiter = models.ForeignKey(
         RecruiterProfile,
         on_delete=models.CASCADE
@@ -234,6 +241,11 @@ class Job(models.Model):
     employment_type = models.CharField(
         max_length=20,
         choices=EMPLOYMENT_CHOICES
+    )
+
+    experience_level = models.CharField(
+        max_length=20,
+        choices=EXPERIENCE_CHOICES
     )
 
     salary = models.CharField(

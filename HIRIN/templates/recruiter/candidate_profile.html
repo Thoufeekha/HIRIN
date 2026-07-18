@@ -56,12 +56,12 @@
             {% else %}
                 <form method="post" action="{% url 'invite_candidate' candidate.id %}" class="invite-form">
                     {% csrf_token %}
-                    <select name="job_id" class="invite-select">
+                    <!-- <select name="job_id" class="invite-select">
                         <option value="">General Interest</option>
                         {% for job in recruiter_jobs %}
                         <option value="{{ job.id }}">{{ job.title }}</option>
                         {% endfor %}
-                    </select>
+                    </select> -->
                     <button type="submit" class="btn-invite">
                         <i class="fa-solid fa-paper-plane"></i>
                         Invite Candidate

@@ -215,7 +215,7 @@
 
 {% endwith %}
 
-<script>
+<!-- <script>
   const avatarBtn = document.getElementById('avatarBtn');
   const notifDropdown = document.getElementById('notifDropdown');
   if (notifBtn && notifDropdown) {
@@ -226,7 +226,69 @@
     document.addEventListener('click', () => notifDropdown.classList.remove('open'));
     notifDropdown.addEventListener('click', (e) => e.stopPropagation());
   }
-</script>
+</script> -->
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Notification
+    const notifBtn = document.getElementById("notifBtn");
+    const notifDropdown = document.getElementById("notifDropdown");
+
+    // Profile
+    const avatarBtn = document.getElementById("avatarBtn");
+    const userMenu = document.getElementById("userMenu");
+
+    // Notification toggle
+    if (notifBtn && notifDropdown) {
+        notifBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            notifDropdown.classList.toggle("open");
+
+            // Close profile if open
+            if (userMenu) {
+                userMenu.classList.remove("open");
+            }
+        });
+
+        notifDropdown.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+    }
+
+    // Profile toggle
+    if (avatarBtn && userMenu) {
+        avatarBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            userMenu.classList.toggle("open");
+
+            // Close notifications if open
+            if (notifDropdown) {
+                notifDropdown.classList.remove("open");
+            }
+        });
+
+        userMenu.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+    }
+
+    // Close both when clicking outside
+    document.addEventListener("click", function () {
+        if (notifDropdown) {
+            notifDropdown.classList.remove("open");
+        }
+
+        if (userMenu) {
+            userMenu.classList.remove("open");
+        }
+    });
+
+});
+
+</script>
 </body>
 </html>
