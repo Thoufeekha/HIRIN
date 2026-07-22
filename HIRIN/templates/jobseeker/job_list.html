@@ -1,13 +1,100 @@
 {% extends "jobseeker/jobseeker_base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/job_list.css' %}">
+{% endblock %}
+
+
 {% block content %}
 
-<h1 class="dashboard-title">All Jobs</h1>
+<!-- Filter Section -->
+<div class="filter-container">
+    <form method="GET">
+
+        {% if search_query %}
+            <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+
+        <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            value="{{ request.GET.location }}"
+            class="filter-input"
+        >
+
+        <select name="experience" class="filter-select">
+          <option value="">Experience Level</option>
+
+          <option value="Fresher"
+              {% if request.GET.experience == "Fresher" %}selected{% endif %}>
+              Fresher
+          </option>
+
+          <option value="0-2 Years"
+              {% if request.GET.experience == "0-2 Years" %}selected{% endif %}>
+              0–2 Years
+          </option>
+
+          <option value="2-5 Years"
+              {% if request.GET.experience == "2-5 Years" %}selected{% endif %}>
+              2–5 Years
+          </option>
+
+          <option value="5+ Years"
+              {% if request.GET.experience == "5+ Years" %}selected{% endif %}>
+              5+ Years
+          </option>
+      </select>
+
+        <select name="employment_type" class="filter-select">
+          <option value="">Job Type</option>
+
+          <option value="Full Time"
+              {% if request.GET.employment_type == "Full Time" %}selected{% endif %}>
+              Full Time
+          </option>
+
+          <option value="Part Time"
+              {% if request.GET.employment_type == "Part Time" %}selected{% endif %}>
+              Part Time
+          </option>
+
+          <option value="Internship"
+              {% if request.GET.employment_type == "Internship" %}selected{% endif %}>
+              Internship
+          </option>
+
+          <option value="Contract"
+              {% if request.GET.employment_type == "Contract" %}selected{% endif %}>
+              Contract
+          </option>
+      </select>
+
+        <button type="submit" class="filter-btn">
+            Apply Filters
+        </button>
+
+        <a href="{% url 'job_list' %}" class="clear-filter-btn">
+            Clear
+        </a>
+
+    </form>
+</div>
+
+
+<!-- <h1 class="dashboard-title">All Jobs</h1> -->
 
 {% if search_query %}
-<p style="color:var(--ink-soft); margin-bottom:16px;">Showing results for "{{ search_query }}"</p>
+<p style="color:var(--ink-soft); margin-bottom:16px;">
+    Showing results for "{{ search_query }}"
+</p>
 {% endif %}
 
 <div class="rec-grid">
+<<<<<<< HEAD
   {% for job in jobs %}
   <div class="job-card">
     <div class="job-top">
@@ -16,16 +103,50 @@
     <h3><a href="{% url 'job_detail' job.id %}" style="color:inherit; text-decoration:none;">{{ job.title }}</a></h3>
     <p class="meta">{{ job.company_name }} · {{ job.location }}</p>
     <p class="meta">{{ job.employment_type }}{% if job.salary %} · {{ job.salary }}{% endif %}</p>
+=======
+    {% for job in jobs %}
+    <div class="job-card">
+        <div class="job-top">
+            <div class="logo-badge">
+                {{ job.recruiter.company_name|slice:":2"|upper }}
+            </div>
+        </div>
+>>>>>>> main
 
-    {% if job.id in applied_job_ids %}
-      <button class="apply-btn" disabled>Applied</button>
-    {% else %}
-      <a href="{% url 'job_detail' job.id %}" class="apply-btn" style="display:inline-block; text-align:center; text-decoration:none;">View & Apply</a>
-    {% endif %}
-  </div>
-  {% empty %}
-  <p style="color:var(--ink-soft);">No jobs found{% if search_query %} for "{{ search_query }}"{% endif %}.</p>
-  {% endfor %}
+        <h3>
+            <a href="{% url 'job_detail' job.id %}" style="color:inherit;text-decoration:none;">
+                {{ job.title }}
+            </a>
+        </h3>
+
+        <p class="meta">
+            {{ job.recruiter.company_name }} · {{ job.location }}
+        </p>
+
+        <p class="meta">
+            {{ job.employment_type }}
+            {% if job.salary %}
+                · {{ job.salary }}
+            {% endif %}
+        </p>
+
+        {% if job.id in applied_job_ids %}
+            <button class="apply-btn" disabled>
+                Applied
+            </button>
+        {% else %}
+            <a href="{% url 'job_detail' job.id %}"
+               class="apply-btn"
+               style="display:inline-block;text-align:center;text-decoration:none;">
+                View & Apply
+            </a>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p style="color:var(--ink-soft);">
+            No jobs found{% if search_query %} for "{{ search_query }}"{% endif %}.
+        </p>
+    {% endfor %}
 </div>
 
 {% endblock %}

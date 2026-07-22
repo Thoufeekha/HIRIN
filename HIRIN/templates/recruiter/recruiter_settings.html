@@ -1,20 +1,237 @@
-{% extends "recruiter_base.html" %}
+{% extends "recruiter/recruiter_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<h1>Settings</h1>
+<div class="profile-header-row">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage recruiter account and automation tools</p>
+    </div>
+</div>
 
-<div class="card">
+<div class="profile-grid">
 
-    <a href="{% url 'change_password' %}" class="setting-btn">
-        Change Password
-    </a>
+    <div class="profile-main">
 
-    <br><br>
+        <!-- Account Information -->
+        <div class="profile-card">
 
-    <a href="{% url 'logout' %}" class="setting-btn logout">
-        Logout
-    </a>
+            <h3>
+                <i class="fa-solid fa-user"></i>
+                Account Information
+            </h3>
+
+            <form method="POST" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="account_info">
+
+                <div class="settings-field">
+                    <label>Recruiter Name</label>
+                    <input
+                        type="text"
+                        name="recruiter_name"
+                        value="{{ recruiter.recruiter_name }}"
+                        required
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>Company Email</label>
+                    <input
+                        type="email"
+                        name="company_email"
+                        value="{{ recruiter.company_email }}"
+                        required
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>Company Phone Number</label>
+                    <input
+                        type="text"
+                        name="company_phone"
+                        value="{{ recruiter.company_phone }}"
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>Company Website</label>
+                    <input
+                        type="url"
+                        name="company_website"
+                        value="{{ recruiter.company_website }}"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="settings-save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Candidate Agent -->
+        <div class="profile-card">
+
+            <h3>
+                <i class="fa-solid fa-robot"></i>
+                Candidate Agent
+            </h3>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input
+                    type="hidden"
+                    name="form_type"
+                    value="candidate_agent"
+                >
+
+                <div class="toggle-row">
+
+                    <div>
+                        <div class="toggle-label">
+                            Automatic Candidate Invitations
+                        </div>
+
+                        <div class="toggle-sub">
+                            Automatically find candidates with
+                            90%+ match and invite them to apply.
+                        </div>
+                    </div>
+
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            name="candidate_agent_enabled"
+                            {% if recruiter.candidate_agent_enabled %}
+                            checked
+                            {% endif %}
+                        >
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="settings-save-btn"
+                >
+                    Save Settings
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Change Password -->
+        <div class="profile-card">
+
+            <h3>
+                <i class="fa-solid fa-lock"></i>
+                Change Password
+            </h3>
+
+            <form method="POST" class="settings-form">
+                {% csrf_token %}
+                <input
+                    type="hidden"
+                    name="form_type"
+                    value="change_password"
+                >
+
+                <div class="settings-field">
+                    <label>Current Password</label>
+                    <input
+                        type="password"
+                        name="current_password"
+                        required
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>New Password</label>
+                    <input
+                        type="password"
+                        name="new_password"
+                        required
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>Confirm New Password</label>
+                    <input
+                        type="password"
+                        name="confirm_password"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="settings-save-btn"
+                >
+                    Update Password
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="profile-card danger-zone">
+
+            <h3>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Danger Zone
+            </h3>
+
+            <div class="danger-row">
+
+                <div>
+                    <div class="danger-title">
+                        Delete Account
+                    </div>
+
+                    <div class="danger-desc">
+                        Permanently delete your recruiter account
+                        and all associated data. This action
+                        cannot be undone.
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input
+                        type="hidden"
+                        name="form_type"
+                        value="delete_account"
+                    >
+
+                    <button
+                        type="submit"
+                        class="danger-btn"
+                        onclick="return confirm('Are you sure you want to delete your account?');"
+                    >
+                        Delete Account
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

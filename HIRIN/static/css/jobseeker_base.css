@@ -158,3 +158,38 @@ body{
 .content{
     padding:30px;
 }
+.notif-dropdown-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:16px 18px;
+
+    border-bottom:1px solid #E5E7EB;
+}
+
+.notif-dropdown-header span{
+    font-size:18px;
+    font-weight:700;
+}
+
+.notif-dropdown-header a{
+    margin-left:20px;   /* adds gap */
+    
+    width:32px;
+    height:32px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    color:#6B7280;
+    border-radius:8px;
+}
+
+.notif-dropdown-header a:hover{
+    background:#F3F4F6;
+    color:#DC2626;
+}

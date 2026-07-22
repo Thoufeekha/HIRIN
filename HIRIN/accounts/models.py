@@ -205,6 +205,10 @@ class RecruiterProfile(models.Model):
         default=5.0
     )
 
+    candidate_agent_enabled = models.BooleanField(
+        default=True
+    )
+
 class Job(models.Model):
 
     EMPLOYMENT_CHOICES = [
@@ -214,10 +218,20 @@ class Job(models.Model):
         ("Contract", "Contract"),
     ]
 
+
     SOURCE_CHOICES = [
         ("internal", "Posted on HIRIN'"),
         ("technopark", "Technopark"),
         ("infopark", "Infopark"),
+
+    ]
+
+    EXPERIENCE_CHOICES = [
+        ("Fresher", "Fresher"),
+        ("0-2 Years", "0-2 Years"),
+        ("2-5 Years", "2-5 Years"),
+        ("5+ Years", "5+ Years"),
+
     ]
 
     recruiter = models.ForeignKey(
@@ -234,6 +248,18 @@ class Job(models.Model):
     )
     scraped_company_name = models.CharField(max_length=200, blank=True)
     source_url = models.URLField(blank=True, null=True, unique=True)
+
+
+
+    experience_level = models.CharField(
+        max_length=20,
+        choices=EXPERIENCE_CHOICES
+    )
+
+    salary = models.CharField(
+        max_length=100,
+        blank=True
+    )
 
 
     title = models.CharField(max_length=200)
@@ -297,7 +323,6 @@ class Application(models.Model):
         ("Viewed", "Viewed"),
         ("Shortlisted", "Shortlisted"),
         ("Interviewing", "Interviewing"),
-        ("Offer", "Offer"),
         ("Rejected", "Rejected"),
     ]
 
@@ -317,7 +342,16 @@ class Application(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default="Applied"
+    
     )
+
+    last_stage = models.CharField(
+    max_length=20,
+    blank=True,
+    null=True
+    )
+
+    
 
     # ADD THESE
     match_score = models.FloatField(default=0)
@@ -362,6 +396,11 @@ class Invitation(models.Model):
         null=True,
         blank=True
     )
+
+    match_score = models.FloatField(
+        default=0
+    )
+
 
     message = models.TextField(
         blank=True
@@ -425,7 +464,7 @@ def notifications(request):
             "created_at": inv.created_at,
         })
 
-    general = notifications.objects.filter(
+    general = Notification.objects.filter(
         recipient=request.user
     ).order_by("-created_at")[:10]
 
@@ -441,8 +480,15 @@ def notifications(request):
     items = items[:10]
 
     unread_count = (
-        Invitation.objects.filter(candidate=request.user, is_read=False).count()
-        + notifications.objects.filter(recipient=request.user, is_read=False).count()
+        Invitation.objects.filter(
+            candidate=request.user,
+            is_read=False
+        ).count()
+        +
+        Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).count()
     )
 
     return {

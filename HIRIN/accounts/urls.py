@@ -50,7 +50,7 @@ urlpatterns = [
     path(
         "job-tracker/update/<int:application_id>/", 
          views.update_application_jsstatus,
-        name="update_application_status"
+        name="update_application_jsstatus"
     ),
 
  
@@ -249,6 +249,18 @@ path(
         "notification/general/<int:notification_id>/read/",
         views.mark_general_notification_read,
         name="mark_general_notification_read"
+    ),
+
+    path(
+        "notifications/clear/",
+        views.clear_notifications,
+        name="clear_notifications"
+    ),
+
+    path(
+        "notifications/clear/jobseeker/",
+        views.clear_notificationsjs,
+        name="clear_notificationsjs"
     ),
 
 

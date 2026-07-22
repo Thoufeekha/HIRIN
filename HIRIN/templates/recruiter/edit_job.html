@@ -37,6 +37,28 @@
         </div>
 
         <div class="form-group">
+            <label for="experience_level">Experience Level</label>
+
+            <select id="experience_level" name="experience_level" required>
+                <option value="Fresher" {% if job.experience_level == "Fresher" %}selected{% endif %}>
+                    Fresher
+                </option>
+
+                <option value="0-2 Years" {% if job.experience_level == "0-2 Years" %}selected{% endif %}>
+                    0–2 Years
+                </option>
+
+                <option value="2-5 Years" {% if job.experience_level == "2-5 Years" %}selected{% endif %}>
+                    2–5 Years
+                </option>
+
+                <option value="5+ Years" {% if job.experience_level == "5+ Years" %}selected{% endif %}>
+                    5+ Years
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="salary">Salary</label>
             <input type="text" id="salary" name="salary" value="{{ job.salary }}">
         </div>

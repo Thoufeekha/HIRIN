@@ -11,14 +11,21 @@
 
     <h1>Manage Jobs</h1>
 
-    <div class="header-right">
+        <div class="header-right">
 
-        <input type="text"
-               class="search-job"
-               placeholder="Search job title...">
+        <form method="GET">
+
+            <input
+                type="text"
+                name="q"
+                class="search-job"
+                placeholder="Search job title..."
+                value="{{ request.GET.q }}"
+            >
+
+        </form>
 
     </div>
-
 </div>
 
 
@@ -81,26 +88,15 @@
 
         <div class="actions">
 
-            <!-- <a href="{% url 'view_job' job.id %}">
-                View
-            </a> -->
+    <a href="{% url 'edit_job' job.id %}">
+        Edit
+    </a>
 
-            <a href="{% url 'edit_job' job.id %}">
-                Edit
-            </a>
+    <a href="{% url 'delete_job' job.id %}">
+        Delete
+    </a>
 
-            <form action="{% url 'delete_job' job.id %}" method="post" class="delete-form" style="display:inline;">
-                {% csrf_token %}
-
-                <button type="submit" class="delete-btn" onclick="return confirm('Delete this job? This cannot be undone.');">
-
-                   Delete
-                </button>
-            </form>
-
-            </a>
-
-        </div>
+</div>
 
     </div>
 
