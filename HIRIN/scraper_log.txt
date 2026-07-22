@@ -1,0 +1,21 @@
+✅ Found .env at: Email\.env
+✅ API key loaded
+Scraping technopark...
+technopark: 20 jobs
+Scraping infopark...
+infopark: 20 jobs
+Total saved: 40
+✅ Found .env at: Email\.env
+✅ API key loaded
+Scraping technopark...
+technopark: 20 jobs
+Scraping infopark...
+infopark: 20 jobs
+Total saved: 40
+✅ Found .env at: Email\.env
+✅ API key loaded
+Scraping technopark...
+technopark: 20 jobs
+Scraping infopark...
+infopark: 20 jobs
+Total saved: 40

@@ -713,10 +713,11 @@ def apply_job(request, job_id):
             )
         )
 
-        Notification.objects.create(
-            recipient=job.recruiter.user,
-            message=f"{request.user.first_name or request.user.email} applied for {job.title}",
-            link=reverse("manage_applications")
+        if job.recruiter:
+            Notification.objects.create(
+                recipient=job.recruiter.user,
+                message=f"{request.user.first_name or request.user.email} applied for {job.title}",
+                link=reverse("manage_applications")
         )
 
     return redirect("jobseeker_dashboard")

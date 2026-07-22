@@ -214,55 +214,60 @@ class Job(models.Model):
         ("Contract", "Contract"),
     ]
 
+    SOURCE_CHOICES = [
+        ("internal", "Posted on HIRIN'"),
+        ("technopark", "Technopark"),
+        ("infopark", "Infopark"),
+    ]
+
     recruiter = models.ForeignKey(
         RecruiterProfile,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
-    title = models.CharField(
-        max_length=200
-    )
-
-    location = models.CharField(
-        max_length=200
-    )
-
-    employment_type = models.CharField(
+    source = models.CharField(
         max_length=20,
-        choices=EMPLOYMENT_CHOICES
+        choices=SOURCE_CHOICES,
+        default="internal",
     )
+    scraped_company_name = models.CharField(max_length=200, blank=True)
+    source_url = models.URLField(blank=True, null=True, unique=True)
 
-    salary = models.CharField(
-        max_length=100,
-        blank=True
-    )
 
-    skills = models.TextField()
+    title = models.CharField(max_length=200)
 
-    description = models.TextField()
+    location = models.CharField(max_length=200)
+
+    employment_type = models.CharField(max_length=20, choices=EMPLOYMENT_CHOICES, default="Full Time")
+
+
+    salary = models.CharField(max_length=100,blank=True)
+
+    skills = models.TextField(blank=True)
+
+    description = models.TextField(blank=True)
 
     valid_until = models.DateField()
 
-    is_published = models.BooleanField(
-        default=False
-    )
+    is_published = models.BooleanField(default=False)
 
-    is_closed = models.BooleanField(
-    default=False
-    )
+    is_closed = models.BooleanField(default=False)
 
-    is_reposted = models.BooleanField(
-        default=False
-    )
+    is_reposted = models.BooleanField(default=False)
 
-    reposted_at = models.DateTimeField(
-    null=True,
-    blank=True
-    )
+    reposted_at = models.DateTimeField(null=True, blank=True)
+
     
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    @property
+    def company_name(self):
+        if self.recruiter:
+            return self.recruiter.company_name
+        return self.scraped_company_name or "External"
 
     @property
     def status(self):

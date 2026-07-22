@@ -11,10 +11,10 @@
   {% for job in jobs %}
   <div class="job-card">
     <div class="job-top">
-      <div class="logo-badge">{{ job.recruiter.company_name|slice:":2"|upper }}</div>
+      <div class="logo-badge">{{ job.company_name|slice:":2"|upper }}</div>
     </div>
     <h3><a href="{% url 'job_detail' job.id %}" style="color:inherit; text-decoration:none;">{{ job.title }}</a></h3>
-    <p class="meta">{{ job.recruiter.company_name }} · {{ job.location }}</p>
+    <p class="meta">{{ job.company_name }} · {{ job.location }}</p>
     <p class="meta">{{ job.employment_type }}{% if job.salary %} · {{ job.salary }}{% endif %}</p>
 
     {% if job.id in applied_job_ids %}
