@@ -17,6 +17,7 @@
             <input type="hidden" name="q" value="{{ search_query }}">
         {% endif %}
 
+
         <input
             type="text"
             name="location"
@@ -94,59 +95,44 @@
 {% endif %}
 
 <div class="rec-grid">
-<<<<<<< HEAD
+
   {% for job in jobs %}
   <div class="job-card">
     <div class="job-top">
       <div class="logo-badge">{{ job.company_name|slice:":2"|upper }}</div>
     </div>
-    <h3><a href="{% url 'job_detail' job.id %}" style="color:inherit; text-decoration:none;">{{ job.title }}</a></h3>
+
+    <h3>
+        <a href="{% url 'job_detail' job.id %}" style="color:inherit; text-decoration:none;">
+            {{ job.title }}
+        </a>
+    </h3>
+
     <p class="meta">{{ job.company_name }} · {{ job.location }}</p>
-    <p class="meta">{{ job.employment_type }}{% if job.salary %} · {{ job.salary }}{% endif %}</p>
-=======
-    {% for job in jobs %}
-    <div class="job-card">
-        <div class="job-top">
-            <div class="logo-badge">
-                {{ job.recruiter.company_name|slice:":2"|upper }}
-            </div>
-        </div>
->>>>>>> main
 
-        <h3>
-            <a href="{% url 'job_detail' job.id %}" style="color:inherit;text-decoration:none;">
-                {{ job.title }}
-            </a>
-        </h3>
+    <p class="meta">
+        {{ job.employment_type }}
+        {% if job.salary %} · {{ job.salary }}{% endif %}
+    </p>
 
-        <p class="meta">
-            {{ job.recruiter.company_name }} · {{ job.location }}
-        </p>
+    {% if job.id in applied_job_ids %}
+        <button class="apply-btn" disabled>Applied</button>
+    {% else %}
+        <a href="{% url 'job_detail' job.id %}"
+           class="apply-btn"
+           style="display:inline-block;text-align:center;text-decoration:none;">
+            View & Apply
+        </a>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p style="color:var(--ink-soft);">
+        No jobs found{% if search_query %} for "{{ search_query }}"{% endif %}.
+    </p>
+  {% endfor %}
 
-        <p class="meta">
-            {{ job.employment_type }}
-            {% if job.salary %}
-                · {{ job.salary }}
-            {% endif %}
-        </p>
-
-        {% if job.id in applied_job_ids %}
-            <button class="apply-btn" disabled>
-                Applied
-            </button>
-        {% else %}
-            <a href="{% url 'job_detail' job.id %}"
-               class="apply-btn"
-               style="display:inline-block;text-align:center;text-decoration:none;">
-                View & Apply
-            </a>
-        {% endif %}
-    </div>
-    {% empty %}
-        <p style="color:var(--ink-soft);">
-            No jobs found{% if search_query %} for "{{ search_query }}"{% endif %}.
-        </p>
-    {% endfor %}
 </div>
 
+
+    
 {% endblock %}
