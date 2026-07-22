@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,3 +142,88 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'jobseeker_login'
 
+
+JAZZMIN_SETTINGS = {
+
+    "site_title": "HIRIN Admin",
+    "site_header": "HIRIN'",
+    "site_brand": "HIRIN",
+    "welcome_sign": "Welcome to HIRIN Administration",
+
+    "site_logo": False,
+    "login_logo": False,
+    "site_icon": False,
+
+
+    "custom_css": "css/admin_custom.css",
+
+    # Sidebar
+    "navigation_expanded": True,
+    "show_sidebar": True,
+
+    # UI
+    "hide_apps": [],
+    "hide_models": [],
+
+    # Search
+    "search_model": [],
+
+    # Top Menu
+    "topmenu_links": [
+        {
+            "name": "View Site",
+            "url": "/",
+            "new_window": False,
+        },
+    ],
+
+    # Sidebar Icons
+    "icons": {
+
+        "accounts": "fas fa-users",
+
+        "accounts.job": "fas fa-briefcase",
+
+        "accounts.application": "fas fa-file-alt",
+
+        "accounts.recruiterprofile": "fas fa-building",
+
+        "accounts.jobseekerprofile": "fas fa-user",
+
+        "accounts.userrole": "fas fa-user-tag",
+
+        "auth.user": "fas fa-user",
+
+        "auth.group": "fas fa-users-cog",
+
+        "ghost_hunter.ghostanalysis": "fas fa-shield-alt",
+
+        "email_generato.generateddocument": "fas fa-envelope",
+
+        "interviewprep.interviewquestion": "fas fa-comments",
+
+        "interviewprep.interviewsession": "fas fa-video",
+
+        "interviewprep.hrtip": "fas fa-lightbulb",
+
+        "interviewprep.aptitudetest": "fas fa-brain",
+
+    }
+}
+
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
+    "dark_mode_theme": None,
+
+    "navbar": "#119378",
+    "accent": "#119378",
+
+    "button_classes": {
+        "primary": "btn-success",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+    }
+}

@@ -28,7 +28,7 @@ urlpatterns = [
     path('ats/', include('ats.urls')),
     path('ghost-hunter/', include('ghost_hunter.urls')),
     path('chatbot/', include('chatbot.urls')),     
-    path('ats/', include('ats.urls')),   
+    # path('ats/', include('ats.urls')),   
     path('candidate_agent/', include('candidate_agent.urls')),
 ]
 
